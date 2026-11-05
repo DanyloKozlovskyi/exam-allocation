@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17
+    container_name: exam-allocation-db
+    environment:
+      POSTGRES_DB: exam_allocation
+      POSTGRES_USER: exam
+      POSTGRES_PASSWORD: exam
+    ports:
+      - "5432:5432"
+    volumes:
+      - exam-allocation-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exam -d exam_allocation"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  exam-allocation-db:

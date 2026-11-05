@@ -1,0 +1,5 @@
+is_global = true
+
+# Compilation-level StyleCop diagnostic (not file-scoped, so .editorconfig cannot silence it).
+# XML documentation is not generated (pal-suite convention), so XML comment analysis is off.
+dotnet_diagnostic.SA0001.severity = none

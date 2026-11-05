@@ -1,0 +1,12 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# C# rules live in api/.editorconfig (copied from pal-suite).
+[*.{cs,csproj,props,sln}]
+indent_size = 4

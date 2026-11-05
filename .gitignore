@@ -426,3 +426,12 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# --- exam-allocation ---
+node_modules/
+client/dist/
+client/coverage/
+client/test-results/
+client/playwright-report/
+samples/generated/medium/
+samples/generated/large/

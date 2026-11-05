@@ -1,0 +1,35 @@
+namespace Application.Common.Errors;
+
+/// <summary>Machine-readable error code returned to clients in ProblemDetails.extensions.code.</summary>
+public enum ErrorCode
+{
+    Unknown = 0,
+    ValidationFailed = 1,
+    InvalidArgument = 2,
+    ConcurrencyConflict = 3,
+    SessionNotFound = 4,
+    SessionAlreadyExists = 5,
+    TestCenterNotFound = 6,
+    TestCenterAlreadyExists = 7,
+    RoomNotFound = 8,
+    RoomAlreadyExists = 9,
+    SeatReferencedByPin = 10,
+    SeatNotFound = 11,
+    ParticipantNotFound = 12,
+    ParticipantAlreadyExists = 13,
+    RuleNotFound = 14,
+    RuleParametersInvalid = 15,
+    PinNotFound = 16,
+    PinConflict = 17,
+    ImportNotFound = 18,
+    ImportFileInvalid = 19,
+    ImportFileTooLarge = 20,
+    ImportRowsInvalid = 21,
+    SolveRunNotFound = 22,
+    SolveRunAlreadyActive = 23,
+    SolveRunNotCancellable = 24,
+    RunInterrupted = 25,
+    AllocationNotFound = 26,
+    MoveViolatesHardRule = 27,
+    InvalidMove = 28,
+}

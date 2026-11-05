@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CapacityTotalExceeded" xml:space="preserve">
+    <value>Учасників ({Size}) більше, ніж місць в активних аудиторіях ({Limit}).</value>
+  </data>
+  <data name="AccessibleCapacityExceeded" xml:space="preserve">
+    <value>Учасників, яким потрібне доступне місце ({Size}), більше, ніж доступних місць ({Limit}).</value>
+  </data>
+  <data name="SeparationImpossible" xml:space="preserve">
+    <value>Значення «{Value}» атрибута «{AttributeKey}» має {Size} учасників, а правило дозволяє розмістити щонайбільше {Limit}.</value>
+  </data>
+  <data name="NoAdjacencyImpossible" xml:space="preserve">
+    <value>Учасників зі значенням «{Value}» атрибута «{AttributeKey}» ({Size}) неможливо розсадити не поруч: максимум {Limit}.</value>
+  </data>
+  <data name="PinInvalidSeat" xml:space="preserve">
+    <value>Фіксація учасника посилається на неіснуюче або вимкнене місце {SeatKey}.</value>
+  </data>
+  <data name="PinDuplicateSeat" xml:space="preserve">
+    <value>Кілька учасників зафіксовано на одному місці {SeatKey}.</value>
+  </data>
+  <data name="PinRoomOverfull" xml:space="preserve">
+    <value>Зафіксованих в аудиторії учасників ({Size}) більше за її місткість ({Limit}).</value>
+  </data>
+  <data name="PinRuleConflict" xml:space="preserve">
+    <value>Фіксації порушують обов'язкове правило.</value>
+  </data>
+  <data name="AttributeMissing" xml:space="preserve">
+    <value>У {Count} учасників відсутній атрибут «{AttributeKey}»; вони вважаються унікальними.</value>
+  </data>
+  <data name="NoActiveRooms" xml:space="preserve">
+    <value>Немає жодної активної аудиторії.</value>
+  </data>
+  <data name="ModelTooLarge" xml:space="preserve">
+    <value>Задача завелика для розв'язання за один крок ({Size} змінних, ліміт {Limit}).</value>
+  </data>
+  <data name="SeatingInfeasible" xml:space="preserve">
+    <value>Не вдалося розсадити учасників в аудиторії з дотриманням правил сусідства.</value>
+  </data>
+  <data name="ConflictCore" xml:space="preserve">
+    <value>Ці правила несумісні між собою: {RuleIds}.</value>
+  </data>
+  <data name="AlternativesLimited" xml:space="preserve">
+    <value>Знайдено менше альтернатив, ніж запитано: {Reason}.</value>
+  </data>
+  <data name="InternalValidationFailed" xml:space="preserve">
+    <value>Внутрішня перевірка результату не пройдена.</value>
+  </data>
+</root>
