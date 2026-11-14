@@ -1,0 +1,29 @@
+#!/bin/sh
+# Commit rules (CLAUDE.md -> Git workflow):
+#   1. no merge commits (also catches merges finished with `git commit` after resolving conflicts)
+#   2. no AI co-author / attribution trailers
+#   3. AI tools must not be the author or committer
+msg_file="$1"
+
+if [ -f "$(git rev-parse --git-path MERGE_HEAD)" ]; then
+  echo "error: merge commits are not allowed (linear history)." >&2
+  echo "       Abort with 'git merge --abort' and use 'git merge --squash <branch>' instead." >&2
+  exit 1
+fi
+
+if grep -qiE '^(co-authored-by|claude-session):|generated with \[?claude|noreply@anthropic\.com' "$msg_file"; then
+  echo "error: AI co-author / attribution lines are not allowed in commit messages." >&2
+  echo "       Remove Co-Authored-By / Claude-Session / 'Generated with Claude' lines." >&2
+  exit 1
+fi
+
+for ident in "$(git var GIT_AUTHOR_IDENT)" "$(git var GIT_COMMITTER_IDENT)"; do
+  case "$ident" in
+    *noreply@anthropic.com*|Claude\ \<*)
+      echo "error: commits must use the repository owner's git identity, not an AI identity." >&2
+      exit 1
+      ;;
+  esac
+done
+
+exit 0

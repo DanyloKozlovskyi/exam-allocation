@@ -1,0 +1,7 @@
+#!/bin/sh
+# Linear history (CLAUDE.md -> Git workflow): merge commits are not allowed.
+# Runs when `git merge` is about to create a merge commit; fast-forwards and --squash are unaffected.
+echo "error: merge commits are not allowed in this repository (linear history)." >&2
+echo "       Integrate branches with:  git merge --squash <branch> && git commit" >&2
+echo "       or rebase onto main and fast-forward:  git rebase main && git switch main && git merge --ff-only <branch>" >&2
+exit 1

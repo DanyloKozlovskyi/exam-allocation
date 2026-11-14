@@ -30,6 +30,9 @@ dotnet run --project api/src/Api            # http://localhost:5080 — applies 
 cd client && npm install && npm run dev     # http://localhost:3000 (MSW mocks on by default: src/config.json → useMocks)
 ```
 
+Git: history is linear and squash-only (see `CLAUDE.md` → Git workflow). `npm install` in `client/`
+enables the repo's git hooks; or run `git config core.hooksPath .githooks` once per clone.
+
 Checks:
 
 ```bash

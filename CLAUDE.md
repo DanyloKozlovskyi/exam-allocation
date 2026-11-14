@@ -54,7 +54,22 @@
   pal-suite folders (`views/` thin pages, `components/Global/<Feature>/{Common,Create,Edit,List,View}`),
   reducer actions as enums, Prettier config from pal-suite.
 - User-facing text is Ukrainian; code, comments, commits and docs are English.
-- Commits: `WS-<id>: <imperative summary>` (`P0: …`, `INT: …`).
+- Commit subjects: `<scope>: <imperative summary>` (e.g. `Phase 2: …`, `WS-C: …`, `Fix: …`).
+
+## Git workflow (enforced)
+- **Linear history, squash strategy.** `main` never contains merge commits. A branch is
+  integrated as one commit: `git merge --squash <branch>` + one `git commit`, or rebase it
+  and `git merge --ff-only`. A whole phase may be a single commit.
+- Update with `git pull --rebase`; never `git pull` / `git merge` that creates a merge commit.
+- **No AI attribution.** Never add `Co-Authored-By: Claude`, `Claude-Session:`,
+  "Generated with Claude" or similar lines to commits or PRs, and never commit as Claude:
+  always use the repository owner's configured git identity; do not change `user.name` /
+  `user.email`.
+- Never bypass hooks (`--no-verify`, `commit -n`) and never change `core.hooksPath`.
+- Enforcement: `.githooks/` (`pre-merge-commit`, `commit-msg`; enabled by
+  `git config core.hooksPath .githooks`, which `npm install` in `client/` runs automatically)
+  and `.claude/hooks/git-guard.mjs` (Claude Code PreToolUse hook in `.claude/settings.json`).
+  On GitHub: allow squash merging only and require linear history on `main`.
 
 ## Commands
 | | |
@@ -71,4 +86,4 @@
 ## Before you finish a task
 1. Run your task's acceptance checks (09) plus build/test/lint for your side.
 2. Update docs if your implementation deviates from them.
-3. Commit on your workstream branch.
+3. Commit on your workstream branch (it is squash-merged into `main` as one commit).

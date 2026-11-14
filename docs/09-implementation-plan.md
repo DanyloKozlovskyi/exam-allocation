@@ -45,8 +45,9 @@ Phase 1 agents replace stub bodies in their own files and never touch registrati
    additive changes only via change requests, applied by the integrator.
 6. Before finishing: acceptance checks, `dotnet build` with zero warnings (StyleCop errors
    are build errors), docs updated if implementation deviates, commit `WS-X: …`.
-7. Orchestrator merges Phase 1 branches one at a time; after each merge:
-   `dotnet build`, `dotnet test`, `npm run ci`.
+7. Orchestrator integrates branches one at a time with **squash merges** (`git merge --squash`
+   + one commit; linear history, no merge commits — see CLAUDE.md → Git workflow); after each:
+   `dotnet build`, `dotnet test`, `npm run ci`. A whole phase may also land as a single commit.
 
 ### Estimated effort (agent-assisted)
 
@@ -175,7 +176,7 @@ Owned: `Application/{Solving,Allocations}/**` (except D's export builder), `Infr
 
 | Task | Acceptance |
 |---|---|
-| I1 Merge Phase 1 branches; apply change requests; re-export OpenAPI; regenerate client enums/types | full build + tests green |
+| I1 Squash-merge Phase 1 branches (if any remain); apply change requests; re-export OpenAPI; regenerate client enums/types | full build + tests green |
 | I2 `SolverInputBuilder` (Domain → SolverInput, SolverOutput → Allocation entities) | mapping tests |
 | I3 Solve commands, `SolveQueue`/`SolveWorker`, `SolveRunExecutor`, lifecycle, restart recovery, single-active-run rule, cancel | integration: small session → `Succeeded`, allocations persisted |
 | I4 `SolveProgressHub` + `SignalRSolveProgressNotifier` (groups, last-progress replay) | test with `HubConnection` (pal-suite `GetHubConnection` helper) receives `RunCompleted` |
