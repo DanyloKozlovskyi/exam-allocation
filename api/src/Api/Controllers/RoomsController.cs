@@ -1,70 +1,81 @@
 using Api.Constants;
 using Api.Dtos;
+using Api.Modules.Errors;
+using Api.Services.Abstract;
+using Application.Rooms.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
-public class RoomsController : ControllerBase
+public class RoomsController(ISender sender, IRoomsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Rooms.List)]
-    public Task<ActionResult<IReadOnlyList<RoomDto>>> GetAll(
+    public async Task<ActionResult<IReadOnlyList<RoomDto>>> GetAll(
         [FromRoute] Guid centerId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<RoomDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var rooms = await controllerService.GetAll(centerId, cancellationToken);
+        return Ok(rooms);
     }
 
     [HttpGet(ApiRoutes.Rooms.ById)]
-    public Task<ActionResult<RoomDto>> Get(
+    public async Task<ActionResult<RoomDto>> Get(
         [FromRoute] Guid centerId,
         [FromRoute] Guid roomId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<RoomDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var room = await controllerService.Get(centerId, roomId, cancellationToken);
+        return room.Match<ActionResult<RoomDto>>(r => r, () => NotFound());
     }
 
     [HttpPost(ApiRoutes.Rooms.Create)]
-    public Task<ActionResult<RoomDto>> Create(
+    public async Task<ActionResult<RoomDto>> Create(
         [FromRoute] Guid centerId,
         [FromBody] RoomDto room,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<RoomDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(room.ToCreateCommand(centerId), cancellationToken);
+        return result.Match<ActionResult<RoomDto>>(r => RoomDto.FromDomain(r, true), e => e.ToObjectResult());
     }
 
     [HttpPost(ApiRoutes.Rooms.CreateBulk)]
-    public Task<ActionResult<IReadOnlyList<RoomDto>>> CreateBulk(
+    public async Task<ActionResult<IReadOnlyList<RoomDto>>> CreateBulk(
         [FromRoute] Guid centerId,
         [FromBody] CreateRoomsBulkDto rooms,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<RoomDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(rooms.ToCommand(centerId), cancellationToken);
+        return result.Match<ActionResult<IReadOnlyList<RoomDto>>>(
+            r => r.Select(x => RoomDto.FromDomain(x, false)).ToList(),
+            e => e.ToObjectResult());
     }
 
     [HttpPut(ApiRoutes.Rooms.Edit)]
-    public Task<ActionResult<RoomDto>> Edit(
+    public async Task<ActionResult<RoomDto>> Edit(
         [FromRoute] Guid centerId,
         [FromBody] RoomDto room,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<RoomDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(room.ToUpdateCommand(centerId), cancellationToken);
+        return result.Match<ActionResult<RoomDto>>(r => RoomDto.FromDomain(r, true), e => e.ToObjectResult());
     }
 
     [HttpDelete(ApiRoutes.Rooms.ById)]
-    public Task<ActionResult> Delete(
+    public async Task<ActionResult> Delete(
         [FromRoute] Guid centerId,
         [FromRoute] Guid roomId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(new DeleteRoomCommand { CenterId = centerId, Id = roomId }, cancellationToken);
+        return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
     [HttpPost(ApiRoutes.Rooms.PreviewLayout)]
-    public Task<ActionResult<RoomLayoutPreviewDto>> PreviewLayout(
-        [FromBody] RoomLayoutDto layout,
-        CancellationToken cancellationToken)
+    public ActionResult<RoomLayoutPreviewDto> PreviewLayout(
+        [FromBody] RoomLayoutDto layout)
     {
-        return Task.FromResult<ActionResult<RoomLayoutPreviewDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        return controllerService.PreviewLayout(layout);
     }
 }

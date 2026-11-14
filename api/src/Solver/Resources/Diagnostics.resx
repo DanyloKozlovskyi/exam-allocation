@@ -57,4 +57,13 @@
   <data name="InternalValidationFailed" xml:space="preserve">
     <value>Внутрішня перевірка результату не пройдена.</value>
   </data>
+  <data name="Reason_TimeBudgetExhausted" xml:space="preserve">
+    <value>вичерпано час на пошук альтернатив</value>
+  </data>
+  <data name="Reason_NoDistinctAllocation" xml:space="preserve">
+    <value>інших відмінних розподілів не знайдено</value>
+  </data>
+  <data name="Reason_Cancelled" xml:space="preserve">
+    <value>розрахунок скасовано</value>
+  </data>
 </root>

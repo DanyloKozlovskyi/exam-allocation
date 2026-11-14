@@ -33,7 +33,7 @@ public class PinsConfiguration : IEntityTypeConfiguration<Pin>
             .HasForeignKey(x => x.RoomId)
             .HasConstraintName("fk_pins_rooms_room_id")
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne<Seat>()
+        builder.HasOne(x => x.Seat)
             .WithMany()
             .HasForeignKey(x => x.SeatId)
             .HasConstraintName("fk_pins_seats_seat_id")

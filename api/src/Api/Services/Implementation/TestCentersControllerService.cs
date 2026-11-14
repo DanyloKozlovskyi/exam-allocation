@@ -1,18 +1,23 @@
 using Api.Dtos;
 using Api.Services.Abstract;
+using Application.Common.Interfaces.Queries;
+using Domain.Centers;
+using Domain.Sessions;
 using LanguageExt;
 
 namespace Api.Services.Implementation;
 
-public class TestCentersControllerService : ITestCentersControllerService
+public class TestCentersControllerService(ITestCenterQueries centerQueries) : ITestCentersControllerService
 {
-    public Task<IReadOnlyList<TestCenterDto>> GetAll(Guid sessionId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<TestCenterDto>> GetAll(Guid sessionId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var centers = await centerQueries.GetAll(new ExamSessionId(sessionId), cancellationToken);
+        return centers.Select(TestCenterDto.FromDomain).ToList();
     }
 
-    public Task<Option<TestCenterDto>> Get(Guid sessionId, Guid centerId, CancellationToken cancellationToken)
+    public async Task<Option<TestCenterDto>> Get(Guid sessionId, Guid centerId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var center = await centerQueries.GetById(new ExamSessionId(sessionId), new TestCenterId(centerId), cancellationToken);
+        return center.Map(TestCenterDto.FromDomain);
     }
 }

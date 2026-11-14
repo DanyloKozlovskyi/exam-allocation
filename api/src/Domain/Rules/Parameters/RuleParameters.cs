@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Domain.ValueObjects;
 
 namespace Domain.Rules.Parameters;
 
@@ -17,6 +18,22 @@ public abstract record RuleParameters
 
     [JsonIgnore]
     public abstract RuleType RuleType { get; }
+
+    /// <summary>Default parameters offered by the rule editor for <paramref name="type"/>.</summary>
+    public static RuleParameters CreateDefault(RuleType type) => type switch
+    {
+        RuleType.SeparateByAttribute => new SeparateByAttributeParameters(AttributeKeys.Group, RuleScope.Room, RuleConstraints.DefaultMaxPerScope),
+        RuleType.NoAdjacentByAttribute => new NoAdjacentByAttributeParameters(
+            AttributeKeys.Group,
+            [AdjacencyKind.SameDesk, AdjacencyKind.Side, AdjacencyKind.FrontBack],
+            false),
+        RuleType.AccessibleSeating => new AccessibleSeatingParameters(),
+        RuleType.MinRoomFill => new MinRoomFillParameters(RuleConstraints.DefaultMinFillRatio),
+        RuleType.KeepTogetherInCenter => new KeepTogetherInCenterParameters(AttributeKeys.School),
+        RuleType.SpreadInRoom => new SpreadInRoomParameters([AdjacencyKind.Side]),
+        RuleType.FillFromFront => new FillFromFrontParameters(),
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported rule type"),
+    };
 }
 
 public sealed record SeparateByAttributeParameters(string AttributeKey, RuleScope Scope, int MaxPerScope) : RuleParameters

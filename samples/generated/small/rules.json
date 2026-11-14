@@ -1,0 +1,57 @@
+[
+  {
+    "id": "780760e9-0e65-426c-a590-b68a72ae44c9",
+    "type": "SeparateByAttribute",
+    "isHard": true,
+    "weight": 1,
+    "isEnabled": true,
+    "displayName": "Розподіл груп по аудиторіях",
+    "parameters": {
+      "type": "SeparateByAttribute",
+      "attributeKey": "group",
+      "scope": "Room",
+      "maxPerScope": 4
+    }
+  },
+  {
+    "id": "8f34e37b-74d1-427c-8376-1c72873fe318",
+    "type": "NoAdjacentByAttribute",
+    "isHard": true,
+    "weight": 1,
+    "isEnabled": true,
+    "displayName": "Не саджати одногрупників поруч",
+    "parameters": {
+      "type": "NoAdjacentByAttribute",
+      "attributeKey": "group",
+      "adjacency": [
+        "SameDesk",
+        "Side",
+        "FrontBack"
+      ],
+      "seatLevelSide": false
+    }
+  },
+  {
+    "id": "847f64d8-36cd-4a0a-bc51-7580cb5650a7",
+    "type": "AccessibleSeating",
+    "isHard": true,
+    "weight": 1,
+    "isEnabled": true,
+    "displayName": "Доступні місця",
+    "parameters": {
+      "type": "AccessibleSeating"
+    }
+  },
+  {
+    "id": "b21b3e33-92ee-441e-a365-34eef1f97be5",
+    "type": "MinRoomFill",
+    "isHard": false,
+    "weight": 10,
+    "isEnabled": true,
+    "displayName": "Мінімальне заповнення аудиторій",
+    "parameters": {
+      "type": "MinRoomFill",
+      "minFillRatio": 0.5
+    }
+  }
+]

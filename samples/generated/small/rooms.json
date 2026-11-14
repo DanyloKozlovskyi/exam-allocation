@@ -1,0 +1,278 @@
+[
+  {
+    "id": "3410cda1-5b13-434e-af84-a54adf7a0ea0",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 101",
+    "layout": {
+      "rows": 6,
+      "columns": 5,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c4s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 60,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "17c1e39c-e46c-428e-8e02-21be0f3b5358",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 102",
+    "layout": {
+      "rows": 5,
+      "columns": 4,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c3s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 40,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "1828a3f0-e94b-4b91-81e3-12bcf19ac41a",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 103",
+    "layout": {
+      "rows": 8,
+      "columns": 6,
+      "seatsPerDesk": 1,
+      "aislesAfterColumns": [
+        1,
+        3
+      ],
+      "disabledSeats": [
+        "r7c5s0"
+      ],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c5s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 47,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "86a95ec1-5bda-4d57-bf8e-e610398f9334",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 104",
+    "layout": {
+      "rows": 6,
+      "columns": 5,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c4s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 60,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "3c5a4d30-f652-4355-91d6-9589d1d290b4",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 105",
+    "layout": {
+      "rows": 5,
+      "columns": 4,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c3s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 40,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "b1fd073e-cd92-447d-8b6b-d9bd0380b1f2",
+    "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Аудиторія 106",
+    "layout": {
+      "rows": 8,
+      "columns": 6,
+      "seatsPerDesk": 1,
+      "aislesAfterColumns": [
+        1,
+        3
+      ],
+      "disabledSeats": [
+        "r7c5s0"
+      ],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c5s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 47,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "63a1e292-c5cf-47f0-9d98-afd125a33af2",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 101",
+    "layout": {
+      "rows": 6,
+      "columns": 5,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c4s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 60,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "b774ec46-323f-4ba8-9879-ce7d7f6bbfd1",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 102",
+    "layout": {
+      "rows": 5,
+      "columns": 4,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c3s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 40,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "6c5f7fae-283c-4ad4-96e0-ad704663df22",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 103",
+    "layout": {
+      "rows": 8,
+      "columns": 6,
+      "seatsPerDesk": 1,
+      "aislesAfterColumns": [
+        1,
+        3
+      ],
+      "disabledSeats": [
+        "r7c5s0"
+      ],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c5s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 47,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "1027f993-1abd-4ff2-ba06-ca56f77367b1",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 104",
+    "layout": {
+      "rows": 6,
+      "columns": 5,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c4s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 60,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "a522ded8-ce43-4db5-98f9-205e85375435",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 105",
+    "layout": {
+      "rows": 5,
+      "columns": 4,
+      "seatsPerDesk": 2,
+      "aislesAfterColumns": [
+        1
+      ],
+      "disabledSeats": [],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c3s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 40,
+    "accessibleCapacity": 2
+  },
+  {
+    "id": "85eaac9a-af44-4313-8dff-31365e7d8223",
+    "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Аудиторія 106",
+    "layout": {
+      "rows": 8,
+      "columns": 6,
+      "seatsPerDesk": 1,
+      "aislesAfterColumns": [
+        1,
+        3
+      ],
+      "disabledSeats": [
+        "r7c5s0"
+      ],
+      "accessibleSeats": [
+        "r0c0s0",
+        "r0c5s0"
+      ]
+    },
+    "costOverride": null,
+    "isActive": true,
+    "capacity": 47,
+    "accessibleCapacity": 2
+  }
+]

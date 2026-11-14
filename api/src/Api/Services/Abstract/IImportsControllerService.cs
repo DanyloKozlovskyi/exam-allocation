@@ -1,4 +1,3 @@
-using Api.Dtos;
 using Application.Allocations.Models;
 
 namespace Api.Services.Abstract;

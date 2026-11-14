@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useNavigate, useParams } from 'react-router-dom';
+import CenterEdit from '../../../components/Global/Centers/Edit';
+import { routes } from '../../../constants/routes';
 
 const CentersEditView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.centerEdit')} />;
+  const { sessionId = '', centerId = '' } = useParams();
+  const navigate = useNavigate();
+  return <CenterEdit sessionId={sessionId} centerId={centerId} onSaved={() => navigate(routes.centers.list(sessionId))} />;
 };
 
 export default CentersEditView;

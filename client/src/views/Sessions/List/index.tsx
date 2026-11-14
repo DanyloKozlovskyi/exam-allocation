@@ -1,9 +1,5 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import SessionsList from '../../../components/Global/Sessions/List';
 
-const SessionsListView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.sessionsList')} />;
-};
+const SessionsListView = () => <SessionsList />;
 
 export default SessionsListView;

@@ -7,6 +7,6 @@ public class ValidateImportCommandValidator : AbstractValidator<ValidateImportCo
     public ValidateImportCommandValidator()
     {
         RuleFor(x => x.ImportId).NotEmpty();
-        RuleFor(x => x.Options).NotEmpty();
+        RuleFor(x => x.Options).NotEmpty().SetValidator(new ImportOptionsValidator()!);
     }
 }

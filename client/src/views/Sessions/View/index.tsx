@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useParams } from 'react-router-dom';
+import SessionView from '../../../components/Global/Sessions/View';
 
 const SessionsViewView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.sessionView')} />;
+  const { sessionId = '' } = useParams();
+  return <SessionView sessionId={sessionId} />;
 };
 
 export default SessionsViewView;

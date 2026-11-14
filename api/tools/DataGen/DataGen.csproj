@@ -9,4 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Solver\Solver.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
 </Project>

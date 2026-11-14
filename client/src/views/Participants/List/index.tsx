@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useParams } from 'react-router-dom';
+import ParticipantsList from '../../../components/Global/Participants/List';
 
 const ParticipantsListView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.participantsList')} />;
+  const { sessionId = '' } = useParams();
+  return <ParticipantsList sessionId={sessionId} />;
 };
 
 export default ParticipantsListView;

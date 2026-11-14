@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<allocation session="Пробне ЗНО 2026" examDate="2026-05-20" generatedAt="2026-11-05T10:30:00.0000000+00:00" index="0" xmlns="urn:exam-allocation:v1">
+  <objective roomsUsed="3" cost="12.50" softPenalty="3" />
+  <center id="cd86b429-d18d-4605-8413-702be1190d78" name="Київський політехнічний ліцей №1" address="вул. Хрещатик, 1" lat="50.4501" lng="30.5234">
+    <room id="cad813ef-5ede-4a5d-ab08-14995e70b1cd" name="Ауд. 215 [корпус: Б]" capacity="4" filled="3">
+      <seat key="r0c0s0" row="1" desk="1" place="1">
+        <participant id="e270f522-967e-4321-9252-8e16209663de" externalId="EXT-20-0" lastName="Прізвище0" firstName="Ім'я0" group="11-А" school="Школа №5" />
+      </seat>
+      <seat key="r0c1s0" row="1" desk="2" place="1">
+        <participant id="62558d72-c582-431f-9024-50c3e6a0137b" lastName="Прізвище1" firstName="Ім'я1" middleName="Іванович" group="11-А" school="Школа №5" />
+      </seat>
+      <seat key="r1c0s0" row="2" desk="1" place="1">
+        <participant id="5348bfc0-7abd-45f2-bfac-45828cb535c8" externalId="EXT-20-2" lastName="Прізвище2" firstName="Ім'я2" middleName="Іванович" group="11-А" school="Школа №5" />
+      </seat>
+      <seat key="r1c1s0" row="2" desk="2" place="1" />
+    </room>
+  </center>
+</allocation>

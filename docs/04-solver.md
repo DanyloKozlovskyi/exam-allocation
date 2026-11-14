@@ -134,6 +134,16 @@ rule. Signature = (values of every `attributeKey` referenced by enabled rules,
 `NeedsAccessibleSeat`). Participants with a missing value get a unique synthetic value, i.e.
 their own class only if the missing key matters; otherwise they merge.
 
+Implementation notes (WS-A):
+- Referenced keys = `attributeKey` of enabled R2, R3, R6 rules. A value that is absent, empty
+  or whitespace counts as **missing**. A missing key is simply **absent from
+  `ParticipantClass.Values`**; consumers treat an absent key as a unique value (the class is
+  never summed with any other class for that key). Each participant with a missing referenced
+  key gets its own class (singleton).
+- Pinned participants = every participant referenced by a pin; they never appear in classes.
+- Classes are ordered deterministically by signature; `Index` = position in the list;
+  `ParticipantIds` are ordered by `SortKey`, then id.
+
 Notation: classes `k ∈ K`, size `s_k`; `val_a(k)` = value of attribute `a` for class `k`.
 Typical sizes: 10 000 participants, attribute `group` only → |K| ≈ number of groups (~400).
 
@@ -148,6 +158,14 @@ Pinned participants are not in classes; they are constants: `pin_r` = number pin
   computed by a small CP-SAT model (time limit 2 s), **cached by (layout hash, kinds)**.
   If not proven optimal, use the best found value (a lower bound — conservative; it may
   cost optimality, never feasibility).
+  Implementation (`IndependentSetCalculator`): one CP-SAT worker, `x_p ∈ {0,1}`, `¬x_p ∨ ¬x_q`
+  per edge, maximize `Σ x_p`, hinted with a greedy min-degree independent set whose size is
+  also the fallback lower bound. Cache key = (rows, columns, seats per desk, aisles, disabled
+  seats, kinds ∪ {SameDesk}, `seatLevelSide` when it can matter); thread-safe
+  (`ConcurrentDictionary`). Cancellation throws `OperationCanceledException` (nothing cached).
+- Seats (`SeatGenerator`) are the enabled seats in seat-key order (row, column, seat); a seat's
+  position in that list is its seat index in `SeatEdge`. `seatLevelSide` refines only `Side`
+  (not `SideAcrossAisle`); `SameDesk` is always included.
 
 ---
 
@@ -193,8 +211,33 @@ Pinned participants are not in classes; they are constants: `pin_r` = number pin
 **Symmetry breaking**: rooms with identical (layout hash, cost, center when R6 is active, no
 pins) are ordered: `y_{r_i} ≥ y_{r_{i+1}}`.
 
+Rooms whose layout hash and cost coincide are only interchangeable if no rule distinguishes
+centers, so the center is part of the key whenever R6 **or a Center-scoped R2** is enabled.
+Rooms with pins or with feedback cuts are excluded from symmetry groups.
+
 **Model size guardrail**: if |K| × |eligible rooms| > 2 000 000, emit `ModelTooLarge`
-diagnostic and abort with a clear message (MVP; later: split by center).
+diagnostic and abort with a clear message (MVP; later: split by center). Stage 1 then returns
+status `Failed`.
+
+**Implementation details (WS-A)**
+
+- Domains: `n_{k,r} ∈ [0, min(s_k, cap_r − pin_r)]`; for classes needing accessible seats also
+  `≤ acc_r − pinAcc_r`. A pair with an upper bound of 0 gets no variable.
+- Additional link: `Σ_k n_{k,r} + pin_r ≥ y_r` — an open room is never empty (keeps `RoomsUsed`,
+  cost and R5 honest, notably in alternatives mode where cost is not minimized).
+- Feedback cuts `Stage1Cut(r, a, v, m)` count pinned participants too:
+  `Σ_{k: val_a(k)=v} n_{k,r} + pin_{a,v,r} ≤ m`.
+- R6 is only modelled for values with `s_v ≥ 2` (incl. pinned); `pin_{v,c} > 0` forces `z_{v,c} = 1`.
+- `CostThenSoft`: phase 2 is skipped when no soft rule exists; if phase 2 finds no solution
+  the phase-1 solution is returned (status `Feasible`).
+- **Alternatives mode** (`PreviousSolutions` non-empty): one solve, objective
+  `minimize SoftPenalty`, with the diversity constraint of §8, `D` computed from the number of
+  non-pinned participants (`Σ_k s_k`). `CostBound` (scaled ×100) adds `Cost ≤ CostBound` in any mode.
+- `Hint` sets `AddHint` on `n_{k,r}` (and `y_r = [Σ_k n_{k,r} > 0]`).
+- Status: `Optimal` only if every executed phase proved optimality; cancellation
+  (`StopSearch`) yields `Cancelled` regardless of what was found.
+- `ObjectiveBreakdown` of stage 1: `RoomsUsed = Σ y_r`, `Cost = Σ cost_r · y_r` (unscaled),
+  `SoftPenalty` / `PenaltyByRule` = stage-1 penalties.
 
 ---
 
@@ -228,6 +271,29 @@ attributes).
 If a room has no R3/R8/R9 rule in play, skip CP-SAT: assign greedily in seat-key order
 (accessible seats first for classes that need them).
 
+Implementation notes (`SeatingSolver`, per room, stateless, safe to call concurrently):
+- **Units**: every class with `n_{k,r} > 0`, plus every pin of the room as a unit of size 1
+  carrying the pinned participant's attributes. A fixed-seat pin's unit has exactly one allowed
+  seat (its own, accessibility not enforced — the pin wins); no other unit may use that seat.
+  A pin on a missing/disabled or duplicated seat → `Infeasible`. Missing attribute value =
+  unique (never conflicts).
+- "R3 in play" = some value of the rule's attribute has total count ≥ 2 in the room (pins
+  included). R8/R9 are in play whenever present. Previous seatings (alternatives) also force
+  the CP-SAT path.
+- **Greedy order**: fixed pins, then units needing accessible seats (in their accessible
+  seats, key order), then the rest (classes by index; pins ordered by participant id first),
+  each filling the first free allowed seats in key order. The greedy seating is also used as a
+  CP-SAT hint.
+- **Seat-level diversity** (§8 step 2): for each previous seating `j`, at least one previous
+  `(unit, seat)` cell of a movable unit must change (`Σ kept ≤ cells − 1`, i.e. Hamming ≥ 2);
+  applied only if the room has ≥ 2 movable units or spare allowed seats. If that makes the
+  room infeasible, the room is re-solved without diversity (best effort; allocations are
+  deduplicated by hash anyway).
+- Status: CP-SAT `OPTIMAL/FEASIBLE/INFEASIBLE` map 1:1, `UNKNOWN` → `NoSolutionInTime`
+  (`Cancelled` if the token fired), other → `Failed`. Greedy → `Optimal`.
+- `PenaltyByRule` (soft R3, R8, R9; hard rules absent) is evaluated on the final seating,
+  R9 including pinned occupants; `Penalty = Σ PenaltyByRule`.
+
 ---
 
 ## 6. Feedback loop (stage 2 infeasible)
@@ -241,6 +307,13 @@ When room `r` is infeasible in stage 2 with hard R3:
 
 This cut is heuristic (it can exclude feasible configurations) but always moves toward
 feasibility. Expected to trigger rarely because of the α-bound.
+
+Implementation notes (WS-A): `c*` includes pinned participants of `r` (the cut counts pins,
+see §4). A room whose stage 2 returns `NoSolutionInTime` is treated like an infeasible one.
+If several hard R3 rules exist, the (attribute, value) with the largest count is cut. If no
+cut can be built (no hard R3 or `c* ≤ 1`) the pipeline stops with `SeatingInfeasible`
+(arguments `RoomId`, `AttributeKey`, `Value`, `Size`). If stage 1 becomes infeasible only
+after cuts were added, the result is also `SeatingInfeasible` (no conflict core).
 
 ---
 
@@ -275,6 +348,12 @@ literals as assumptions (`model.AddAssumptions`), solve, read
 the core by deletion (drop one literal, re-check, keep it out if still infeasible) within a
 10 s budget. Output diagnostic `ConflictCore` with the list of rule ids and centers.
 
+Implementation notes (WS-A): literals exist for hard R2 rules, hard R3 rules (α-bound), the R4
+rule (if present in `Rules`; otherwise accessibility stays unconditional) and per-center
+capacity. In this mode domains are not tightened by capacity or rules (`n_{k,r} ≤ s_k` only),
+symmetry breaking, cuts, soft rules and objective are omitted, and the model is solved with
+one worker. Arguments: `RuleIds` and `CenterId` (comma-separated, invariant format).
+
 ---
 
 ## 8. Alternatives (`Solver/Alternatives/`)
@@ -298,6 +377,36 @@ For `i = 1..N`:
 
 Allocations are deduplicated by a hash of sorted `(participantId, roomId, seatKey)`.
 
+Implementation notes (WS-A): `IAlternativesGenerator.Generate` returns `AlternativesResult`
+(allocations + diagnostics). The generator runs stage 2 + expansion itself (shared
+`AllocationRealizer` with the pipeline) and applies its own feedback cuts (≤
+`MaxFeedbackIterations` per alternative). Each stage-1 solve gets
+`min(Stage1TimeLimitSeconds, remaining budget)`. Seat-level fallback uses
+`RandomSeed + i` and passes all previous seatings of the room. `AlternativesLimited.Reason`
+is an `AlternativesLimitReason` enum name (`TimeBudgetExhausted`, `NoDistinctAllocation`,
+`Cancelled`). The pipeline validates every alternative and drops invalid ones
+(`InternalValidationFailed` warning).
+
+---
+
+## 8a. Pipeline (`Solver/Pipeline/SolverPipeline`)
+
+1. `Precheck` — any `Error` diagnostic → status `Infeasible` (no solving).
+2. `ClassBuilder`.
+3. Stage 1 (with cuts). `Infeasible` without cuts → `ConflictExplainer` → `Infeasible` +
+   `ConflictCore`; `NoSolutionInTime`/`Failed` → returned as is.
+4. Stage 2 per room (`Parallel.ForEachAsync`, degree `ProcessorCount`); failed rooms →
+   feedback cuts (§6).
+5. Expansion (alternative index 0).
+6. Post-validation with `IAllocationValidator`; invalid → `Failed` + `InternalValidationFailed`.
+7. Alternatives (if `Options.Alternatives > 0`).
+8. Status `Optimal` iff stage 1 and every room of stage 2 were optimal, else `Feasible`.
+
+Final `ObjectiveBreakdown`: `RoomsUsed`/`Cost` from the rooms that actually hold participants,
+`SoftPenalty`/`PenaltyByRule` = stage-1 + stage-2 penalties. Cancellation at any point →
+`Cancelled` (no allocations). Progress is reported at each `SolveStage` change, per room in
+stage 2 (`RoomsDone`/`RoomsTotal`) and per alternative (`AlternativesDone`).
+
 ---
 
 ## 9. Expansion (`Solver/Expansion/Expander`)
@@ -305,6 +414,13 @@ Allocations are deduplicated by a hash of sorted `(participantId, roomId, seatKe
 For each room and class: participants of the class sorted by `SortKey`, seats of the class
 sorted by seat key (row, column, seat) → zip. Alternatives with `i > 0` shuffle participants
 within a class using `Random(RandomSeed + i)` so that alternatives also differ individually.
+
+Precisely: each class becomes one queue of its members ordered by (`SortKey` ordinal,
+participant id), Fisher–Yates-shuffled (`Random.Shuffle`, classes in index order) when `i > 0`.
+Rooms are visited in `RoomId` order and seats inside a room in (row, column, seat) order; each
+class seat dequeues the next member, so a class split across rooms is chunked in room order.
+Pinned seats (`PinnedParticipantId`) are emitted unchanged. More class seats than members →
+`InvalidOperationException` (internal error).
 
 ---
 

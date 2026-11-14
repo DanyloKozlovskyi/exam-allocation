@@ -1,0 +1,26 @@
+[
+  {
+    "id": "8286d046-9740-43e4-95cf-ff46699c73c4",
+    "name": "Центр тестування №1",
+    "address": "м. Київ, просп. Бажана, 38",
+    "latitude": 50.363077,
+    "longitude": 30.649801,
+    "googlePlaceId": null,
+    "costPerRoom": 1000,
+    "isActive": true,
+    "roomCount": 6,
+    "capacity": 294
+  },
+  {
+    "id": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+    "name": "Центр тестування №2",
+    "address": "м. Київ, вул. Антоновича, 14",
+    "latitude": 50.551103,
+    "longitude": 30.363683,
+    "googlePlaceId": null,
+    "costPerRoom": 1100,
+    "isActive": true,
+    "roomCount": 6,
+    "capacity": 294
+  }
+]

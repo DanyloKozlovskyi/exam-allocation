@@ -4,4 +4,5 @@ public static class RoomConstraints
 {
     public const int NameMaxLength = 100;
     public const decimal MinCost = 0m;
+    public const int MaxBulkRooms = 200;
 }

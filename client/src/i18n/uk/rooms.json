@@ -1,1 +1,88 @@
-{}
+{
+  "title": "Аудиторії",
+  "createTitle": "Нова аудиторія",
+  "editTitle": "Редагування аудиторії",
+  "actions": {
+    "create": "Додати аудиторію",
+    "save": "Зберегти аудиторію",
+    "createRoom": "Створити аудиторію",
+    "createRooms": "Створити аудиторії ({{count}})",
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "showAdjacency": "Показати сусідство"
+  },
+  "steps": {
+    "details": "Параметри",
+    "layout": "План",
+    "summary": "Підсумок"
+  },
+  "fields": {
+    "name": "Назва",
+    "rows": "Ряди",
+    "columns": "Парт у ряду",
+    "seatsPerDesk": "Місць за партою",
+    "aisles": "Проходи після парт",
+    "aisleAfter": "Після парти {{column}}",
+    "costOverride": "Вартість аудиторії",
+    "costOverrideHelp": "Порожнє значення — вартість центру",
+    "isActive": "Активна",
+    "capacity": "Місткість",
+    "accessibleCapacity": "Місця для осіб з інвалідністю",
+    "size": "Розмір",
+    "duplicateCount": "Кількість копій",
+    "duplicateHelp": "Створити кілька однакових аудиторій з цим планом"
+  },
+  "list": {
+    "empty": "Аудиторій ще немає",
+    "sizeValue": "{{rows}} × {{columns}} × {{seats}}",
+    "active": "Так",
+    "inactive": "Ні",
+    "defaultCost": "За центром"
+  },
+  "layout": {
+    "hint": "Натисніть на місце, щоб змінити його стан: звичайне → для осіб з інвалідністю → недоступне.",
+    "previewCapacity": "Місткість: {{capacity}}, з них для осіб з інвалідністю: {{accessible}}",
+    "previewLoading": "Оновлення попереднього перегляду…"
+  },
+  "bulk": {
+    "nameTemplate": "{{name}}-{{index}}"
+  },
+  "validation": {
+    "nameRequired": "Вкажіть назву",
+    "nameTooLong": "Назва не довша за {{max}} символів",
+    "rowsRange": "Від {{min}} до {{max}}",
+    "costNegative": "Вартість не може бути від'ємною",
+    "noSeats": "План повинен містити хоча б одне доступне місце",
+    "duplicateRange": "Від {{min}} до {{max}}"
+  },
+  "messages": {
+    "created": "Аудиторію створено",
+    "bulkCreated": "Створено аудиторій: {{count}}",
+    "saved": "Аудиторію збережено",
+    "deleted": "Аудиторію видалено",
+    "saving": "Збереження…",
+    "deleteTitle": "Видалити аудиторію?",
+    "deleteMessage": "Аудиторію «{{name}}» буде видалено разом з усіма місцями."
+  },
+  "grid": {
+    "title": "План аудиторії",
+    "front": "Дошка / стіл екзаменатора",
+    "aisle": "Прохід",
+    "seatLabel": "Ряд {{row}}, Парта {{column}}, Місце {{seat}} — {{state}}"
+  },
+  "seatState": {
+    "Normal": "звичайне",
+    "Accessible": "для осіб з інвалідністю",
+    "Disabled": "недоступне",
+    "Occupied": "зайняте",
+    "Violation": "порушення",
+    "Selected": "вибране"
+  },
+  "adjacencyKind": {
+    "SameDesk": "За однією партою",
+    "Side": "Сусідні парти в ряду",
+    "SideAcrossAisle": "Через прохід",
+    "FrontBack": "Спереду / позаду",
+    "Diagonal": "По діагоналі"
+  }
+}

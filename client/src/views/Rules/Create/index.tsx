@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useNavigate, useParams } from 'react-router-dom';
+import RuleCreate from '../../../components/Global/Rules/Create';
+import { routes } from '../../../constants/routes';
 
 const RulesCreateView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.ruleCreate')} />;
+  const { sessionId = '' } = useParams();
+  const navigate = useNavigate();
+  return <RuleCreate sessionId={sessionId} onFinish={() => void navigate(routes.rules.list(sessionId))} />;
 };
 
 export default RulesCreateView;

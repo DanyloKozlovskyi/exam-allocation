@@ -1,23 +1,30 @@
 using Api.Dtos;
 using Api.Services.Abstract;
+using Application.Common.Interfaces.Queries;
+using Domain.Sessions;
 using LanguageExt;
 
 namespace Api.Services.Implementation;
 
-public class SessionsControllerService : ISessionsControllerService
+public class SessionsControllerService(IExamSessionQueries sessionQueries) : ISessionsControllerService
 {
-    public Task<IReadOnlyList<SessionSummaryDto>> GetAll(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<SessionSummaryDto>> GetAll(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var sessions = await sessionQueries.GetAll(cancellationToken);
+        return sessions.Select(SessionSummaryDto.FromDomain).ToList();
     }
 
-    public Task<Option<SessionDto>> Get(Guid sessionId, CancellationToken cancellationToken)
+    public async Task<Option<SessionDto>> Get(Guid sessionId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var session = await sessionQueries.GetById(new ExamSessionId(sessionId), cancellationToken);
+        return session.Map(SessionDto.FromDomain);
     }
 
-    public Task<Option<SessionTotalsDto>> Totals(Guid sessionId, CancellationToken cancellationToken)
+    public async Task<Option<SessionTotalsDto>> Totals(Guid sessionId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var totals = await sessionQueries.GetTotals(new ExamSessionId(sessionId), cancellationToken);
+
+        // Stale detection against the latest solve run is wired in Phase 2 (SolveRuns).
+        return totals.Map(x => SessionTotalsDto.FromModel(x, false));
     }
 }

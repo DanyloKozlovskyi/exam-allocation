@@ -1,1 +1,65 @@
-{}
+{
+  "list": {
+    "title": "Центри тестування",
+    "create": "Додати центр",
+    "empty": "Центрів ще немає. Додайте центр на мапі або кнопкою «Додати центр».",
+    "columns": {
+      "name": "Назва",
+      "address": "Адреса",
+      "roomCount": "Аудиторій",
+      "capacity": "Місткість",
+      "isActive": "Активний",
+      "actions": "Дії"
+    },
+    "rooms": "Аудиторії",
+    "deleteTitle": "Видалити центр?",
+    "deleteMessage": "Центр «{{name}}» і всі його аудиторії буде видалено."
+  },
+  "map": {
+    "fallbackTitle": "Мапа недоступна",
+    "fallbackHint": "Ключ Google Maps не налаштовано. Введіть координати, щоб додати центр у вказаній точці.",
+    "latitude": "Широта",
+    "longitude": "Довгота",
+    "addHere": "Додати центр у цій точці",
+    "searchPlaceholder": "Пошук місця (Google Places)",
+    "centersOnMap": "Центри сесії",
+    "inactive": "неактивний"
+  },
+  "form": {
+    "createTitle": "Новий центр тестування",
+    "editTitle": "Редагування центру",
+    "steps": {
+      "details": "Основні дані",
+      "summary": "Підсумок"
+    },
+    "fields": {
+      "name": "Назва",
+      "address": "Адреса",
+      "latitude": "Широта",
+      "longitude": "Довгота",
+      "costPerRoom": "Вартість аудиторії",
+      "costHint": "Порожнє значення — вартість за замовчуванням",
+      "isActive": "Активний",
+      "googlePlaceId": "Google Place ID"
+    },
+    "createAction": "Створити центр",
+    "saveAction": "Зберегти зміни",
+    "saving": "Збереження…",
+    "notSet": "Не вказано",
+    "yes": "Так",
+    "no": "Ні"
+  },
+  "validation": {
+    "required": "Обов'язкове поле",
+    "tooLong": "Не більше {{max}} символів",
+    "outOfRange": "Значення поза допустимим діапазоном",
+    "notANumber": "Введіть число"
+  },
+  "messages": {
+    "created": "Центр створено",
+    "updated": "Зміни збережено",
+    "deleted": "Центр видалено",
+    "activated": "Центр активовано",
+    "deactivated": "Центр деактивовано"
+  }
+}

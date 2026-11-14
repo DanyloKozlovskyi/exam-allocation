@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Schema of the allocation XML export (GET allocations/{allocationId}/export?format=Xml). -->
+<!-- Seat coordinates (row, desk, place) are 1-based; the seat key is the 0-based SeatKey r{row}c{column}s{seat}. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ea="urn:exam-allocation:v1"
+           targetNamespace="urn:exam-allocation:v1"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+  <xs:element name="allocation" type="ea:AllocationType"/>
+
+  <xs:complexType name="AllocationType">
+    <xs:sequence>
+      <xs:element name="objective" type="ea:ObjectiveType"/>
+      <xs:element name="center" type="ea:CenterType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="session" type="xs:string" use="required"/>
+    <xs:attribute name="examDate" type="xs:date" use="optional"/>
+    <xs:attribute name="generatedAt" type="xs:dateTime" use="required"/>
+    <!-- 0-based alternative index; -1 for a manual allocation. -->
+    <xs:attribute name="index" type="xs:int" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ObjectiveType">
+    <xs:attribute name="roomsUsed" type="xs:nonNegativeInteger" use="required"/>
+    <xs:attribute name="cost" type="xs:decimal" use="required"/>
+    <xs:attribute name="softPenalty" type="xs:long" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="CenterType">
+    <xs:sequence>
+      <xs:element name="room" type="ea:RoomType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="ea:Guid" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="address" type="xs:string" use="optional"/>
+    <xs:attribute name="lat" type="ea:Latitude" use="required"/>
+    <xs:attribute name="lng" type="ea:Longitude" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="RoomType">
+    <xs:sequence>
+      <xs:element name="seat" type="ea:SeatType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="ea:Guid" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="capacity" type="xs:nonNegativeInteger" use="required"/>
+    <xs:attribute name="filled" type="xs:nonNegativeInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="SeatType">
+    <xs:sequence>
+      <xs:element name="participant" type="ea:ParticipantType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="key" type="ea:SeatKey" use="required"/>
+    <xs:attribute name="row" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="desk" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="place" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ParticipantType">
+    <xs:attribute name="id" type="ea:Guid" use="required"/>
+    <xs:attribute name="externalId" type="xs:string" use="optional"/>
+    <xs:attribute name="lastName" type="xs:string" use="required"/>
+    <xs:attribute name="firstName" type="xs:string" use="required"/>
+    <xs:attribute name="middleName" type="xs:string" use="optional"/>
+    <xs:attribute name="group" type="xs:string" use="optional"/>
+    <xs:attribute name="school" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="Guid">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SeatKey">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="r\d+c\d+s\d+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Latitude">
+    <xs:restriction base="xs:double">
+      <xs:minInclusive value="-90"/>
+      <xs:maxInclusive value="90"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Longitude">
+    <xs:restriction base="xs:double">
+      <xs:minInclusive value="-180"/>
+      <xs:maxInclusive value="180"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

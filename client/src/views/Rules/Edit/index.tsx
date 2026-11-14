@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useNavigate, useParams } from 'react-router-dom';
+import RuleEdit from '../../../components/Global/Rules/Edit';
+import { routes } from '../../../constants/routes';
 
 const RulesEditView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.ruleEdit')} />;
+  const { sessionId = '', ruleId = '' } = useParams();
+  const navigate = useNavigate();
+  return <RuleEdit sessionId={sessionId} ruleId={ruleId} onFinish={() => void navigate(routes.rules.list(sessionId))} />;
 };
 
 export default RulesEditView;

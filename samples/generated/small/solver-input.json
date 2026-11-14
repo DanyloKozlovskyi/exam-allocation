@@ -1,0 +1,2995 @@
+{
+  "rooms": [
+    {
+      "roomId": "3410cda1-5b13-434e-af84-a54adf7a0ea0",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 6,
+        "columns": 5,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c4s0"
+        ]
+      }
+    },
+    {
+      "roomId": "17c1e39c-e46c-428e-8e02-21be0f3b5358",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 5,
+        "columns": 4,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c3s0"
+        ]
+      }
+    },
+    {
+      "roomId": "1828a3f0-e94b-4b91-81e3-12bcf19ac41a",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 8,
+        "columns": 6,
+        "seatsPerDesk": 1,
+        "aislesAfterColumns": [
+          1,
+          3
+        ],
+        "disabledSeats": [
+          "r7c5s0"
+        ],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c5s0"
+        ]
+      }
+    },
+    {
+      "roomId": "86a95ec1-5bda-4d57-bf8e-e610398f9334",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 6,
+        "columns": 5,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c4s0"
+        ]
+      }
+    },
+    {
+      "roomId": "3c5a4d30-f652-4355-91d6-9589d1d290b4",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 5,
+        "columns": 4,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c3s0"
+        ]
+      }
+    },
+    {
+      "roomId": "b1fd073e-cd92-447d-8b6b-d9bd0380b1f2",
+      "centerId": "8286d046-9740-43e4-95cf-ff46699c73c4",
+      "cost": 1000,
+      "layout": {
+        "rows": 8,
+        "columns": 6,
+        "seatsPerDesk": 1,
+        "aislesAfterColumns": [
+          1,
+          3
+        ],
+        "disabledSeats": [
+          "r7c5s0"
+        ],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c5s0"
+        ]
+      }
+    },
+    {
+      "roomId": "63a1e292-c5cf-47f0-9d98-afd125a33af2",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 6,
+        "columns": 5,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c4s0"
+        ]
+      }
+    },
+    {
+      "roomId": "b774ec46-323f-4ba8-9879-ce7d7f6bbfd1",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 5,
+        "columns": 4,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c3s0"
+        ]
+      }
+    },
+    {
+      "roomId": "6c5f7fae-283c-4ad4-96e0-ad704663df22",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 8,
+        "columns": 6,
+        "seatsPerDesk": 1,
+        "aislesAfterColumns": [
+          1,
+          3
+        ],
+        "disabledSeats": [
+          "r7c5s0"
+        ],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c5s0"
+        ]
+      }
+    },
+    {
+      "roomId": "1027f993-1abd-4ff2-ba06-ca56f77367b1",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 6,
+        "columns": 5,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c4s0"
+        ]
+      }
+    },
+    {
+      "roomId": "a522ded8-ce43-4db5-98f9-205e85375435",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 5,
+        "columns": 4,
+        "seatsPerDesk": 2,
+        "aislesAfterColumns": [
+          1
+        ],
+        "disabledSeats": [],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c3s0"
+        ]
+      }
+    },
+    {
+      "roomId": "85eaac9a-af44-4313-8dff-31365e7d8223",
+      "centerId": "cac7873f-f608-4434-86ce-ec6dfd32d231",
+      "cost": 1100,
+      "layout": {
+        "rows": 8,
+        "columns": 6,
+        "seatsPerDesk": 1,
+        "aislesAfterColumns": [
+          1,
+          3
+        ],
+        "disabledSeats": [
+          "r7c5s0"
+        ],
+        "accessibleSeats": [
+          "r0c0s0",
+          "r0c5s0"
+        ]
+      }
+    }
+  ],
+  "participants": [
+    {
+      "participantId": "e2894bbc-296c-4fcb-9744-9c7ebe9a77fd",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Ольга Іванівна"
+    },
+    {
+      "participantId": "4025cd60-b63b-494f-ba25-2e84c9c1379a",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мороз Максим Олександрович"
+    },
+    {
+      "participantId": "c5289a22-5e4b-4d4d-ad51-64c4a05b7d64",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Ольга Михайлівна"
+    },
+    {
+      "participantId": "fa6e1e1d-d8f5-423f-8ff9-2f50433e33fc",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Тарас Вікторович"
+    },
+    {
+      "participantId": "bfcad34c-6528-45b9-b45e-fc20bb047bba",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловська Ганна Олександрівна"
+    },
+    {
+      "participantId": "7434585e-1d5d-474a-a641-1a7a5ad14ba3",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Тетяна Ярославівна"
+    },
+    {
+      "participantId": "30339b5b-3987-42b8-af9a-d2f401ee7b95",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вакуленко Наталія Богданівна"
+    },
+    {
+      "participantId": "a5e11ccd-3360-462f-9188-13886d02bc01",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Анастасія Іванівна"
+    },
+    {
+      "participantId": "8548a776-e258-4dcf-af02-2a155e8d7e51",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколов Сергій Вікторович"
+    },
+    {
+      "participantId": "6cbe111e-eb94-44be-86f5-64dda9567599",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Поліщук Максим Богданович"
+    },
+    {
+      "participantId": "72e886a2-750e-4f3e-baae-dc09f8589589",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Павленко Олександр Сергійович"
+    },
+    {
+      "participantId": "38c50de8-36b4-4708-aa1f-b627237c8bd6",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Остап Михайлович"
+    },
+    {
+      "participantId": "d387464c-feb0-4fe0-8643-594f8fb97822",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловський Юрій Миколайович"
+    },
+    {
+      "participantId": "e1268f4f-dbd5-4309-9f3e-8190949cc63e",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Олійник Ганна Василівна"
+    },
+    {
+      "participantId": "d85ddb64-c394-4312-bf2b-3649ecfcb761",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Марія Степанівна"
+    },
+    {
+      "participantId": "bed704e6-1cfa-44b2-9655-070e50eab3c9",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Ольга Вікторівна"
+    },
+    {
+      "participantId": "474b135f-9fa7-4c0f-b228-15514b7ed685",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Анна Володимирівна"
+    },
+    {
+      "participantId": "3b2ed5e9-129c-4803-a89b-09e05c86f18c",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вакуленко Олександр Андрійович"
+    },
+    {
+      "participantId": "bdf22d63-6c04-43dc-afa6-729530763d1c",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Захарченко Олександр Юрійович"
+    },
+    {
+      "participantId": "710b8d89-f7ef-48e5-a147-28bec785a83b",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Дмитро Андрійович"
+    },
+    {
+      "participantId": "4a96f5f8-102b-40b3-ac47-f097c2da9fe7",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Левченко Мирослава Дмитрівна"
+    },
+    {
+      "participantId": "d74a5f4e-f069-4094-8d73-e6e4f0919774",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Заболотна Юлія Юріївна"
+    },
+    {
+      "participantId": "2638ff35-ab04-4408-b182-312f09aa954c",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Петро Олегович"
+    },
+    {
+      "participantId": "b209d4de-48d2-4207-a551-8cc5c2186011",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Остапчук Степан Ярославович"
+    },
+    {
+      "participantId": "b4b5f05b-e6e6-4702-b401-c712f8572a2e",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Андрій Юрійович"
+    },
+    {
+      "participantId": "6aa4300c-9247-4a35-815c-db930482e454",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Роман Миколайович"
+    },
+    {
+      "participantId": "b3c55071-c1c9-4335-bc33-e18aaa4fbf10",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кравченко Тарас Петрович"
+    },
+    {
+      "participantId": "7eeca4f2-d4f4-4a46-b745-00fb969be0df",
+      "attributes": {
+        "group": "КН-11",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Ольга Вікторівна"
+    },
+    {
+      "participantId": "335a09f9-4324-4db3-8d39-5e7eabd934d4",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Роман Степанович"
+    },
+    {
+      "participantId": "b4138fe1-31df-4092-83cc-956c7bf2759a",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Заболотний Віктор Юрійович"
+    },
+    {
+      "participantId": "1c38c1f2-0535-4982-a40f-4fc03b187946",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Вікторія Андріївна"
+    },
+    {
+      "participantId": "11c86c89-e730-4abf-8bce-7101f5eeceda",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Олійник Богдан Михайлович"
+    },
+    {
+      "participantId": "ac46bc9f-d93f-43fb-a2dc-84a2ca69546f",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Ганна Василівна"
+    },
+    {
+      "participantId": "bedd4198-2a45-4cab-a69b-e611b5e9b082",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Марія Степанівна"
+    },
+    {
+      "participantId": "5eecf228-852b-4a79-8da4-0c4c08077a68",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Яковенко Анастасія Степанівна"
+    },
+    {
+      "participantId": "919d403b-7f15-4da4-a514-11ff876f4ff1",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Заболотний Михайло Володимирович"
+    },
+    {
+      "participantId": "c5daf658-e2ac-4a35-b7f7-5e73ffedb14e",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Анастасія Юріївна"
+    },
+    {
+      "participantId": "4cfb90e8-9781-462b-8dde-091ee6e24ac3",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Наталія Олександрівна"
+    },
+    {
+      "participantId": "8bb21d2e-8288-429e-9304-9f5c837066de",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мороз Дмитро Михайлович"
+    },
+    {
+      "participantId": "555518e9-0a18-4a66-80ae-6966abba7349",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Ярослав Петрович"
+    },
+    {
+      "participantId": "c169dafa-7263-45e3-943c-50642e44045c",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Петро Андрійович"
+    },
+    {
+      "participantId": "f5355692-b6d7-45f3-b733-367dcfee3eeb",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Анастасія Ярославівна"
+    },
+    {
+      "participantId": "021871ac-757c-4c6e-8a88-9d54bc688334",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Софія Михайлівна"
+    },
+    {
+      "participantId": "e61a099c-565f-41c5-a1ba-dfb472e6e41c",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Клименко Сергій Андрійович"
+    },
+    {
+      "participantId": "2899aa2d-8612-47bb-8829-dc92551068fe",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Максим Петрович"
+    },
+    {
+      "participantId": "a0bdcee8-824a-479e-9730-7b6ca76e5e81",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Олійник Ганна Тарасівна"
+    },
+    {
+      "participantId": "220390d8-d51c-4e7c-983e-20da2d44dbdb",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Оксана Степанівна"
+    },
+    {
+      "participantId": "2660f9f0-a1ad-4c09-9dcf-509ec0103db9",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Ірина Петрівна"
+    },
+    {
+      "participantId": "915bf2ff-2a7a-4582-b585-cbee1ae797a3",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Тетяна Андріївна"
+    },
+    {
+      "participantId": "3bd06e7b-346c-419e-8a9a-58f9a7f10605",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Юрій Васильович"
+    },
+    {
+      "participantId": "b0844a27-28a5-46a5-82be-77b05684838a",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Олег Олександрович"
+    },
+    {
+      "participantId": "f473ea2b-f673-4e90-a73c-bdebcb53234b",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткачук Андрій Сергійович"
+    },
+    {
+      "participantId": "48e0dc88-6c50-4a83-bf24-80a252fb6011",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Романюк Вікторія Богданівна"
+    },
+    {
+      "participantId": "c5ba811a-308a-4f5f-8a47-eaeb78a30e92",
+      "attributes": {
+        "group": "ІПЗ-31",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорна Софія Миколаївна"
+    },
+    {
+      "participantId": "5878483c-3ac3-44ce-99e3-936d5b2683c5",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Назар Ярославович"
+    },
+    {
+      "participantId": "58dab696-7e51-4f10-a807-54f2697d7c12",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кравченко Сергій Володимирович"
+    },
+    {
+      "participantId": "36e50810-6cb3-4c28-8de9-e9b33ba6929e",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Олег Олександрович"
+    },
+    {
+      "participantId": "7a3edb31-a8f1-4307-a387-35792985aef5",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Наталія Юріївна"
+    },
+    {
+      "participantId": "3f6b1d5a-d62d-44ea-9829-493c2ede2ca6",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мороз Дарина Петрівна"
+    },
+    {
+      "participantId": "3ab361ea-2111-48e3-9ed3-a9d6d2d7bdd3",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Тарас Романович"
+    },
+    {
+      "participantId": "3cec5e8a-a6fb-4e81-a6dd-4ec7096fbcb8",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Мирослава Іванівна"
+    },
+    {
+      "participantId": "66a055fa-075c-436e-80fd-f103695f03c6",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Ольга Дмитрівна"
+    },
+    {
+      "participantId": "0e5af677-67c9-4a01-b5a7-1d167490084b",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Степан Михайлович"
+    },
+    {
+      "participantId": "c45ddfe5-0f9f-41b8-8706-39a470825f46",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Наталія Миколаївна"
+    },
+    {
+      "participantId": "ecd4564a-cff4-4bfa-a776-dc4edf9116fc",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткачук Оксана Василівна"
+    },
+    {
+      "participantId": "72e3a02e-0d04-45a9-be0c-ffa6c19b8989",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорний Іван Ярославович"
+    },
+    {
+      "participantId": "555d8fdf-f090-4948-8c69-47238f1cb5f1",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Андрій Тарасович"
+    },
+    {
+      "participantId": "a8dc6aa9-f61e-438d-b27e-178bb24f1085",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Клименко Юрій Васильович"
+    },
+    {
+      "participantId": "82b7a271-7f32-47d4-9dba-7f6c01362580",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовський Сергій Богданович"
+    },
+    {
+      "participantId": "9830eb99-ccdc-4ba5-9d7c-a4f0b837c824",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Юрій Олегович"
+    },
+    {
+      "participantId": "1e97c315-18b1-44eb-af01-22a5e7d8b687",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Юрій Іванович"
+    },
+    {
+      "participantId": "7cda3d00-ff48-4b5c-8786-8302f9842898",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Олександр Петрович"
+    },
+    {
+      "participantId": "4a827bed-5ed1-4d12-bb95-c489af1485bc",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Христина Дмитрівна"
+    },
+    {
+      "participantId": "a39e7ae7-53ee-4f8e-af2b-fe75c512c258",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Христина Степанівна"
+    },
+    {
+      "participantId": "78bef14c-7049-4ba2-98c1-9a2bbd0601e3",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кузьменко Олександр Дмитрович"
+    },
+    {
+      "participantId": "14c66acc-01ea-44c3-b0f2-7944ea9a88e0",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Наталія Петрівна"
+    },
+    {
+      "participantId": "4a636a97-0c07-44c0-8a93-94c6108087f7",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Віктор Юрійович"
+    },
+    {
+      "participantId": "e620ce67-6bd2-4378-bc3e-27989a34ff63",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Ганна Юріївна"
+    },
+    {
+      "participantId": "7ee45ee6-1ada-4801-8646-750d9c2f9b42",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Христина Василівна"
+    },
+    {
+      "participantId": "2d6d550d-4b75-4487-9a7c-79db87816f3c",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Дмитро Вікторович"
+    },
+    {
+      "participantId": "8ab2f8b6-04fe-4063-a6ad-54bb7dd80977",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Бойко Анна Дмитрівна"
+    },
+    {
+      "participantId": "32fbc92b-ae14-462b-bb3c-4fd057565dba",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вакуленко Андрій Богданович"
+    },
+    {
+      "participantId": "1f24ce33-a809-4466-9793-82fec68a2eb6",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Олег Миколайович"
+    },
+    {
+      "participantId": "eb05706b-8126-4dab-aeee-8755dff7fad7",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Богдан Степанович"
+    },
+    {
+      "participantId": "d2cda9e3-cb90-432e-8a8c-f0ec5ac85e1e",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальський Ярослав Олегович"
+    },
+    {
+      "participantId": "a9faa469-93e6-4f33-85df-5172d787c638",
+      "attributes": {
+        "group": "ЕК-41",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Мирослава Богданівна"
+    },
+    {
+      "participantId": "2e846897-b89c-47de-9e09-3b7a04d228a9",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Онищенко Андрій Дмитрович"
+    },
+    {
+      "participantId": "4183799e-e697-4c1a-b03e-4c0542624062",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Віктор Михайлович"
+    },
+    {
+      "participantId": "0c9c6872-65c2-4cf0-bd82-955fb4f8ee01",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Шевченко Дарина Сергіївна"
+    },
+    {
+      "participantId": "75eecb6e-6fc1-47e8-9463-fd9ef52c10e6",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткачук Віктор Ярославович"
+    },
+    {
+      "participantId": "a5b6bbf3-698e-4051-b792-54a2dc049dae",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Катерина Дмитрівна"
+    },
+    {
+      "participantId": "c1981ea8-ccbf-4bde-b72f-50997a7a0f37",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Софія Тарасівна"
+    },
+    {
+      "participantId": "fba9d05d-2818-4873-9ed5-8b22bb4b9d1e",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневська Анастасія Тарасівна"
+    },
+    {
+      "participantId": "080363bf-8a62-478d-87cc-f070bd4a4eee",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Богдан Богданович"
+    },
+    {
+      "participantId": "77c55a19-2ebe-4872-aa65-6823a19d6da5",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Бондаренко Христина Дмитрівна"
+    },
+    {
+      "participantId": "b19b08d6-00fe-404f-9f26-f90962a6083e",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Остап Ярославович"
+    },
+    {
+      "participantId": "4d8767dd-ac1b-48e0-91f2-06842242522a",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вакуленко Тарас Сергійович"
+    },
+    {
+      "participantId": "1a6e3ecb-f73f-4765-a211-42cb61f9a113",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Богдан Андрійович"
+    },
+    {
+      "participantId": "85f3344d-6340-44b6-8ae4-2df677112819",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Софія Тарасівна"
+    },
+    {
+      "participantId": "b8c3e06f-49c0-46b0-a1dd-dab5007d0a7b",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вакуленко Оксана Юріївна"
+    },
+    {
+      "participantId": "d4152d97-e7ea-4978-b106-9ef306de532f",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Вікторія Андріївна"
+    },
+    {
+      "participantId": "41530669-9377-4e1e-9ddc-21cc8dd7b3ae",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Марченко Степан Юрійович"
+    },
+    {
+      "participantId": "c13bd730-9ff9-4bb6-887f-7aa8562e26c2",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Назар Вікторович"
+    },
+    {
+      "participantId": "267d2993-0779-41a0-a9aa-b6cde0382e17",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мороз Петро Сергійович"
+    },
+    {
+      "participantId": "23a65cd5-a836-4b8c-9061-0fddc19dadbe",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Людмила Михайлівна"
+    },
+    {
+      "participantId": "dbc3d5de-f675-4bf8-92f5-5ff208bdccd6",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Павленко Степан Васильович"
+    },
+    {
+      "participantId": "f0a74898-9b1f-4880-a5fd-5b518af687e2",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколова Вікторія Ярославівна"
+    },
+    {
+      "participantId": "eab06b3e-dfb9-48e1-973d-390333468c1c",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Гуменюк Степан Дмитрович"
+    },
+    {
+      "participantId": "a003f82d-c67e-4345-ba81-ac7e555adcf7",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Анастасія Вікторівна"
+    },
+    {
+      "participantId": "4e22c04d-b056-46fb-9e6a-571ced1173ac",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Олена Миколаївна"
+    },
+    {
+      "participantId": "848cbbdd-ebde-44af-a3f0-9ed8e2df37e0",
+      "attributes": {
+        "group": "ФІН-21",
+        "school": "Спеціалізована школа №1"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Олександр Володимирович"
+    },
+    {
+      "participantId": "68496762-bc4a-422a-837a-700495ca78c4",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Клименко Василь Андрійович"
+    },
+    {
+      "participantId": "3c320b44-f7cb-4213-92c8-81a4372276a2",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Роман Степанович"
+    },
+    {
+      "participantId": "326e68d5-874b-41af-be8a-e19e9c1d5c17",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Яковенко Остап Миколайович"
+    },
+    {
+      "participantId": "60efb2b1-a75e-4201-84c7-53b3bc6ea2c3",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Поліщук Юрій Петрович"
+    },
+    {
+      "participantId": "059f3d53-049a-4b1a-9a5b-61ae5b24b67e",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Павленко Петро Вікторович"
+    },
+    {
+      "participantId": "ea8dc3f9-aedf-43b9-a2fd-55b3ee5d7450",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Бондаренко Степан Іванович"
+    },
+    {
+      "participantId": "05f26bea-4a61-44ec-b793-8fb6825a7a12",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Петро Андрійович"
+    },
+    {
+      "participantId": "fb0b5df7-c66c-4e42-b729-3dc6970f579b",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Ірина Романівна"
+    },
+    {
+      "participantId": "fcc66aeb-026c-4df9-bf08-4d855ff20de6",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Шевченко Дарина Андріївна"
+    },
+    {
+      "participantId": "f0526ac0-4bea-4622-b63c-f194280cf345",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Катерина Андріївна"
+    },
+    {
+      "participantId": "41ef2037-1c37-444a-9b8a-e022f82aff74",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Софія Іванівна"
+    },
+    {
+      "participantId": "f05bcc09-e637-4019-8af4-bf6225894962",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколова Олена Михайлівна"
+    },
+    {
+      "participantId": "7211b25a-e130-41f4-b37e-0c71292e5493",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Василь Михайлович"
+    },
+    {
+      "participantId": "c02096d0-a1d3-41b5-9dcf-87fe04ae194a",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Остапчук Олег Вікторович"
+    },
+    {
+      "participantId": "f0b27517-5afb-4ef5-9db1-f9a7ae8a1cf1",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Клименко Оксана Олегівна"
+    },
+    {
+      "participantId": "7284ae95-7f25-493b-92f9-310b44b8206d",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневська Олена Степанівна"
+    },
+    {
+      "participantId": "578e1dff-2356-49fd-8baa-c3e70f82c62d",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Вікторія Василівна"
+    },
+    {
+      "participantId": "9cc8b88b-d269-44fb-a385-fa7d7d9691f6",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Катерина Дмитрівна"
+    },
+    {
+      "participantId": "236d4f07-3635-4f59-9101-6b06bc7465c5",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Вікторія Олександрівна"
+    },
+    {
+      "participantId": "6ac924e8-eb91-4735-a307-7f7c9583685b",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Злата Михайлівна"
+    },
+    {
+      "participantId": "768f8491-21c0-402c-9fe1-0a3c1b1e2aa3",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Іван Васильович"
+    },
+    {
+      "participantId": "8aecf9ee-f027-4afc-82b8-b45e9056a03a",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальський Роман Андрійович"
+    },
+    {
+      "participantId": "3f742603-647a-473d-bf90-527e3ca38aa2",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Віктор Михайлович"
+    },
+    {
+      "participantId": "dd55281d-c88a-488a-85d2-7f1a01ebd377",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Дмитро Олександрович"
+    },
+    {
+      "participantId": "e0622883-b353-4715-8737-99da3fe5fd1e",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кузьменко Катерина Богданівна"
+    },
+    {
+      "participantId": "63d2bdf9-b83a-4bb7-a0eb-a570149900f3",
+      "attributes": {
+        "group": "МЕН-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Онищенко Марія Богданівна"
+    },
+    {
+      "participantId": "05c140e6-59d6-4ee9-af0b-638a6a8f7c18",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Злата Михайлівна"
+    },
+    {
+      "participantId": "4b2b69f3-2bfc-4763-873e-7d3a22eb2378",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколов Олександр Романович"
+    },
+    {
+      "participantId": "0fb065b6-6395-4e81-9a16-64574ff2d796",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лук'янчук Остап Миколайович"
+    },
+    {
+      "participantId": "4fe5cc67-a448-4f59-877c-9ab01e3d037b",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Михайло Михайлович"
+    },
+    {
+      "participantId": "e318276d-f9d3-424c-b808-a330274e98ca",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Оксана Романівна"
+    },
+    {
+      "participantId": "a6ca9ad2-b530-4bd3-bd72-66a36dfaa5cd",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Коваленко Роман Петрович"
+    },
+    {
+      "participantId": "80f7744e-eef6-406b-bc1a-08ba1a9a8d4e",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Людмила Ярославівна"
+    },
+    {
+      "participantId": "8c3c957b-54ba-4df3-93d7-141ac28325d2",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Романюк Максим Андрійович"
+    },
+    {
+      "participantId": "e95e5701-5f52-4e18-afd3-6694f5d3deba",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Степан Михайлович"
+    },
+    {
+      "participantId": "9ff34328-1658-4c67-9668-7d115c7a3dde",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Юрій Михайлович"
+    },
+    {
+      "participantId": "86ad0324-b0cc-4847-b3fd-2cefb7d8146a",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мороз Василь Миколайович"
+    },
+    {
+      "participantId": "83e96b18-5998-4ba0-8fd4-a59d33033f46",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Тетяна Миколаївна"
+    },
+    {
+      "participantId": "21516ae3-a1a5-4329-9a6c-ab297d0c98c4",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Олег Тарасович"
+    },
+    {
+      "participantId": "518628e3-d584-44d5-b06e-e2909e350097",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Сергій Олегович"
+    },
+    {
+      "participantId": "73f968f5-f7b6-41a7-9558-1079250042cb",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Анастасія Михайлівна"
+    },
+    {
+      "participantId": "98c9fe29-d6de-4d97-a23f-9e2fd5edc08d",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Анастасія Іванівна"
+    },
+    {
+      "participantId": "17d1161b-3578-4bbd-91d3-ec2317cb6a2f",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Вишневський Іван Олегович"
+    },
+    {
+      "participantId": "49721873-1250-4e82-b252-ee25ad0ee7f8",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лук'янчук Христина Тарасівна"
+    },
+    {
+      "participantId": "0bb26c10-21bd-4d56-82f6-bc1e4da8fe5f",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Тетяна Богданівна"
+    },
+    {
+      "participantId": "fdfd809f-bc6a-4782-9a71-7f35f362abbf",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Онищенко Юрій Сергійович"
+    },
+    {
+      "participantId": "07315bef-6660-48e8-b33d-7f9ed371ecb4",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Василь Степанович"
+    },
+    {
+      "participantId": "e93d84a8-455a-4f53-9095-3110adaf24cb",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Сергій Олександрович"
+    },
+    {
+      "participantId": "96ff34a6-f01f-4abe-af3e-8b58b947d6f4",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Оксана Василівна"
+    },
+    {
+      "participantId": "8e4da723-c225-49c7-9849-0e398701503d",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Людмила Олегівна"
+    },
+    {
+      "participantId": "b8a65760-68f3-474d-9804-3505a6838db1",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Юрій Олегович"
+    },
+    {
+      "participantId": "1e7df517-4532-4686-8acb-cb0063c250a7",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовський Роман Михайлович"
+    },
+    {
+      "participantId": "34d8453f-7de1-4bc2-8940-279d73496128",
+      "attributes": {
+        "group": "ПР-31",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Дарина Миколаївна"
+    },
+    {
+      "participantId": "c142046a-0a3d-4732-947d-0fd7b0a4ea50",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневська Ольга Тарасівна"
+    },
+    {
+      "participantId": "78f063a3-7eee-413c-b6b3-f1310b6d2f9f",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Вікторія Петрівна"
+    },
+    {
+      "participantId": "71632052-84b1-40ae-9b02-f68daec7a051",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Клименко Ярослав Вікторович"
+    },
+    {
+      "participantId": "a61dc99d-36a4-41ba-8a3f-a86a1150438c",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальський Іван Романович"
+    },
+    {
+      "participantId": "a4fbb1da-a65d-4e8f-b335-f62023b55646",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Злата Іванівна"
+    },
+    {
+      "participantId": "224dc251-769d-445d-8112-916755c21822",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Романюк Іван Володимирович"
+    },
+    {
+      "participantId": "49b20a96-9bee-46ec-bc2f-ac9a4189eead",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Роман Олександрович"
+    },
+    {
+      "participantId": "b8642332-f2cd-433e-88c6-bdc85cbab79b",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Олена Петрівна"
+    },
+    {
+      "participantId": "cde5e205-3814-4529-8186-5ff9d964e74d",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорна Софія Богданівна"
+    },
+    {
+      "participantId": "d2ee6974-cfe4-4237-a810-55c20a2d407f",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Максим Андрійович"
+    },
+    {
+      "participantId": "cf5e3f46-5582-4dd0-888f-31c15b9079f6",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Поліщук Ярослав Олегович"
+    },
+    {
+      "participantId": "370a76d8-37cf-4ea6-a466-ef9a742d2990",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Максим Васильович"
+    },
+    {
+      "participantId": "00238160-9caf-48c7-b18a-50224a6dc954",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловська Катерина Степанівна"
+    },
+    {
+      "participantId": "274228a3-62e7-464f-b7cc-ef8c9e78f4e6",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Онищенко Юлія Тарасівна"
+    },
+    {
+      "participantId": "779fdbb3-c029-4c60-abae-5a3b45bc58e1",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Олена Михайлівна"
+    },
+    {
+      "participantId": "9660bdf9-f4ac-4dd4-a193-844b39f04da2",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Петренко Олександр Миколайович"
+    },
+    {
+      "participantId": "50941d8c-bc58-449b-9c58-606723b91d3f",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Марія Миколаївна"
+    },
+    {
+      "participantId": "f0d61b09-cc0c-4f0b-aa0a-9788f86d9fcb",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Юрій Петрович"
+    },
+    {
+      "participantId": "e3243b05-3616-432f-8d3f-d7635b8302be",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорний Петро Васильович"
+    },
+    {
+      "participantId": "dec94d32-4c2b-437d-9b29-92526403e0b2",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Олександр Миколайович"
+    },
+    {
+      "participantId": "25bfcb5c-e99c-4d9d-a607-48a9a4d3ee5a",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Іваненко Юлія Андріївна"
+    },
+    {
+      "participantId": "11441532-7ff6-4c21-9255-59b3e9d58209",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Ірина Дмитрівна"
+    },
+    {
+      "participantId": "a94a22b5-30c0-47f2-880b-ab2beb2ab57a",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорний Віктор Петрович"
+    },
+    {
+      "participantId": "f5eeb193-fdba-406b-8b5c-87d0897cf3fa",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Яковенко Михайло Петрович"
+    },
+    {
+      "participantId": "87ad4a4a-abfd-4fcc-a5e9-f8646521705b",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Іваненко Оксана Петрівна"
+    },
+    {
+      "participantId": "5a24afbc-ad62-40c1-ab6f-1a4c4c496740",
+      "attributes": {
+        "group": "ЮР-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Олександр Тарасович"
+    },
+    {
+      "participantId": "5a236c8f-9e83-40b4-9ca9-ad8d9b892c9b",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Олена Олегівна"
+    },
+    {
+      "participantId": "d81918dd-1a08-4945-a0e7-45163c94ee3e",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Ірина Тарасівна"
+    },
+    {
+      "participantId": "bb9ea2fe-b7cc-4141-9593-b2abf8b2540a",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Шевчук Тетяна Романівна"
+    },
+    {
+      "participantId": "7768c23c-f55e-4d3e-aacc-2d023bde757b",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколов Петро Іванович"
+    },
+    {
+      "participantId": "6a92538b-e143-4399-90c4-5d8858c2e035",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Ярослав Олегович"
+    },
+    {
+      "participantId": "a985c7aa-d4bd-4fde-a53e-206abeb06ed5",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Наталія Олегівна"
+    },
+    {
+      "participantId": "7acf08d9-1ce2-4595-98cd-a10164e08b0d",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Петро Михайлович"
+    },
+    {
+      "participantId": "1d3c856a-1199-4f71-b753-ad5d99d1bfb5",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Василь Олександрович"
+    },
+    {
+      "participantId": "687e718c-d05a-48e3-8b94-07e9856f8393",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Білий Юрій Михайлович"
+    },
+    {
+      "participantId": "a4f47aa1-0fca-47cc-92ac-54725add14bd",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Вікторія Олегівна"
+    },
+    {
+      "participantId": "74a6bfec-6114-423b-9190-ad2565ebf789",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Шевчук Степан Миколайович"
+    },
+    {
+      "participantId": "77b2e8b8-912b-456f-a80a-c9954eb5ba4e",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Вікторія Романівна"
+    },
+    {
+      "participantId": "4ca71bc1-f2f5-431c-b0af-7f782533d7f3",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Марченко Ольга Андріївна"
+    },
+    {
+      "participantId": "8fe48629-3516-4b3c-94d8-14853bf6cc0b",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Юрій Олегович"
+    },
+    {
+      "participantId": "1d4a5bb8-8128-4be2-b3ce-dcc4e89894c2",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Романюк Вікторія Андріївна"
+    },
+    {
+      "participantId": "f26ad65c-3dea-480a-92b1-317aab702a99",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Березовська Оксана Юріївна"
+    },
+    {
+      "participantId": "c1380a60-5e53-4838-ad58-e272a85b84df",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Павленко Олег Сергійович"
+    },
+    {
+      "participantId": "49ab1c61-273c-4969-8bef-088618fbcb32",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Максим Юрійович"
+    },
+    {
+      "participantId": "084e5965-1402-4aa6-87b0-6f816dffee8c",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Шевченко Назар Вікторович"
+    },
+    {
+      "participantId": "ebda6921-6090-4cb9-b9a7-6505d3fcc25c",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневська Людмила Ярославівна"
+    },
+    {
+      "participantId": "04983e04-fcaa-45dd-ba7f-a7048043f074",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Іван Юрійович"
+    },
+    {
+      "participantId": "7b0a084d-039a-402b-b5dc-240aaf1d2a42",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Мирослава Миколаївна"
+    },
+    {
+      "participantId": "01be273f-b852-47d2-a5c8-5dd662b6358e",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Злата Олегівна"
+    },
+    {
+      "participantId": "f983a384-26d0-41c6-b58c-5110050ee04b",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколова Наталія Юріївна"
+    },
+    {
+      "participantId": "33c6140f-664d-44f4-9dd5-6a2a92ba843a",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Ірина Степанівна"
+    },
+    {
+      "participantId": "c50c3cf0-a85c-4255-8fc8-ae572b758ebc",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколова Соломія Сергіївна"
+    },
+    {
+      "participantId": "e5e7b6d7-5473-415c-b2c6-b84d931ed8ba",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Дячук Ганна Юріївна"
+    },
+    {
+      "participantId": "d3bb0d4e-4466-4ef5-81fe-d23a38198524",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Коваленко Назар Васильович"
+    },
+    {
+      "participantId": "09f6019c-5698-41b6-9891-01320b88a82c",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Артем Ярославович"
+    },
+    {
+      "participantId": "13e5c731-055a-4552-8d08-6aa640b20bc4",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Романюк Злата Юріївна"
+    },
+    {
+      "participantId": "07d16de8-902c-48dd-8ddc-44929e6a3a11",
+      "attributes": {
+        "group": "ФЛ-11",
+        "school": "Київський ліцей №2"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловський Юрій Іванович"
+    },
+    {
+      "participantId": "9cd6ca8c-4867-413f-a715-4959130c2e74",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Наталія Андріївна"
+    },
+    {
+      "participantId": "d147a213-d3b3-4c8f-9a10-1de43b7b61ba",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Онищенко Ольга Іванівна"
+    },
+    {
+      "participantId": "e021896b-eafd-4c0f-afcf-0a5c7078288e",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Людмила Богданівна"
+    },
+    {
+      "participantId": "752c054c-90d8-49cc-b40a-3b8f02a81826",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Білий Остап Михайлович"
+    },
+    {
+      "participantId": "871241eb-02ca-4c38-b4de-0fec9e1e84f4",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Савчук Богдан Петрович"
+    },
+    {
+      "participantId": "cccfc4ba-d06e-470f-9bfd-8b30c461c319",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Оксана Михайлівна"
+    },
+    {
+      "participantId": "a32b2cc0-8963-4194-8591-903c9d307c43",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Ярослав Степанович"
+    },
+    {
+      "participantId": "bc83e199-bdda-4bc0-bd17-caae95fa97a3",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Остап Степанович"
+    },
+    {
+      "participantId": "f3fb6c56-3026-4647-b2b1-5d6bc8264ba8",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловський Михайло Дмитрович"
+    },
+    {
+      "participantId": "8dc57907-3607-4fe4-9152-eaad8f437487",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Левченко Віктор Іванович"
+    },
+    {
+      "participantId": "436d664b-d3cd-4a4c-8281-7aa6df4ef236",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гончаренко Мирослава Сергіївна"
+    },
+    {
+      "participantId": "bd725fa1-e339-40d6-9ed4-3f5c52bc1358",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Поліщук Юлія Богданівна"
+    },
+    {
+      "participantId": "076fd04e-f4af-4182-a294-9116cda906fa",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Злата Сергіївна"
+    },
+    {
+      "participantId": "4a3bac24-928d-4ede-9ce5-98c992538e02",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Марченко Юлія Вікторівна"
+    },
+    {
+      "participantId": "46ae40bc-1384-4d0c-83a5-7123ca292434",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневська Наталія Сергіївна"
+    },
+    {
+      "participantId": "4cf9af46-553a-4878-900b-02210b686c8c",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Біла Соломія Юріївна"
+    },
+    {
+      "participantId": "a6263f58-29c8-4e6a-b866-8baf5b7591b5",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Олійник Оксана Петрівна"
+    },
+    {
+      "participantId": "026f9af3-c1bf-47b7-b91a-e3d2f2ee6fd2",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Бондаренко Іван Васильович"
+    },
+    {
+      "participantId": "7176a4d7-f2af-47db-8abd-c13d1c64a5b7",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Петро Вікторович"
+    },
+    {
+      "participantId": "dda84b3f-8769-4222-94d7-91863b1cf5f8",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткачук Роман Олегович"
+    },
+    {
+      "participantId": "94215caf-8ad6-4bc9-8169-c35b029859cd",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Андрій Дмитрович"
+    },
+    {
+      "participantId": "b730e6b5-47e0-4eb0-93f8-99d6568fee87",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Дарина Юріївна"
+    },
+    {
+      "participantId": "2bce6d53-8438-4b9c-bdca-6423dbf976f1",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Іваненко Тетяна Тарасівна"
+    },
+    {
+      "participantId": "842971ed-08ab-466a-8ab1-6c602d627861",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Заболотний Остап Сергійович"
+    },
+    {
+      "participantId": "b2342e16-967b-4678-ab9e-bb3f6a66fca4",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Степан Олегович"
+    },
+    {
+      "participantId": "c3f718b2-96ad-4ffd-924d-7e04c9d642f4",
+      "attributes": {
+        "group": "БІО-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Сидоренко Ярослав Тарасович"
+    },
+    {
+      "participantId": "fcc220b1-bc7b-4be4-87e2-ae63153ceece",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Сидоренко Дмитро Сергійович"
+    },
+    {
+      "participantId": "8fa13a3c-afb9-4cd4-8a3f-34d40546a3eb",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Михайло Васильович"
+    },
+    {
+      "participantId": "731b2237-b82d-42e3-b177-a9c5c374e521",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорна Оксана Іванівна"
+    },
+    {
+      "participantId": "8f7aa23d-f610-424b-a5f8-33ac1e051886",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кузьменко Мирослава Вікторівна"
+    },
+    {
+      "participantId": "0e8ac798-d241-4abd-acc0-c65c73f97fa0",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Софія Степанівна"
+    },
+    {
+      "participantId": "19767f0c-6fa4-4acd-9135-141fc3a5daef",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Дмитро Іванович"
+    },
+    {
+      "participantId": "4f6c3838-0caa-4598-b86f-35597b8c4813",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Марченко Катерина Володимирівна"
+    },
+    {
+      "participantId": "3db18adb-53b0-41a4-a24e-9e0a67d3470a",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Олена Олександрівна"
+    },
+    {
+      "participantId": "c5dfc618-1948-4c92-8b31-c09ce85dadbb",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Левченко Олег Володимирович"
+    },
+    {
+      "participantId": "4f9720d5-b814-4900-aba2-00bc79c2c4d2",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Ірина Іванівна"
+    },
+    {
+      "participantId": "6ddd1dd6-757e-4f99-b700-aa408142a648",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальський Остап Юрійович"
+    },
+    {
+      "participantId": "e0c08e5f-9a6e-48e9-9a92-7de25ffe02b9",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Захарченко Вікторія Богданівна"
+    },
+    {
+      "participantId": "7c55a174-7ff8-491e-8132-d98002778e1c",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Березовська Ольга Миколаївна"
+    },
+    {
+      "participantId": "5e2d6e1c-4422-4ea3-949e-1d2a18ebed6b",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальська Тетяна Дмитрівна"
+    },
+    {
+      "participantId": "61a35f99-875c-4d74-9586-67b654573328",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Тарас Олександрович"
+    },
+    {
+      "participantId": "55bb936d-8bea-41a1-a999-c0e407830e89",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кузьменко Злата Вікторівна"
+    },
+    {
+      "participantId": "73b6183e-94c3-43b9-85a0-df50632ccbe8",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Павленко Артем Петрович"
+    },
+    {
+      "participantId": "d2a7ec2c-d34d-4f25-a10f-7f4c0a2e7b05",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Григоренко Наталія Андріївна"
+    },
+    {
+      "participantId": "93e0f8e3-57a3-4042-b053-c05b05122c0e",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Людмила Вікторівна"
+    },
+    {
+      "participantId": "04609024-fd59-4250-aa4b-04eb7d48f3c6",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": true,
+      "sortKey": "Козловська Катерина Сергіївна"
+    },
+    {
+      "participantId": "f1bfbc31-1b04-474e-80b0-3753cabf6880",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Білий Петро Олександрович"
+    },
+    {
+      "participantId": "6fbb08c6-ca87-4738-a2cc-44b1a5f3d4a0",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лук'янчук Іван Тарасович"
+    },
+    {
+      "participantId": "98cd9be9-89b3-468b-ae5f-22f13f6ab303",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткаченко Ярослав Олегович"
+    },
+    {
+      "participantId": "a2f2e3de-cc24-4f94-bdf5-77efd3dd6dee",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кушнір Людмила Дмитрівна"
+    },
+    {
+      "participantId": "bf226db3-8865-4d20-90d8-91eb3b0ab7da",
+      "attributes": {
+        "group": "ХІМ-11",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кравченко Василь Вікторович"
+    },
+    {
+      "participantId": "8d6c01aa-1446-48ab-9069-ae2a76d0e2be",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Олена Тарасівна"
+    },
+    {
+      "participantId": "d29804e5-14b5-46e0-83b5-9a820377bef9",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Литвиненко Дмитро Ярославович"
+    },
+    {
+      "participantId": "e08c8180-0941-4f13-b982-24444cc5fdd3",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Яковенко Назар Тарасович"
+    },
+    {
+      "participantId": "a814b38d-5972-4424-899a-b908ed65820b",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Лисенко Богдан Олегович"
+    },
+    {
+      "participantId": "3d753309-b2b6-46c1-bf48-881acdf3cd78",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Руденко Іван Богданович"
+    },
+    {
+      "participantId": "3c6be830-5f5f-477a-891d-f5fdeb83809e",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Соколова Христина Тарасівна"
+    },
+    {
+      "participantId": "ee30520a-711f-43b5-b9a5-5ade6bd94a09",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Іваненко Артем Романович"
+    },
+    {
+      "participantId": "1c922b75-6fe1-494d-8d12-088b6c26953a",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Марченко Роман Дмитрович"
+    },
+    {
+      "participantId": "1f9a7710-aa80-4535-aa64-551c4094279e",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Дмитро Юрійович"
+    },
+    {
+      "participantId": "525293ec-b2ff-4fb5-b218-63812a65b3f7",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Карпенко Дмитро Тарасович"
+    },
+    {
+      "participantId": "6fb2ae63-912b-4c6e-bc00-ec5d7923e448",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Приходько Наталія Миколаївна"
+    },
+    {
+      "participantId": "9af14bb7-2f16-4673-94dc-3c507689e49f",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Бондаренко Михайло Олександрович"
+    },
+    {
+      "participantId": "24771735-41b0-4fcf-b0df-cc967dab62c0",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Козловська Софія Олегівна"
+    },
+    {
+      "participantId": "0caf24a8-9902-48ff-a9ae-d6399382337a",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ковальчук Василь Олегович"
+    },
+    {
+      "participantId": "ba70fda3-def8-4e81-8ebd-bf4c3d8cf3c7",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Поліщук Роман Володимирович"
+    },
+    {
+      "participantId": "5df63147-28ea-462f-9eaf-7355fe05263f",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Чорна Дарина Олександрівна"
+    },
+    {
+      "participantId": "ec16f0da-f555-4340-9db8-45d4ef5ccb79",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Анна Василівна"
+    },
+    {
+      "participantId": "f74c0eb0-873e-47cc-85a3-ec523e6c41df",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Гуменюк Артем Вікторович"
+    },
+    {
+      "participantId": "812df700-a90e-455b-b5fc-052a302ae2ca",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Ткачук Роман Миколайович"
+    },
+    {
+      "participantId": "81591598-efb1-4989-ab79-826305af161e",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Іваненко Мирослава Романівна"
+    },
+    {
+      "participantId": "27e6a6cf-420d-455f-bb7d-c47b6768e2d4",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Богдан Андрійович"
+    },
+    {
+      "participantId": "c7838309-7b2a-4bcb-bfe6-900169c86e72",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Остапчук Ірина Ярославівна"
+    },
+    {
+      "participantId": "e7befb70-469e-4a34-b5d3-249f96c62363",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Роман Андрійович"
+    },
+    {
+      "participantId": "793397fb-a0fd-4174-a6b9-0ca6a79987c4",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мельник Оксана Степанівна"
+    },
+    {
+      "participantId": "626c130a-02d3-4e4a-b9c0-e6971a74648a",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Вишневський Роман Ярославович"
+    },
+    {
+      "participantId": "f81719cf-2cee-4f9b-8057-91fc09f183c7",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Кузьменко Тарас Олександрович"
+    },
+    {
+      "participantId": "0f26f8ac-248d-4a23-b2ea-8ed6783af955",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Мартинюк Олег Васильович"
+    },
+    {
+      "participantId": "9a546978-8210-43e0-9577-0796952221f0",
+      "attributes": {
+        "group": "КН-12",
+        "school": "Київський ліцей №3"
+      },
+      "needsAccessibleSeat": false,
+      "sortKey": "Яковенко Катерина Іванівна"
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "780760e9-0e65-426c-a590-b68a72ae44c9",
+      "type": "SeparateByAttribute",
+      "isHard": true,
+      "weight": 1,
+      "parameters": {
+        "type": "SeparateByAttribute",
+        "attributeKey": "group",
+        "scope": "Room",
+        "maxPerScope": 4
+      }
+    },
+    {
+      "ruleId": "8f34e37b-74d1-427c-8376-1c72873fe318",
+      "type": "NoAdjacentByAttribute",
+      "isHard": true,
+      "weight": 1,
+      "parameters": {
+        "type": "NoAdjacentByAttribute",
+        "attributeKey": "group",
+        "adjacency": [
+          "SameDesk",
+          "Side",
+          "FrontBack"
+        ],
+        "seatLevelSide": false
+      }
+    },
+    {
+      "ruleId": "847f64d8-36cd-4a0a-bc51-7580cb5650a7",
+      "type": "AccessibleSeating",
+      "isHard": true,
+      "weight": 1,
+      "parameters": {
+        "type": "AccessibleSeating"
+      }
+    },
+    {
+      "ruleId": "b21b3e33-92ee-441e-a365-34eef1f97be5",
+      "type": "MinRoomFill",
+      "isHard": false,
+      "weight": 10,
+      "parameters": {
+        "type": "MinRoomFill",
+        "minFillRatio": 0.5
+      }
+    }
+  ],
+  "pins": [],
+  "options": {
+    "alternatives": 5,
+    "diversityRatio": 0.1,
+    "costSlack": 0.1,
+    "stage1TimeLimitSeconds": 60,
+    "stage2TimeLimitSecondsPerRoom": 5,
+    "maxFeedbackIterations": 5,
+    "numWorkers": 0,
+    "randomSeed": 1,
+    "objectiveMode": "CostThenSoft"
+  }
+}

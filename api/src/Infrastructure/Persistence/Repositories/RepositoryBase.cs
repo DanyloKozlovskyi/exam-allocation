@@ -1,5 +1,6 @@
 using Domain;
 using Domain.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -49,7 +50,13 @@ public abstract class RepositoryBase<T, TKey>(ApplicationDbContext dbContext)
 
         try
         {
-            Context.Set<T>().Update(entity);
+            // Tracked aggregates (loaded by the repository) are saved via change detection so that
+            // child entities added to their collections are inserted, not updated.
+            if (Context.Entry(entity).State == EntityState.Detached)
+            {
+                Context.Set<T>().Update(entity);
+            }
+
             await Context.SaveChangesAsync(cancellationToken);
             Context.ChangeTracker.Clear();
             return entity;

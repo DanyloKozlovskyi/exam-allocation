@@ -1,1 +1,99 @@
-{}
+{
+  "title": "Результат розподілу",
+  "alternative": {
+    "best": "Найкращий",
+    "numbered": "Варіант {{index}}",
+    "manual": "Ручна версія",
+    "summary": "Аудиторій: {{rooms}} · вартість: {{cost}} · штраф: {{penalty}}"
+  },
+  "tabs": {
+    "Overview": "Огляд",
+    "Participants": "Учасники"
+  },
+  "actions": {
+    "export": "Експорт",
+    "pinAll": "Зафіксувати все",
+    "pinRoom": "Зафіксувати аудиторію",
+    "back": "До результату",
+    "moveMode": "Ручне редагування",
+    "validateMoves": "Перевірити зміни",
+    "applyMoves": "Зберегти як ручну версію",
+    "resetMoves": "Скинути зміни",
+    "openRoom": "Відкрити розсадку"
+  },
+  "export": {
+    "Xlsx": "Excel (XLSX)",
+    "Xml": "XML",
+    "Csv": "CSV",
+    "Pdf": "PDF (відомості)",
+    "roomPdf": "PDF для цієї аудиторії"
+  },
+  "overview": {
+    "map": "Центри тестування",
+    "mapPlaceholder": "Карта буде доступна після підключення компонента карти центрів.",
+    "coordinates": "{{lat}}, {{lng}}",
+    "centerFill": "Заповнено {{filled}} з {{capacity}}",
+    "rooms": "Аудиторії",
+    "roomFill": "{{filled}} / {{capacity}}",
+    "unused": "не використовується",
+    "allCenters": "Усі центри",
+    "penalties": "Штрафи за бажаними правилами",
+    "noPenalties": "Бажані правила виконано без штрафів",
+    "penaltyValue": "{{name}}: {{penalty}}",
+    "unknownRule": "Правило {{id}}"
+  },
+  "participants": {
+    "search": "Пошук за прізвищем, ім'ям або групою",
+    "lastName": "Прізвище",
+    "firstName": "Ім'я",
+    "middleName": "По батькові",
+    "group": "Група",
+    "school": "Навчальний заклад",
+    "center": "Центр",
+    "room": "Аудиторія",
+    "seat": "Місце",
+    "seatLabel": "Ряд {{row}}, парта {{column}}, місце {{seat}}",
+    "empty": "Учасників не знайдено"
+  },
+  "seating": {
+    "title": "{{room}} — розсадка",
+    "fill": "Зайнято {{filled}} з {{capacity}} місць",
+    "empty": "Вільне місце",
+    "tooltipSeat": "Ряд {{row}}, парта {{column}}, місце {{seat}}",
+    "fullName": "{{lastName}} {{firstName}} {{middleName}}",
+    "groupLabel": "Група: {{group}}",
+    "schoolLabel": "Заклад: {{school}}",
+    "seatAria": "{{seat}}: {{name}}",
+    "groups": "Групи",
+    "violations": "Порушення",
+    "noViolations": "Порушень немає",
+    "moveHintSource": "Оберіть учасника, якого потрібно пересадити.",
+    "moveHintTarget": "Оберіть нове місце (зайняте місце — обмін).",
+    "pendingMoves": "Змін: {{count}}",
+    "moveItem": "{{name}}: {{from}} → {{to}}",
+    "reportValid": "Зміни не порушують обов'язкових правил. Штраф: {{penalty}}.",
+    "reportInvalid": "Зміни порушують обов'язкові правила ({{count}}). Штраф: {{penalty}}.",
+    "forceTitle": "Зберегти з порушеннями?",
+    "forceMessage": "Ручна версія порушує обов'язкові правила. Зберегти її все одно?"
+  },
+  "violationKind": {
+    "Unseated": "Учасника не розміщено",
+    "SeatedMoreThanOnce": "Учасника розміщено двічі",
+    "SeatOccupiedMoreThanOnce": "Місце зайняте двічі",
+    "SeatNotFound": "Місця не існує",
+    "CapacityExceeded": "Перевищено місткість",
+    "AccessibilityViolated": "Потрібне доступне місце",
+    "PinViolated": "Порушено фіксацію",
+    "SeparationViolated": "Порушено розділення",
+    "AdjacencyViolated": "Сусіди з однаковим значенням",
+    "MinRoomFillShortfall": "Аудиторія заповнена недостатньо",
+    "KeepTogetherSplit": "Групу розділено між центрами",
+    "SpreadViolated": "Зайняті сусідні місця",
+    "FillFromFront": "Не заповнено перші ряди"
+  },
+  "messages": {
+    "pinned": "Зафіксовано учасників: {{count}}",
+    "validated": "Перевірку виконано",
+    "applied": "Ручну версію збережено"
+  }
+}

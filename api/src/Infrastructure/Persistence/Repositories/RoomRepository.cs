@@ -4,29 +4,87 @@ using Domain.Centers;
 using Domain.Rooms;
 using Domain.Sessions;
 using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
 public class RoomRepository(ApplicationDbContext dbContext)
     : RepositoryBase<Room, RoomId>(dbContext), IRoomRepository, IRoomQueries
 {
-    public Task<Option<Room>> GetById(TestCenterId centerId, RoomId id, CancellationToken cancellationToken)
+    /// <summary>
+    /// Tracked lookup including seats and center. <see cref="TestCenterId.Empty"/> as <paramref name="centerId"/>
+    /// matches any center (pin commands only know the room id; see docs/change-requests.md).
+    /// </summary>
+    public async Task<Option<Room>> GetById(TestCenterId centerId, RoomId id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var anyCenter = centerId == TestCenterId.Empty();
+        var entity = await Context.Rooms
+            .Include(x => x.Seats)
+            .Include(x => x.Center)
+            .FirstOrDefaultAsync(x => (anyCenter || x.CenterId == centerId) && x.Id == id, cancellationToken);
+
+        return entity ?? Option<Room>.None;
     }
 
-    public Task<Option<Room>> FindByName(TestCenterId centerId, string name, Option<RoomId> excludeId, CancellationToken cancellationToken)
+    public async Task<Option<Room>> FindByName(TestCenterId centerId, string name, Option<RoomId> excludeId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var normalized = name.Trim();
+        var query = Context.Rooms.AsNoTracking().Where(x => x.CenterId == centerId && x.Name == normalized);
+        query = excludeId.Match(id => query.Where(x => x.Id != id), () => query);
+        var entity = await query.FirstOrDefaultAsync(cancellationToken);
+
+        return entity ?? Option<Room>.None;
     }
 
-    public Task<IReadOnlyList<Room>> GetAll(TestCenterId centerId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Room>> GetAll(TestCenterId centerId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await Context.Rooms
+            .AsNoTracking()
+            .Where(x => x.CenterId == centerId)
+            .OrderBy(x => x.Name)
+            .ThenBy(x => x.Id)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyList<Room>> GetActiveBySession(ExamSessionId sessionId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Deletes the room in a single statement so that the database cascades seats and pins together
+    /// (deleting tracked seats first would violate the pin -> seat foreign key).
+    /// </summary>
+    async Task<Room> IRoomRepository.RemoveAsync(Room entity, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await Context.Rooms.Where(x => x.Id == entity.Id).ExecuteDeleteAsync(cancellationToken);
+            Context.ChangeTracker.Clear();
+            return entity;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Unexpected failure while trying to delete room '{entity.Id}'", ex);
+        }
+    }
+
+    async Task<Option<Room>> IRoomQueries.GetById(TestCenterId centerId, RoomId id, CancellationToken cancellationToken)
+    {
+        var entity = await Context.Rooms
+            .AsNoTracking()
+            .Include(x => x.Seats)
+            .FirstOrDefaultAsync(x => x.CenterId == centerId && x.Id == id, cancellationToken);
+
+        return entity ?? Option<Room>.None;
+    }
+
+    public async Task<IReadOnlyList<Room>> GetActiveBySession(ExamSessionId sessionId, CancellationToken cancellationToken)
+    {
+        return await Context.Rooms
+            .AsNoTracking()
+            .Include(x => x.Seats)
+            .Include(x => x.Center)
+            .Where(x => x.IsActive && x.Center!.IsActive && x.Center.SessionId == sessionId)
+            .OrderBy(x => x.CenterId)
+            .ThenBy(x => x.Name)
+            .ThenBy(x => x.Id)
+            .AsSplitQuery()
+            .ToListAsync(cancellationToken);
     }
 }

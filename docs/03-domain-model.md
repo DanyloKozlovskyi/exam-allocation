@@ -79,8 +79,10 @@ Seat key format: `r{row}c{column}s{seatIndex}`, all 0-based. Seat label for huma
 | Row, Column, SeatIndex | int | |
 | IsAccessible | bool | |
 
-Seats are regenerated when the layout changes. If a layout change would remove a seat that
-is referenced by a pin, the API returns `409` with the list of affected pins.
+Seats are regenerated when the layout changes: seats whose key survives keep their id (so pins
+stay valid), removed keys are deleted, new keys are added. If a layout change would remove a seat
+that is referenced by a pin, the API returns `409` with the list of affected pin ids (in the
+ProblemDetails `data` extension).
 
 ### Participant
 | Field | Type | Notes |

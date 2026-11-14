@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useNavigate, useParams } from 'react-router-dom';
+import ImportWizard from '../../../components/Global/Imports/Create';
+import { routes } from '../../../constants/routes';
 
 const ParticipantsImportView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.participantsImport')} />;
+  const { sessionId = '' } = useParams();
+  const navigate = useNavigate();
+  return <ImportWizard sessionId={sessionId} onFinished={() => navigate(routes.participants.list(sessionId))} />;
 };
 
 export default ParticipantsImportView;

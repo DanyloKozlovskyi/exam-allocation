@@ -1,16 +1,20 @@
 using Api.Constants;
 using Api.Dtos;
+using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Models;
+using Application.Participants.Commands;
 using Application.Participants.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
-public class ParticipantsController : ControllerBase
+public class ParticipantsController(ISender sender, IParticipantsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Participants.List)]
-    public Task<ActionResult<PagedDto<ParticipantDto>>> GetPage(
+    public async Task<ActionResult<PagedDto<ParticipantDto>>> GetPage(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken,
         [FromQuery] int page = PageRequest.FirstPage,
@@ -22,58 +26,67 @@ public class ParticipantsController : ControllerBase
         [FromQuery] string? school = null,
         [FromQuery] bool? needsAccessibleSeat = null)
     {
-        return Task.FromResult<ActionResult<PagedDto<ParticipantDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var filter = new ParticipantFilter(group, school, needsAccessibleSeat, sortBy);
+        var request = new PageRequest(page, pageSize, search, sortDirection);
+        var result = await controllerService.GetPage(sessionId, filter, request, cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet(ApiRoutes.Participants.ById)]
-    public Task<ActionResult<ParticipantDto>> Get(
+    public async Task<ActionResult<ParticipantDto>> Get(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<ParticipantDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var participant = await controllerService.Get(sessionId, participantId, cancellationToken);
+        return participant.Match<ActionResult<ParticipantDto>>(p => p, () => NotFound());
     }
 
     [HttpPost(ApiRoutes.Participants.Create)]
-    public Task<ActionResult<ParticipantDto>> Create(
+    public async Task<ActionResult<ParticipantDto>> Create(
         [FromRoute] Guid sessionId,
         [FromBody] ParticipantDto participant,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<ParticipantDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(participant.ToCreateCommand(sessionId), cancellationToken);
+        return result.Match<ActionResult<ParticipantDto>>(p => ParticipantDto.FromDomain(p), e => e.ToObjectResult());
     }
 
     [HttpPut(ApiRoutes.Participants.Edit)]
-    public Task<ActionResult<ParticipantDto>> Edit(
+    public async Task<ActionResult<ParticipantDto>> Edit(
         [FromRoute] Guid sessionId,
         [FromBody] ParticipantDto participant,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<ParticipantDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(participant.ToUpdateCommand(sessionId), cancellationToken);
+        return result.Match<ActionResult<ParticipantDto>>(p => ParticipantDto.FromDomain(p), e => e.ToObjectResult());
     }
 
     [HttpDelete(ApiRoutes.Participants.ById)]
-    public Task<ActionResult> Delete(
+    public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(new DeleteParticipantCommand { SessionId = sessionId, Id = participantId }, cancellationToken);
+        return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
     [HttpPost(ApiRoutes.Participants.DeleteAll)]
-    public Task<ActionResult> DeleteAll(
+    public async Task<ActionResult> DeleteAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(new DeleteAllParticipantsCommand { SessionId = sessionId }, cancellationToken);
+        return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
     [HttpGet(ApiRoutes.Participants.Attributes)]
-    public Task<ActionResult<IReadOnlyList<AttributeInfoDto>>> Attributes(
+    public async Task<ActionResult<IReadOnlyList<AttributeInfoDto>>> Attributes(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<AttributeInfoDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var attributes = await controllerService.Attributes(sessionId, cancellationToken);
+        return Ok(attributes);
     }
 }

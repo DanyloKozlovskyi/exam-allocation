@@ -1,3 +1,4 @@
+using Domain.Common;
 using Domain.Participants;
 using Domain.Rooms;
 using Domain.Sessions;
@@ -25,12 +26,25 @@ public class Pin : IEntity<PinId>
 
     public SeatId? SeatId { get; private set; }
 
+    /// <summary>Pinned seat (loaded by read queries to expose its key); null when only the room is fixed.</summary>
+    public Seat? Seat { get; private set; }
+
     public static Pin New(PinId id, ExamSessionId sessionId, ParticipantId participantId, RoomId roomId, SeatId? seatId)
-        => new(id, sessionId, participantId, roomId, seatId);
+    {
+        Guard.NotNull(sessionId, nameof(sessionId));
+        Guard.NotNull(participantId, nameof(participantId));
+        Guard.NotNull(roomId, nameof(roomId));
+        return new Pin(id, sessionId, participantId, roomId, seatId);
+    }
 
     public void MoveTo(RoomId roomId, SeatId? seatId)
     {
+        Guard.NotNull(roomId, nameof(roomId));
         RoomId = roomId;
         SeatId = seatId;
+        if (Seat is not null && Seat.Id != seatId)
+        {
+            Seat = null;
+        }
     }
 }

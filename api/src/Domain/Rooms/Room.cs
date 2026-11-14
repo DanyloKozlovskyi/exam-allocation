@@ -70,11 +70,23 @@ public class Room : IEntity<RoomId>, IVersioned
         IsActive = isActive;
     }
 
+    /// <summary>
+    /// Replaces the layout; seats whose key survives keep their id (pins stay valid),
+    /// removed keys are deleted and new keys are added. Capacity is recomputed.
+    /// </summary>
     public void ChangeLayout(RoomLayout layout, IReadOnlyList<(SeatKey Key, bool IsAccessible)> seatKeys)
     {
         Guard.NotNull(layout, nameof(layout));
         Layout = layout;
         ReplaceSeats(seatKeys);
+    }
+
+    /// <summary>Seats that would disappear if the room switched to <paramref name="seatKeys"/>.</summary>
+    public IReadOnlyList<Seat> SeatsRemovedBy(IReadOnlyList<(SeatKey Key, bool IsAccessible)> seatKeys)
+    {
+        Guard.NotNull(seatKeys, nameof(seatKeys));
+        var remaining = seatKeys.Select(x => x.Key).ToHashSet();
+        return Seats.Where(x => !remaining.Contains(x.Key)).ToList();
     }
 
     private static void Validate(string name, decimal? costOverride)
@@ -89,10 +101,30 @@ public class Room : IEntity<RoomId>, IVersioned
 
     private void ReplaceSeats(IReadOnlyList<(SeatKey Key, bool IsAccessible)> seatKeys)
     {
-        Seats.Clear();
+        Guard.NotNull(seatKeys, nameof(seatKeys));
+        var target = new Dictionary<SeatKey, bool>();
         foreach (var (key, isAccessible) in seatKeys)
         {
-            Seats.Add(Seat.New(SeatId.New(), Id, key, isAccessible));
+            Guard.NotNull(key, nameof(seatKeys));
+            Guard.IsTrue(target.TryAdd(key, isAccessible), nameof(seatKeys), $"Duplicate seat key '{key}'");
+        }
+
+        foreach (var seat in Seats.Where(x => !target.ContainsKey(x.Key)).ToList())
+        {
+            Seats.Remove(seat);
+        }
+
+        var existing = Seats.ToDictionary(x => x.Key);
+        foreach (var (key, isAccessible) in target)
+        {
+            if (existing.TryGetValue(key, out var seat))
+            {
+                seat.SetAccessible(isAccessible);
+            }
+            else
+            {
+                Seats.Add(Seat.New(SeatId.New(), Id, key, isAccessible));
+            }
         }
 
         Capacity = Seats.Count;

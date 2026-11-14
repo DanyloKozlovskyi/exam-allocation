@@ -1,3 +1,4 @@
+using Application.Rules.Validators;
 using FluentValidation;
 
 namespace Application.Rules.Commands;
@@ -8,6 +9,6 @@ public class UpdateRuleCommandValidator : AbstractValidator<UpdateRuleCommand>
     {
         RuleFor(x => x.SessionId).NotEmpty();
         RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.Parameters).NotEmpty();
+        this.AddRuleRules(x => x.Parameters, x => x.IsHard, x => x.Weight, x => x.DisplayName);
     }
 }

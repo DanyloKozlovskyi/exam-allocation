@@ -1,38 +1,49 @@
 using Api.Constants;
 using Api.Dtos;
+using Api.Modules.Errors;
+using Api.Services.Abstract;
+using Application.Pins.Commands;
+using Domain.ValueObjects;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
-public class PinsController : ControllerBase
+public class PinsController(ISender sender, IPinsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Pins.List)]
-    public Task<ActionResult<IReadOnlyList<PinDto>>> GetAll(
+    public async Task<ActionResult<IReadOnlyList<PinDto>>> GetAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<PinDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var pins = await controllerService.GetAll(sessionId, cancellationToken);
+        return Ok(pins);
     }
 
     [HttpPost(ApiRoutes.Pins.Create)]
-    public Task<ActionResult<PinDto>> Upsert(
+    public async Task<ActionResult<PinDto>> Upsert(
         [FromRoute] Guid sessionId,
         [FromBody] PinDto pin,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<PinDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(pin.ToUpsertCommand(sessionId), cancellationToken);
+        return result.Match<ActionResult<PinDto>>(
+            p => p.ToDto(p.SeatId is null ? null : p.Seat?.Key.Value ?? SeatKey.Parse(pin.SeatKey!.Trim()).Value),
+            e => e.ToObjectResult());
     }
 
     [HttpDelete(ApiRoutes.Pins.ByParticipant)]
-    public Task<ActionResult> Delete(
+    public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(new DeletePinCommand { SessionId = sessionId, ParticipantId = participantId }, cancellationToken);
+        return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
+    /// <summary>Pins every participant of an allocation (Phase 2: Allocations).</summary>
     [HttpPost(ApiRoutes.Pins.PinAll)]
     public Task<ActionResult<IReadOnlyList<PinDto>>> PinAll(
         [FromRoute] Guid allocationId,

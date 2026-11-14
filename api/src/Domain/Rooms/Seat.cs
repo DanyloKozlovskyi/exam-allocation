@@ -37,4 +37,9 @@ public class Seat : IEntity<SeatId>
     public bool IsAccessible { get; private set; }
 
     public static Seat New(SeatId id, RoomId roomId, SeatKey key, bool isAccessible) => new(id, roomId, key, isAccessible);
+
+    internal void SetAccessible(bool isAccessible)
+    {
+        IsAccessible = isAccessible;
+    }
 }

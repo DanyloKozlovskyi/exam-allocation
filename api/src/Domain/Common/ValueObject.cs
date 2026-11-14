@@ -2,6 +2,11 @@ namespace Domain.Common;
 
 public abstract class ValueObject
 {
+    public static bool operator ==(ValueObject? left, ValueObject? right)
+        => left is null ? right is null : left.Equals(right);
+
+    public static bool operator !=(ValueObject? left, ValueObject? right) => !(left == right);
+
     public override bool Equals(object? obj)
     {
         if (obj is null || obj.GetType() != GetType())

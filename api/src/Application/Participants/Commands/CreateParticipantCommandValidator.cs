@@ -7,7 +7,14 @@ public class CreateParticipantCommandValidator : AbstractValidator<CreatePartici
     public CreateParticipantCommandValidator()
     {
         RuleFor(x => x.SessionId).NotEmpty();
-        RuleFor(x => x.LastName).NotEmpty();
-        RuleFor(x => x.FirstName).NotEmpty();
+        this.AddParticipantRules(
+            x => x.ExternalId,
+            x => x.LastName,
+            x => x.FirstName,
+            x => x.MiddleName,
+            x => x.Group,
+            x => x.School,
+            x => x.Attributes,
+            x => x.Notes);
     }
 }

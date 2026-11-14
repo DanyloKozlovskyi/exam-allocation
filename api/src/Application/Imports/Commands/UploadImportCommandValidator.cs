@@ -8,5 +8,6 @@ public class UploadImportCommandValidator : AbstractValidator<UploadImportComman
     {
         RuleFor(x => x.SessionId).NotEmpty();
         RuleFor(x => x.FileName).NotEmpty();
+        RuleFor(x => x.Content).NotEmpty();
     }
 }

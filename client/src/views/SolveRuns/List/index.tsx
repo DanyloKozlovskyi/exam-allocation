@@ -1,9 +1,11 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useNavigate, useParams } from 'react-router-dom';
+import SolveRunsList from '../../../components/Global/SolveRuns/List';
+import { routes } from '../../../constants/routes';
 
 const SolveRunsListView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.solveRunsList')} />;
+  const { sessionId = '' } = useParams();
+  const navigate = useNavigate();
+  return <SolveRunsList sessionId={sessionId} onOpen={(runId) => void navigate(routes.solveRuns.view(sessionId, runId))} />;
 };
 
 export default SolveRunsListView;

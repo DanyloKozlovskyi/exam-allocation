@@ -1,3 +1,4 @@
+using Domain.Rooms;
 using FluentValidation;
 
 namespace Application.Rooms.Commands;
@@ -7,7 +8,8 @@ public class CreateRoomCommandValidator : AbstractValidator<CreateRoomCommand>
     public CreateRoomCommandValidator()
     {
         RuleFor(x => x.CenterId).NotEmpty();
-        RuleFor(x => x.Name).NotEmpty();
-        RuleFor(x => x.Layout).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(RoomConstraints.NameMaxLength);
+        RuleFor(x => x.Layout).NotNull().SetValidator(new RoomLayoutInputValidator()!);
+        RuleFor(x => x.CostOverride).GreaterThanOrEqualTo(RoomConstraints.MinCost);
     }
 }

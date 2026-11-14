@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import PlaceholderView from '../../../components/Common/PlaceholderView';
+import { useParams } from 'react-router-dom';
+import SolveRunView from '../../../components/Global/SolveRuns/View';
 
 const SolveRunsViewView = () => {
-  const { t } = useTranslation();
-  return <PlaceholderView title={t('views.solveRunView')} />;
+  const { sessionId = '', runId = '' } = useParams();
+  return <SolveRunView sessionId={sessionId} runId={runId} />;
 };
 
 export default SolveRunsViewView;
