@@ -21,6 +21,7 @@ describe('buildNavigation', () => {
       NavigationItemKey.Centers,
       NavigationItemKey.Participants,
       NavigationItemKey.Rules,
+      NavigationItemKey.Pins,
       NavigationItemKey.SolveRuns,
     ]);
     expect(items.find((item) => item.key === NavigationItemKey.Participants)?.badge).toBe(120);

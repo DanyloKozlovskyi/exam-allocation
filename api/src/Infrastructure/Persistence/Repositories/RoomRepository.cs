@@ -81,6 +81,14 @@ public class RoomRepository(ApplicationDbContext dbContext)
         return entity ?? Option<Room>.None;
     }
 
+    public async Task<IReadOnlyList<Room>> GetByIds(IReadOnlyCollection<RoomId> ids, CancellationToken cancellationToken)
+    {
+        return await Context.Rooms
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Room>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken)
     {
         return await Context.Rooms

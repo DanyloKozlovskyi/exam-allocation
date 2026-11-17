@@ -14,5 +14,8 @@ public interface IParticipantQueries
 
     Task<IReadOnlyList<Participant>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken = default);
 
+    /// <summary>Participants of the session with the given ids (e.g. to name pins without loading the session).</summary>
+    Task<IReadOnlyList<Participant>> GetByIds(ExamSessionId sessionId, IReadOnlyCollection<ParticipantId> ids, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<AttributeSummary>> GetAttributeSummary(ExamSessionId sessionId, CancellationToken cancellationToken = default);
 }

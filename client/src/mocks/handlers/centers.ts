@@ -13,6 +13,7 @@ import {
   pathParam,
   problem,
   registerMockStore,
+  touchMockSessionInput,
 } from './sessions';
 
 export const MOCK_CENTER_KNU_ID = '0193a100-0000-7000-8000-000000000001';
@@ -22,8 +23,6 @@ export const MOCK_CENTER_LNU_ID = '0193a100-0000-7000-8000-000000000004';
 export const MOCK_CENTER_LP_ID = '0193a100-0000-7000-8000-000000000005';
 
 const INITIAL_VERSION = 1;
-/** Rough share of accessible seats in fixture rooms (one accessible desk per room). */
-const ACCESSIBLE_SEATS_PER_ROOM = 2;
 
 const createCenterFixtures = (): TestCenterDto[] => [
   {
@@ -98,19 +97,61 @@ const createCenterFixtures = (): TestCenterDto[] => [
   },
 ];
 
+/** Fixture centers as created (their `roomCount`/`capacity` describe the rooms the rooms store seeds for them). */
+export const MOCK_CENTER_FIXTURES: readonly TestCenterDto[] = createCenterFixtures();
+
 let centers: TestCenterDto[] = createCenterFixtures();
 
+/** Room statistics of a center, computed by the rooms store (`mocks/handlers/rooms.ts`). */
+export interface MockCenterRoomStats {
+  roomCount: number;
+  activeRooms: number;
+  /** Seats of active rooms. */
+  capacity: number;
+  /** Accessible seats of active rooms. */
+  accessibleCapacity: number;
+}
+
+interface CenterRoomStatsProvider {
+  (centerId: string): MockCenterRoomStats;
+}
+
+let roomStatsProvider: CenterRoomStatsProvider | null = null;
+
+/** The rooms store registers itself here, so center counts and session totals follow the rooms that exist. */
+export const registerCenterRoomStats = (provider: CenterRoomStatsProvider) => {
+  roomStatsProvider = provider;
+};
+
+const withRoomStats = (center: TestCenterDto): TestCenterDto => {
+  if (!roomStatsProvider || !center.id) {
+    return center;
+  }
+  const stats = roomStatsProvider(center.id);
+  return { ...center, roomCount: stats.roomCount, capacity: stats.capacity };
+};
+
 const sessionCenters = (sessionId: string) => centers.filter((center) => center.sessionId === sessionId);
+
+export const getMockSessionCenters = (sessionId: string) => sessionCenters(sessionId).map(withRoomStats);
+
+export const findMockCenter = (centerId: string) => centers.find((center) => center.id === centerId);
+
+export const isMockFixtureCenter = (centerId: string) => MOCK_CENTER_FIXTURES.some((center) => center.id === centerId);
 
 registerMockStore({
   totals: (sessionId) => {
     const active = sessionCenters(sessionId).filter((center) => center.isActive);
-    const rooms = active.reduce((sum, center) => sum + (center.roomCount ?? 0), 0);
+    const stats = active.map((center) =>
+      roomStatsProvider && center.id
+        ? roomStatsProvider(center.id)
+        : { roomCount: center.roomCount ?? 0, activeRooms: center.roomCount ?? 0, capacity: center.capacity ?? 0, accessibleCapacity: 0 }
+    );
     return {
       centers: sessionCenters(sessionId).length,
-      rooms,
-      totalCapacity: active.reduce((sum, center) => sum + (center.capacity ?? 0), 0),
-      accessibleCapacity: rooms * ACCESSIBLE_SEATS_PER_ROOM,
+      rooms: stats.reduce((sum, item) => sum + item.activeRooms, 0),
+      totalCapacity: stats.reduce((sum, item) => sum + item.capacity, 0),
+      accessibleCapacity: stats.reduce((sum, item) => sum + item.accessibleCapacity, 0),
     };
   },
   removeSession: (sessionId) => {
@@ -133,7 +174,7 @@ export const centersHandlers: HttpHandler[] = [
     if (!mockSessionExists(sessionId)) {
       return problem(HttpStatus.NotFound, ErrorCode.SessionNotFound);
     }
-    return HttpResponse.json(sessionCenters(sessionId));
+    return HttpResponse.json(getMockSessionCenters(sessionId));
   }),
 
   http.post(mockUrl(apiRoutes.centers.create(sessionIdParam)), async ({ params, request }) => {
@@ -175,12 +216,15 @@ export const centersHandlers: HttpHandler[] = [
       version: (existing.version ?? INITIAL_VERSION) + 1,
     };
     centers = centers.map((center) => (center.id === dto.id ? updated : center));
-    return HttpResponse.json(updated);
+    if (existing.isActive !== updated.isActive) {
+      touchMockSessionInput(sessionId);
+    }
+    return HttpResponse.json(withRoomStats(updated));
   }),
 
   http.get(mockUrl(centerPath), ({ params }) => {
     const center = sessionCenters(String(params[MockPathParam.SessionId])).find((item) => item.id === params[MockPathParam.CenterId]);
-    return center ? HttpResponse.json(center) : problem(HttpStatus.NotFound, ErrorCode.TestCenterNotFound);
+    return center ? HttpResponse.json(withRoomStats(center)) : problem(HttpStatus.NotFound, ErrorCode.TestCenterNotFound);
   }),
 
   http.delete(mockUrl(centerPath), ({ params }) => {
@@ -188,6 +232,7 @@ export const centersHandlers: HttpHandler[] = [
     if (!centers.some((center) => center.id === centerId)) {
       return problem(HttpStatus.NotFound, ErrorCode.TestCenterNotFound);
     }
+    touchMockSessionInput(findMockCenter(centerId)?.sessionId);
     centers = centers.filter((center) => center.id !== centerId);
     return noContent();
   }),

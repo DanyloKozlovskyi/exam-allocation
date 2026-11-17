@@ -1,4 +1,5 @@
 import { generatePath } from 'react-router-dom';
+import type { AccessibleFilter } from '../enums/Participants';
 
 export enum RoutePath {
   Home = '/',
@@ -17,6 +18,7 @@ export enum RoutePath {
   Rules = '/sessions/:sessionId/rules',
   RuleCreate = '/sessions/:sessionId/rules/create',
   RuleEdit = '/sessions/:sessionId/rules/:ruleId/edit',
+  Pins = '/sessions/:sessionId/pins',
   SolveRuns = '/sessions/:sessionId/solve-runs',
   SolveRunView = '/sessions/:sessionId/solve-runs/:runId',
   AllocationView = '/sessions/:sessionId/allocations/:allocationId',
@@ -31,6 +33,26 @@ export enum RouteParam {
   RunId = 'runId',
   AllocationId = 'allocationId',
 }
+
+/** Query parameters of the participants list (deep links, e.g. from solver diagnostics). */
+export enum ParticipantsQueryParam {
+  Search = 'search',
+  Group = 'group',
+  School = 'school',
+  Accessible = 'accessible',
+}
+
+export interface ParticipantsListFilter {
+  search?: string;
+  group?: string;
+  school?: string;
+  accessible?: AccessibleFilter;
+}
+
+const withQuery = (path: string, params: Partial<Record<ParticipantsQueryParam, string | undefined>>) => {
+  const query = new URLSearchParams(Object.entries(params).filter((entry): entry is [string, string] => Boolean(entry[1])));
+  return query.size > 0 ? `${path}?${query.toString()}` : path;
+};
 
 export const routes = {
   home: () => RoutePath.Home,
@@ -51,13 +73,22 @@ export const routes = {
     edit: (sessionId: string, centerId: string, roomId: string) => generatePath(RoutePath.RoomEdit, { sessionId, centerId, roomId }),
   },
   participants: {
-    list: (sessionId: string) => generatePath(RoutePath.Participants, { sessionId }),
+    list: (sessionId: string, filter: ParticipantsListFilter = {}) =>
+      withQuery(generatePath(RoutePath.Participants, { sessionId }), {
+        [ParticipantsQueryParam.Search]: filter.search,
+        [ParticipantsQueryParam.Group]: filter.group,
+        [ParticipantsQueryParam.School]: filter.school,
+        [ParticipantsQueryParam.Accessible]: filter.accessible,
+      }),
     import: (sessionId: string) => generatePath(RoutePath.ParticipantsImport, { sessionId }),
   },
   rules: {
     list: (sessionId: string) => generatePath(RoutePath.Rules, { sessionId }),
     create: (sessionId: string) => generatePath(RoutePath.RuleCreate, { sessionId }),
     edit: (sessionId: string, ruleId: string) => generatePath(RoutePath.RuleEdit, { sessionId, ruleId }),
+  },
+  pins: {
+    list: (sessionId: string) => generatePath(RoutePath.Pins, { sessionId }),
   },
   solveRuns: {
     list: (sessionId: string) => generatePath(RoutePath.SolveRuns, { sessionId }),

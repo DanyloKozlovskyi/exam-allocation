@@ -15,11 +15,13 @@ internal sealed class Stage1ModelBuilder
     private readonly Dictionary<Guid, LinearExprBuilder> penaltyByRule = [];
     private readonly List<(BoolVar Literal, ConflictItem Item)> enforcement = [];
     private readonly List<BoolVar> open = [];
+    private readonly Stage1BuildOptions options;
 
-    private Stage1ModelBuilder(Stage1Context context, bool explain, CancellationToken cancellationToken)
+    private Stage1ModelBuilder(Stage1Context context, bool explain, Stage1BuildOptions? options, CancellationToken cancellationToken)
     {
         this.context = context;
         this.explain = explain;
+        this.options = options ?? Stage1BuildOptions.Default;
         this.cancellationToken = cancellationToken;
     }
 
@@ -42,11 +44,15 @@ internal sealed class Stage1ModelBuilder
         return cells;
     }
 
-    public static Stage1Model Build(Stage1Context context, Stage1Request request, bool explain, CancellationToken cancellationToken)
+    public static Stage1Model Build(Stage1Context context, Stage1Request request, bool explain, CancellationToken cancellationToken, Stage1BuildOptions? options = null)
     {
-        var builder = new Stage1ModelBuilder(context, explain, cancellationToken);
+        var builder = new Stage1ModelBuilder(context, explain, options, cancellationToken);
         return builder.BuildModel(request);
     }
+
+    /// <summary>Whether a rule distinguishes centers (R6, Center-scoped R2), so the center is part of the room symmetry key (04 §4).</summary>
+    public static bool CenterMatters(IEnumerable<SolverRule> rules)
+        => rules.Any(r => r.Parameters is KeepTogetherInCenterParameters || r.Parameters is SeparateByAttributeParameters { Scope: RuleScope.Center });
 
     private Stage1Model BuildModel(Stage1Request request)
     {
@@ -85,6 +91,12 @@ internal sealed class Stage1ModelBuilder
                 model.Add(cost <= bound);
             }
 
+            if (options.CostLowerBound is { } lowerBound)
+            {
+                // Redundant: the room-selection bound of 04 §4.1 is a lower bound of every stage-1 cost.
+                model.Add(cost >= lowerBound);
+            }
+
             foreach (var previous in request.PreviousSolutions)
             {
                 AddDiversity(previous);
@@ -108,9 +120,10 @@ internal sealed class Stage1ModelBuilder
             HasSoftPenalty = penaltyByRule.Count > 0,
             Enforcement = enforcement,
         };
-        if (!explain && request.Hint is { Count: > 0 } hint)
+        var pinnedRooms = context.Rooms.Where(r => context.Pins.Count(r.Room.RoomId) > 0).Select(r => r.Index).ToHashSet();
+        if (!explain && (request.Hint ?? options.Hint) is { Count: > 0 } hint)
         {
-            result.AddHint(hint, context.RoomIndexById);
+            result.AddHint(hint, context.RoomIndexById, pinnedRooms);
         }
         else if (!explain)
         {
@@ -124,6 +137,11 @@ internal sealed class Stage1ModelBuilder
 
     private void CreateVariables()
     {
+        var fixedCounts = options.Fixed && options.Hint is { } given
+            ? given.Where(c => context.RoomIndexById.ContainsKey(c.RoomId))
+                .GroupBy(c => (c.ClassIndex, context.RoomIndexById[c.RoomId]))
+                .ToDictionary(g => g.Key, g => (long)g.Sum(c => c.Count))
+            : null;
         foreach (var room in context.Rooms)
         {
             var y = model.NewBoolVar($"y_{room.Index}");
@@ -132,6 +150,12 @@ internal sealed class Stage1ModelBuilder
             if (pinned > 0)
             {
                 model.Add(y == 1);
+            }
+            else if (!explain && options.Rooms is { } allowed && !allowed.Contains(room.Index))
+            {
+                // Step A of 04 §4.1: rooms outside the selection stay closed and get no count variables.
+                model.Add(y == 0);
+                continue;
             }
 
             var free = room.Capacity - pinned;
@@ -159,7 +183,15 @@ internal sealed class Stage1ModelBuilder
                 }
 
                 var cell = (participantClass.Index, room.Index);
-                counts[cell] = model.NewIntVar(0, upper, $"n_{participantClass.Index}_{room.Index}");
+                var lower = 0L;
+                if (fixedCounts is not null)
+                {
+                    // Evaluation of a given assignment (04 §4.1): the count is a constant of the model.
+                    lower = Math.Min(upper, fixedCounts.GetValueOrDefault(cell));
+                    upper = lower;
+                }
+
+                counts[cell] = model.NewIntVar(lower, upper, $"n_{participantClass.Index}_{room.Index}");
                 upperBounds[cell] = upper;
             }
         }
@@ -443,8 +475,7 @@ internal sealed class Stage1ModelBuilder
 
     private void AddSymmetryBreaking(IReadOnlyList<Stage1Cut> cuts, long[] costs)
     {
-        var centerMatters = context.Input.Rules.Any(r => r.Parameters is KeepTogetherInCenterParameters
-            || r.Parameters is SeparateByAttributeParameters { Scope: RuleScope.Center });
+        var centerMatters = CenterMatters(context.Input.Rules);
         var cutRooms = cuts.Select(c => c.RoomId).ToHashSet();
         var groups = context.Rooms
             .Where(r => context.Pins.Count(r.Room.RoomId) == 0 && !cutRooms.Contains(r.Room.RoomId))

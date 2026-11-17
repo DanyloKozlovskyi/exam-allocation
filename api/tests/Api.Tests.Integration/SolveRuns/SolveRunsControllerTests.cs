@@ -301,5 +301,8 @@ public class SolveRunsControllerTests(IntegrationTestWebFactory factory) : BaseI
         var stored = await Context.SolveRuns.AsNoTracking().SingleAsync(x => x.Id == interrupted.Id);
         stored.Status.Should().Be(SolveRunStatus.Failed);
         stored.ErrorMessage.Should().Be(ApplicationDbContextInitialiser.InterruptedRunMessage);
+        stored.FailureReason.Should().Be(SolveRunFailureReason.Interrupted);
+        var dto = await (await Client.GetAsync(Route(ApiRoutes.SolveRuns.ById, (RunParam, interrupted.Id.Value)))).ReadJson<SolveRunDto>();
+        dto.FailureReason.Should().Be(SolveRunFailureReason.Interrupted);
     }
 }

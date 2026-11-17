@@ -13,6 +13,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
 {
     private const int BudgetMultiplier = 2;
     private const int MinStage1Seconds = 1;
+    private const int MinStage2Seconds = 1;
 
     public AlternativesResult Generate(AlternativesRequest request, IProgress<SolveProgress> progress, CancellationToken cancellationToken)
     {
@@ -24,6 +25,11 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
         }
 
         var state = new GenerationState(request, new AllocationRealizer(seatingSolver, expander));
+
+        // The budget covers stage 1 and stage 2 of every alternative: its deadline cancels both (04 §8, R-20).
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        deadline.CancelAfter(TimeSpan.FromSeconds(Math.Max(0, state.RemainingSeconds)));
+        var token = deadline.Token;
         AlternativesLimitReason? reason = null;
         for (var index = 1; index <= requested; index++)
         {
@@ -33,28 +39,29 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
                 break;
             }
 
-            if (state.RemainingSeconds <= 0)
+            if (state.RemainingSeconds <= 0 || token.IsCancellationRequested)
             {
                 reason = AlternativesLimitReason.TimeBudgetExhausted;
                 break;
             }
 
-            var attempt = state.SeatLevel ? null : TryStage1Alternative(state, index, cancellationToken);
-            if (attempt is { Outcome: AttemptOutcome.OutOfTime })
-            {
-                reason = cancellationToken.IsCancellationRequested ? AlternativesLimitReason.Cancelled : AlternativesLimitReason.TimeBudgetExhausted;
-                break;
-            }
-
-            if (attempt is null or { Outcome: AttemptOutcome.Exhausted })
+            var attempt = state.SeatLevel ? null : TryStage1Alternative(state, index, token);
+            if (attempt is { Outcome: AttemptOutcome.Exhausted })
             {
                 state.SeatLevel = true;
-                attempt = TrySeatLevelAlternative(state, index, cancellationToken);
+                attempt = null;
             }
 
+            attempt ??= TrySeatLevelAlternative(state, index, token);
             if (cancellationToken.IsCancellationRequested)
             {
                 reason = AlternativesLimitReason.Cancelled;
+                break;
+            }
+
+            if (attempt.Outcome == AttemptOutcome.OutOfTime || token.IsCancellationRequested)
+            {
+                reason = AlternativesLimitReason.TimeBudgetExhausted;
                 break;
             }
 
@@ -98,13 +105,25 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
                 return new Attempt(AttemptOutcome.Exhausted, null, null, null);
             }
 
+            if (stage1.Status == SolveStatus.NoSolutionInTime && !cancellationToken.IsCancellationRequested && state.RemainingSeconds > 0)
+            {
+                // No room-level alternative within the stage-1 limit, but budget is left: switch to seat-level
+                // diversity (04 §8 step 2) instead of reporting the budget as exhausted.
+                return new Attempt(AttemptOutcome.Exhausted, null, null, null);
+            }
+
             if (stage1.Status is not (SolveStatus.Optimal or SolveStatus.Feasible))
             {
                 return new Attempt(AttemptOutcome.OutOfTime, null, null, null);
             }
 
+            if (state.Stage2Input() is not { } stage2Input)
+            {
+                return new Attempt(AttemptOutcome.OutOfTime, null, null, null);
+            }
+
             var realization = state.Realizer
-                .SeatAsync(input, state.Request.Classes, stage1.Counts, input.Options.RandomSeed + index, null, SilentProgress.Instance, cancellationToken)
+                .SeatAsync(stage2Input, state.Request.Classes, stage1.Counts, input.Options.RandomSeed + index, null, SilentProgress.Instance, cancellationToken)
                 .GetAwaiter()
                 .GetResult();
             if (realization.Cancelled)
@@ -139,11 +158,21 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             .SelectMany(s => s)
             .GroupBy(e => e.Key)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<IReadOnlyList<ClassSeatAssignment>>)g.Select(e => e.Value).ToList());
+        if (state.Stage2Input() is not { } stage2Input)
+        {
+            return new Attempt(AttemptOutcome.OutOfTime, null, null, null);
+        }
+
         var realization = state.Realizer
-            .SeatAsync(input, state.Request.Classes, counts, input.Options.RandomSeed + index, previous, SilentProgress.Instance, cancellationToken)
+            .SeatAsync(stage2Input, state.Request.Classes, counts, input.Options.RandomSeed + index, previous, SilentProgress.Instance, cancellationToken)
             .GetAwaiter()
             .GetResult();
-        if (realization.Cancelled || realization.FailedRooms.Count > 0)
+        if (realization.Cancelled)
+        {
+            return new Attempt(AttemptOutcome.OutOfTime, null, null, null);
+        }
+
+        if (realization.FailedRooms.Count > 0)
         {
             return new Attempt(AttemptOutcome.Exhausted, null, null, null);
         }
@@ -177,6 +206,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             Realizer = realizer;
             budgetSeconds = (double)request.Input.Options.Stage1TimeLimitSeconds * BudgetMultiplier;
             PreviousCounts.Add(request.Best.Counts);
+            Cuts.AddRange(request.Cuts ?? []);
             Hashes.Add(AllocationRealizer.Hash(request.BestAllocation.Items));
             SeatingsForBestCounts.Add(AllocationRealizer.ToClassSeatings(request.Input, request.Classes, request.BestAllocation.Items));
             var bestCost = request.Best.Objective?.Cost ?? request.BestAllocation.Objective.Cost;
@@ -202,6 +232,20 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
         public List<Stage1Cut> Cuts { get; } = [];
 
         public double RemainingSeconds => budgetSeconds - stopwatch.Elapsed.TotalSeconds;
+
+        /// <summary>Input for one realization with the per-room stage-2 limit capped by the remaining budget; null when it is spent.</summary>
+        public SolverInput? Stage2Input()
+        {
+            var remaining = RemainingSeconds;
+            if (remaining <= 0)
+            {
+                return null;
+            }
+
+            var options = Request.Input.Options;
+            var seconds = (int)Math.Max(MinStage2Seconds, Math.Min(options.Stage2TimeLimitSecondsPerRoom, Math.Ceiling(remaining)));
+            return Request.Input with { Options = options with { Stage2TimeLimitSecondsPerRoom = seconds } };
+        }
 
         public void Accept(Attempt attempt)
         {

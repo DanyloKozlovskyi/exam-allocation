@@ -14,6 +14,7 @@ import {
   type ParticipantDto,
 } from '../../api/dtos';
 import { apiRoutes } from '../../constants/apiRoutes';
+import { MOCK_IMPORT_VALID_ROWS } from '../importFixture';
 import { MockAttributeKey, mockAddParticipants, mockRemoveSessionParticipants } from './participants';
 import { HttpStatus, MockPathParam, mockSessionExists, mockUrl, newId, pathParam, problem } from './sessions';
 
@@ -30,7 +31,7 @@ export enum MockImportHeader {
 }
 
 export const MOCK_IMPORT_SHEETS = ['Учасники', 'Довідка'];
-export const MOCK_IMPORT_VALID_ROWS = 48;
+export { MOCK_IMPORT_VALID_ROWS };
 export const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 const CONTENT_TYPE_HEADER = 'Content-Type';
 const CONTENT_DISPOSITION_HEADER = 'Content-Disposition';

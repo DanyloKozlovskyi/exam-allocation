@@ -12,6 +12,7 @@ namespace Api.Controllers;
 public class TestCentersController(ISender sender, ITestCentersControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Centers.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<TestCenterDto>>> GetAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -21,6 +22,8 @@ public class TestCentersController(ISender sender, ITestCentersControllerService
     }
 
     [HttpGet(ApiRoutes.Centers.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TestCenterDto>> Get(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid centerId,
@@ -31,6 +34,11 @@ public class TestCentersController(ISender sender, ITestCentersControllerService
     }
 
     [HttpPost(ApiRoutes.Centers.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TestCenterDto>> Create(
         [FromRoute] Guid sessionId,
         [FromBody] TestCenterDto center,
@@ -41,6 +49,11 @@ public class TestCentersController(ISender sender, ITestCentersControllerService
     }
 
     [HttpPut(ApiRoutes.Centers.Edit)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TestCenterDto>> Edit(
         [FromRoute] Guid sessionId,
         [FromBody] TestCenterDto center,
@@ -51,6 +64,11 @@ public class TestCentersController(ISender sender, ITestCentersControllerService
     }
 
     [HttpDelete(ApiRoutes.Centers.ById)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid centerId,

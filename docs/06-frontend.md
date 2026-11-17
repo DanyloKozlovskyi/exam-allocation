@@ -56,8 +56,12 @@ placeholder views; each workstream replaces only its own views.
 - `api/axiosInstance.ts`: `baseURL` from config; response interceptor normalizes
   `ProblemDetails`. `helpers/processError(error, enqueueSnackbar)` switches on `ErrorCode`
   to pick the i18n message.
-- Layout: left drawer with session steps (badges from `sessions/{id}/totals`):
-  Центри → Аудиторії → Учасники → Правила → Розрахунок → Результати.
+- Layout: left drawer with session steps (`components/Layout/navigation.ts`, badges from
+  `sessions/{id}/totals` and the run count): Сесії → Огляд → Центри → Аудиторії (only while a center is
+  open — rooms belong to a center) → Учасники → Правила → Розрахунок → Результати (only once a run
+  succeeded; links to its best allocation).
+- Mock mode: `config.useMocks = true` starts the MSW browser worker (`mocks/browser.ts`) before rendering;
+  default `false` (real API) since Phase 2.
 
 ## Features
 
@@ -80,7 +84,8 @@ step checklist, last run status.
 - `components/Common/RoomGrid` — presentational SVG: desks, seats, aisles; `renderSeat`
   render prop; `SeatState` enum (`Normal`, `Accessible`, `Disabled`, `Occupied`,
   `Violation`, `Selected`); optional adjacency overlay per `AdjacencyKind`.
-- Live preview via `rooms/preview-layout`; "Duplicate to N rooms" → `create-bulk`.
+- Live preview via `rooms/preview-layout`; "Кількість копій" on the summary step (1–50) → `create-bulk`
+  with names from the `bulk.nameTemplate` (`<name>-<n>`).
 
 ### Participants — `components/Global/Participants`
 - List: MUI X DataGrid in server mode (paging/sorting/filter → `ParticipantSortField`,
@@ -95,7 +100,7 @@ step checklist, last run status.
 - Create/Edit: type select (`RuleType`, from `rule-types`), then a **per-type parameters
   form** component chosen by a `Record<RuleType, React.FC<…>>` map; attribute selects from
   `sessions/{id}/attributes`; adjacency kinds as checkboxes with small illustrations.
-- Precheck button → `DiagnosticsPanel` (shared with Solve).
+- Precheck button ("Перевірити здійсненність", rules list) → `DiagnosticsPanel` (shared with Solve).
 
 ### Solve — `components/Global/SolveRuns`
 - Run dialog with `SolveOptionsDto` fields (advanced section collapsed).
@@ -106,7 +111,11 @@ step checklist, last run status.
   `SOLVE_POLL_INTERVAL_MS`.
 - Progress view: stage stepper (`SolveStage`), objective/bound mini chart, cancel.
 - `DiagnosticsPanel`: message, link to offending rule/center, suggestion text per
-  `DiagnosticCode` (i18n).
+  `DiagnosticCode` (i18n). Shown on the run view when the run has diagnostics or is `Infeasible`.
+- Infeasibility UX (Phase 3, H3 — `components/Global/SolveRuns/**`): a suggestion for every
+  `DiagnosticCode` and deep links from each diagnostic to the rule / center / room it names;
+  `Failed` runs explained by `failureReason` (`Interrupted`, `NoSolutionInTime`, `SolverError`) next
+  to the free-text `errorMessage`. Until H3 lands the run view shows `errorMessage` only.
 - Runs history DataGrid with status chip (`SolveRunStatus` → colour map constant), stale badge.
 
 ### Allocations — `components/Global/Allocations`
@@ -116,7 +125,10 @@ step checklist, last run status.
 - Room seating: `RoomGrid` with surname + group colour (stable hash → palette constant),
   tooltip with details, violations highlighted by `ViolationKind`.
 - Manual edit mode: select seat → select target → `validate-moves` → show report →
-  "Зберегти як ручну версію" → `apply-moves`. Pin room / pin all → pins API → re-run dialog.
+  "Зберегти як ручну версію" → `apply-moves` (a hard violation asks for confirmation and sends `force`);
+  selecting an occupied target swaps the two participants. Pin room / pin all → pins API → re-run dialog.
+- Pins page (`/sessions/:sessionId/pins`, drawer «Фіксації»): participant, room (link to its plan),
+  seat, remove one / remove all (`pins/delete-all`); pin diagnostics link here.
 
 ## UX rules
 - All user-facing text via i18n (`i18n/uk/<feature>.json`, typed keys); no inline literals.
@@ -128,4 +140,6 @@ step checklist, last run status.
 ## Tests
 - Jest + ts-jest (jsdom) + Testing Library; MSW for network.
 - `npm run typecheck`, `npm run lint` clean.
-- Playwright e2e in Phase 3 (mocks mode).
+- Playwright e2e (Phase 3, H2 — `client/e2e/`): the administrator happy path in two modes —
+  `npm run e2e:mocks` (MSW mocks, no backend) and `npm run e2e:api` (real API + Postgres);
+  `npm run e2e` runs both. Selectors use the `data-qa` `TestId` enums.

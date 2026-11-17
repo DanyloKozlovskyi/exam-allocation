@@ -1,6 +1,11 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
 import { SolveRunStatus, SolveStage, type SolveRunDto } from '../../../../api/dtos';
+import { apiRoutes } from '../../../../constants/apiRoutes';
+import { mockApiUrl } from '../../../../mocks/handlers/rooms';
+import { server } from '../../../../mocks/server';
+import { SolveRunFailureReason } from '../../../../api/dtos';
 import { HubEvent, HubMethod } from '../../../../constants/hub';
 import { RoutePath, routes } from '../../../../constants/routes';
 import { SolveProgressTransport, SolveRunsTestId } from '../../../../enums/SolveRuns';
@@ -163,7 +168,88 @@ describe('useSolveProgress / run view', () => {
 
     expect(await screen.findByText('Недостатньо місць')).toBeInTheDocument();
     expect(screen.getByText(/Додайте аудиторії або центри/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Перейти до центру' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Центри та аудиторії' })).toHaveAttribute('href', routes.centers.list(SESSION_ID));
     expect(fakeHub.connection).toBeNull();
+  });
+});
+
+describe('failed runs (R-9 failureReason)', () => {
+  const FAILED_RUN_ID = 'failed-run';
+  const failedRun = (failureReason: SolveRunFailureReason | undefined, errorMessage: string | null = 'Interrupted by server restart'): SolveRunDto => ({
+    id: FAILED_RUN_ID,
+    sessionId: SESSION_ID,
+    status: SolveRunStatus.Failed,
+    createdAt: new Date().toISOString(),
+    startedAt: new Date().toISOString(),
+    finishedAt: new Date().toISOString(),
+    diagnostics: [],
+    allocationIds: [],
+    isStale: false,
+    errorMessage,
+    failureReason,
+  });
+  const serveRun = (run: SolveRunDto) => server.use(http.get(mockApiUrl(apiRoutes.solveRuns.byId(':runId')), () => HttpResponse.json(run)));
+
+  it('Interrupted: explains the restart, hides the English server text and offers a re-run', async () => {
+    serveRun(failedRun(SolveRunFailureReason.Interrupted));
+    const { container } = renderRun(FAILED_RUN_ID, SolveProgressTransport.Polling);
+
+    expect(await screen.findByText('Розрахунок перервано')).toBeInTheDocument();
+    const alert = byQa(container, SolveRunsTestId.FailureReason) as HTMLElement;
+    expect(alert).toHaveAttribute('data-reason', SolveRunFailureReason.Interrupted);
+    expect(within(alert).getByText(/Запустіть розрахунок повторно/)).toBeInTheDocument();
+    expect(screen.queryByText(/Interrupted by server restart/)).not.toBeInTheDocument();
+    expect(byQa(alert, SolveRunsTestId.FailureReasonRules)).toBeNull();
+
+    fireEvent.click(byQa(alert, SolveRunsTestId.FailureReasonRerun) as HTMLElement);
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('NoSolutionInTime: suggests a longer time limit or relaxing rules', async () => {
+    serveRun(failedRun(SolveRunFailureReason.NoSolutionInTime, 'No solution found within the time limit'));
+    const { container } = renderRun(FAILED_RUN_ID, SolveProgressTransport.Polling);
+
+    expect(await screen.findByText('Рішення не знайдено за відведений час')).toBeInTheDocument();
+    const alert = byQa(container, SolveRunsTestId.FailureReason) as HTMLElement;
+    expect(within(alert).getByText(/Збільште ліміт часу.*послабте обов'язкові правила/)).toBeInTheDocument();
+    expect(byQa(alert, SolveRunsTestId.FailureReasonRules)).toHaveAttribute('href', routes.rules.list(SESSION_ID));
+    expect(byQa(alert, SolveRunsTestId.FailureReasonRerun)).toBeInTheDocument();
+    expect(screen.queryByText(/No solution found/)).not.toBeInTheDocument();
+  });
+
+  it('ModelTooLarge: explains the input size and links to the rules, without a re-run or error detail', async () => {
+    serveRun(failedRun(SolveRunFailureReason.ModelTooLarge, null));
+    const { container } = renderRun(FAILED_RUN_ID, SolveProgressTransport.Polling);
+
+    expect(await screen.findByText("Завдання завелике для розв'язувача")).toBeInTheDocument();
+    const alert = byQa(container, SolveRunsTestId.FailureReason) as HTMLElement;
+    expect(within(alert).getByText(/Вимкніть зайві аудиторії/)).toBeInTheDocument();
+    expect(byQa(alert, SolveRunsTestId.FailureReasonRules)).toHaveAttribute('href', routes.rules.list(SESSION_ID));
+    expect(byQa(alert, SolveRunsTestId.FailureReasonRerun)).toBeNull();
+  });
+
+  it('SolverError: shows a generic message with the error detail; a run without a reason counts as SolverError', async () => {
+    serveRun(failedRun(undefined, 'CP-SAT crashed'));
+    const { container } = renderRun(FAILED_RUN_ID, SolveProgressTransport.Polling);
+
+    expect(await screen.findByText("Помилка розв'язувача")).toBeInTheDocument();
+    const alert = byQa(container, SolveRunsTestId.FailureReason) as HTMLElement;
+    expect(alert).toHaveAttribute('data-reason', SolveRunFailureReason.SolverError);
+    expect(within(alert).getByText(/непередбачена помилка/)).toBeInTheDocument();
+    expect(within(alert).getByText('Подробиці: CP-SAT crashed')).toBeInTheDocument();
+  });
+
+  it('shows the reason in the runs list', async () => {
+    const runs = [SolveRunFailureReason.Interrupted, SolveRunFailureReason.NoSolutionInTime, SolveRunFailureReason.SolverError].map((reason, index) => ({
+      ...failedRun(reason),
+      id: `failed-${index}`,
+    }));
+    server.use(http.get(mockApiUrl(apiRoutes.solveRuns.list(':sessionId')), () => HttpResponse.json(runs)));
+    const { container } = renderWithProviders(<SolveRunsListView />, { route: routes.solveRuns.list(SESSION_ID), path: RoutePath.SolveRuns });
+
+    expect(await screen.findByText('Перервано перезапуском сервера — запустіть повторно')).toBeInTheDocument();
+    expect(screen.getByText('Не вистачило часу — збільште ліміт')).toBeInTheDocument();
+    expect(screen.getByText("Помилка розв'язувача")).toBeInTheDocument();
+    expect(container.querySelectorAll(`[data-qa="${SolveRunsTestId.ListFailureReason}"]`)).toHaveLength(3);
   });
 });

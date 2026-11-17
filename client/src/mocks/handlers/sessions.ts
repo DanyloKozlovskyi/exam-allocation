@@ -97,9 +97,29 @@ let sessions: SessionDto[] = createSessionFixtures();
 
 export const mockSessionExists = (sessionId: string) => sessions.some((session) => session.id === sessionId);
 
+/**
+ * The rules and solve-run stores seed session-agnostic fixtures lazily for session ids unknown to this store
+ * (feature tests use ad-hoc ids). Sessions of this store — fixtures without rules/runs and sessions created at
+ * runtime — start empty, so the mock app follows what the user created (e2e `mocks` project).
+ */
+export const shouldSeedMockSession = (sessionId: string) => !mockSessionExists(sessionId);
+
+// Input version per session: bumped by every change of solver inputs (rooms, participants, rules, pins);
+// a solve run remembers the version it started with and is stale once it differs (mirrors `SessionFingerprint`).
+const inputVersions = new Map<string, number>();
+
+export const mockSessionInputVersion = (sessionId: string) => inputVersions.get(sessionId) ?? 0;
+
+export const touchMockSessionInput = (sessionId: string | null | undefined) => {
+  if (sessionId) {
+    inputVersions.set(sessionId, mockSessionInputVersion(sessionId) + 1);
+  }
+};
+
 /** Restores every registered mock store to its fixtures (used by tests). */
 export const resetMockStore = () => {
   sessions = createSessionFixtures();
+  inputVersions.clear();
   contributors.forEach((contributor) => contributor.reset());
 };
 
@@ -110,7 +130,8 @@ const toSummary = (session: SessionDto): SessionSummaryDto => ({
   updatedAt: session.updatedAt ?? nowIso(),
 });
 
-const computeTotals = (sessionId: string): SessionTotalsDto =>
+/** Session totals as served by `GET sessions/{id}/totals` (also used by the mock precheck). */
+export const mockSessionTotals = (sessionId: string): SessionTotalsDto =>
   contributors.reduce<SessionTotalsDto>((totals, contributor) => ({ ...totals, ...contributor.totals(sessionId) }), {
     centers: 0,
     rooms: 0,
@@ -166,7 +187,7 @@ export const sessionsHandlers: HttpHandler[] = [
     if (!mockSessionExists(sessionId)) {
       return problem(HttpStatus.NotFound, ErrorCode.SessionNotFound);
     }
-    return HttpResponse.json(computeTotals(sessionId));
+    return HttpResponse.json(mockSessionTotals(sessionId));
   }),
 
   http.get(mockUrl(sessionPath), ({ params }) => {

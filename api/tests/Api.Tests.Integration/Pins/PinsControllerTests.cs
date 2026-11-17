@@ -163,6 +163,10 @@ public class PinsControllerTests(IntegrationTestWebFactory factory) : BaseIntegr
         pins.Should().HaveCount(2);
         pins.Single(x => x.ParticipantId == ivanenko.Id.Value).SeatKey.Should().Be(SeatKey);
         pins.Single(x => x.ParticipantId == petrenko.Id.Value).SeatKey.Should().BeNull();
+        var ivanenkoPin = pins.Single(x => x.ParticipantId == ivanenko.Id.Value);
+        ivanenkoPin.ParticipantName.Should().Be(ivanenko.Name.SortKey);
+        ivanenkoPin.RoomName.Should().Be(room.Name);
+        ivanenkoPin.CenterId.Should().Be(room.CenterId.Value);
     }
 
     [Fact]
@@ -178,6 +182,26 @@ public class PinsControllerTests(IntegrationTestWebFactory factory) : BaseIntegr
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await Context.Pins.AnyAsync(x => x.ParticipantId == ivanenko.Id)).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ShouldDeleteAllPinsOfSession()
+    {
+        // Arrange
+        Context.Pins.AddRange(
+            PinsData.SeatPin(session.Id, ivanenko.Id, room, SeatKey),
+            PinsData.RoomPin(session.Id, petrenko.Id, secondRoom.Id));
+        await SaveChangesAsync();
+
+        // Act
+        var response = await Client.PostAsync(Route(ApiRoutes.Pins.DeleteAll, (SessionParam, session.Id.Value)), null);
+        var missingSession = await Client.PostAsync(Route(ApiRoutes.Pins.DeleteAll, (SessionParam, Guid.NewGuid())), null);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await Context.Pins.AnyAsync(x => x.SessionId == session.Id)).Should().BeFalse();
+        missingSession.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        (await missingSession.ReadErrorCode()).Should().Be(ErrorCode.SessionNotFound);
     }
 
     [Fact]

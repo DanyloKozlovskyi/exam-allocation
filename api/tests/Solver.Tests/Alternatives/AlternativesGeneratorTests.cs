@@ -1,7 +1,13 @@
+using System.Diagnostics;
 using FluentAssertions;
+using Solver.Allocation;
+using Solver.Alternatives;
 using Solver.Model;
+using Solver.Pipeline;
+using Solver.Seating;
 using Solver.Tests.Pipeline;
 using Solver.Tests.Pipeline.Fakes;
+using Solver.Validation;
 using Xunit;
 
 namespace Solver.Tests.Alternatives;
@@ -62,6 +68,35 @@ public class AlternativesGeneratorTests
     }
 
     [Fact]
+    public async Task ShouldSwitchToSeatLevelWhenTheStage1AlternativeRunsOutOfTime()
+    {
+        // Arrange — review P3-2: stage 1 finds no diverse room assignment in time, but budget is left
+        var input = SolverPipelineTests.SmallInput();
+        input = input with { Options = input.Options with { Alternatives = 2, CostSlack = 0.5 } };
+        var seating = new FakeSeatingSolver();
+        var timingOut = new TimingOutAlternativeStage1(TestSolver.Stage1());
+        var pipeline = new SolverPipeline(
+            TestSolver.Precheck(),
+            new ClassBuilder(),
+            TestSolver.Stage1(),
+            TestSolver.Explainer(),
+            seating,
+            new FakeExpander(),
+            new FakeValidator(),
+            new AlternativesGenerator(timingOut, seating, new FakeExpander()));
+
+        // Act
+        var output = await pipeline.RunAsync(input, new RecordingProgress(), CancellationToken.None);
+
+        // Assert — seat-level alternatives instead of "time budget exhausted"
+        timingOut.TimedOut.Should().BeGreaterThan(0);
+        output.Allocations.Should().HaveCount(3);
+        output.Diagnostics.Should().NotContain(d => d.Code == DiagnosticCode.AlternativesLimited);
+        var validator = new FakeValidator();
+        output.Allocations.Should().OnlyContain(a => validator.Validate(input, a.Items).IsValid);
+    }
+
+    [Fact]
     public async Task ShouldFallBackToSeatLevelDiversityWhenRoomsAreForced()
     {
         // Arrange — one room exactly full: stage-1 diversity is impossible.
@@ -98,6 +133,134 @@ public class AlternativesGeneratorTests
         Solver.Resources.DiagnosticMessages.Render(diagnostic).Should().NotContain("{").And.NotContain(nameof(Solver.Alternatives.AlternativesLimitReason.NoDistinctAllocation));
     }
 
+    [Fact]
+    public async Task ShouldStartStage1AlternativesWithTheFeedbackCutsOfTheBestAllocation()
+    {
+        // Arrange — R-20: the first stage-2 call fails, so the best allocation needs a feedback cut.
+        var input = new TestInputBuilder()
+            .WithRoom(2, 3, 1).WithRoom(2, 3, 1).WithRoom(2, 3, 1)
+            .WithGroup("A", 4).WithGroup("B", 4)
+            .WithRule(RuleType.NoAdjacentByAttribute, new NoAdjacentByAttributeParameters(TestInputBuilder.GroupKey, [AdjacencyKind.Side], false))
+            .WithOptions(o => o with { Alternatives = 2, CostSlack = 1 })
+            .Build();
+        var seating = new FailingSeatingSolver(new FakeSeatingSolver(), failures: 1);
+        var pipelineStage1 = new RecordingStage1Solver(TestSolver.Stage1());
+        var alternativesStage1 = new RecordingStage1Solver(TestSolver.Stage1());
+        var pipeline = new SolverPipeline(
+            TestSolver.Precheck(),
+            new ClassBuilder(),
+            pipelineStage1,
+            TestSolver.Explainer(),
+            seating,
+            new FakeExpander(),
+            new FakeValidator(),
+            new AlternativesGenerator(alternativesStage1, seating, new FakeExpander()));
+
+        // Act
+        var output = await pipeline.RunAsync(input, new RecordingProgress(), CancellationToken.None);
+
+        // Assert
+        output.Stats.FeedbackIterations.Should().BeGreaterThanOrEqualTo(1);
+        var learned = pipelineStage1.Requests[^1].Cuts;
+        learned.Should().NotBeEmpty();
+        alternativesStage1.Requests.Should().NotBeEmpty();
+        alternativesStage1.Requests.Should().OnlyContain(r => learned.All(cut => r.Cuts.Contains(cut)));
+        var validator = new AllocationValidator();
+        output.Allocations.Should().HaveCountGreaterThan(1);
+        output.Allocations.Should().OnlyContain(a => validator.Validate(input, a.Items).IsValid);
+    }
+
+    [Fact]
+    public async Task ShouldKeepStage2OfAlternativesWithinTheTimeBudget()
+    {
+        // Arrange — R-20: budget = 2 × 1 s; stage 2 of every alternative blocks until it is cancelled.
+        var input = SolverPipelineTests.SmallInput();
+        input = input with { Options = input.Options with { Alternatives = 3, CostSlack = 0.5, Stage1TimeLimitSeconds = 1, Stage2TimeLimitSecondsPerRoom = 30 } };
+        var best = await TestSolver.Pipeline().RunAsync(input with { Options = input.Options with { Alternatives = 0 } }, new RecordingProgress(), CancellationToken.None);
+        var classes = new ClassBuilder().Build(input);
+        var stage1 = TestSolver.Stage1().Solve(TestSolver.Request(input), new RecordingProgress(), CancellationToken.None);
+        var seating = new BlockingSeatingSolver();
+        var generator = TestSolver.Alternatives(seating);
+        var stopwatch = Stopwatch.StartNew();
+
+        // Act
+        var result = generator.Generate(new AlternativesRequest(input, classes, stage1, best.Allocations[0]), new RecordingProgress(), CancellationToken.None);
+
+        // Assert
+        stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10));
+        result.Allocations.Should().BeEmpty();
+        var diagnostic = result.Diagnostics.Should().ContainSingle(d => d.Code == DiagnosticCode.AlternativesLimited).Subject;
+        diagnostic.Arguments[DiagnosticArgument.Reason].Should().Be(nameof(AlternativesLimitReason.TimeBudgetExhausted));
+        seating.TimeLimits.Should().NotBeEmpty();
+        seating.TimeLimits.Should().OnlyContain(t => t <= 2 * input.Options.Stage1TimeLimitSeconds);
+    }
+
+    [Fact]
+    public async Task ShouldReportCancelledWhenTheCallerCancelsDuringStage2()
+    {
+        // Arrange — the caller's token (not the budget) stops a blocked stage 2.
+        var input = SolverPipelineTests.SmallInput();
+        input = input with { Options = input.Options with { Alternatives = 2, CostSlack = 0.5, Stage1TimeLimitSeconds = 30 } };
+        var best = await TestSolver.Pipeline().RunAsync(input with { Options = input.Options with { Alternatives = 0 } }, new RecordingProgress(), CancellationToken.None);
+        var classes = new ClassBuilder().Build(input);
+        var stage1 = TestSolver.Stage1().Solve(TestSolver.Request(input), new RecordingProgress(), CancellationToken.None);
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+
+        // Act
+        var result = TestSolver.Alternatives(new BlockingSeatingSolver())
+            .Generate(new AlternativesRequest(input, classes, stage1, best.Allocations[0]), new RecordingProgress(), cancellation.Token);
+
+        // Assert
+        result.Allocations.Should().BeEmpty();
+        result.Diagnostics.Should().ContainSingle(d => d.Code == DiagnosticCode.AlternativesLimited)
+            .Which.Arguments[DiagnosticArgument.Reason].Should().Be(nameof(AlternativesLimitReason.Cancelled));
+    }
+
     private static Dictionary<Guid, (Guid RoomId, string SeatKey)> Placement(SolvedAllocation allocation)
         => allocation.Items.ToDictionary(i => i.ParticipantId, i => (i.RoomId, i.SeatKey));
+
+    /// <summary>Stage-2 double that blocks until its token is cancelled and records the per-room time limits it was given.</summary>
+    private sealed class BlockingSeatingSolver : ISeatingSolver
+    {
+        private readonly List<int> timeLimits = [];
+
+        public IReadOnlyList<int> TimeLimits
+        {
+            get
+            {
+                lock (timeLimits)
+                {
+                    return timeLimits.ToList();
+                }
+            }
+        }
+
+        public SeatingResult Solve(SeatingRequest request, CancellationToken cancellationToken)
+        {
+            lock (timeLimits)
+            {
+                timeLimits.Add(request.TimeLimitSeconds);
+            }
+
+            cancellationToken.WaitHandle.WaitOne();
+            return new SeatingResult(SolveStatus.Cancelled, [], 0, new Dictionary<Guid, long>());
+        }
+    }
+}
+
+/// <summary>Stage 1 that reports NoSolutionInTime for every alternative (requests with previous solutions).</summary>
+internal sealed class TimingOutAlternativeStage1(IStage1Solver inner) : IStage1Solver
+{
+    public int TimedOut { get; private set; }
+
+    public Stage1Result Solve(Stage1Request request, IProgress<SolveProgress> progress, CancellationToken cancellationToken)
+    {
+        if (request.PreviousSolutions.Count == 0)
+        {
+            return inner.Solve(request, progress, cancellationToken);
+        }
+
+        TimedOut++;
+        return new Stage1Result(SolveStatus.NoSolutionInTime, [], null, [], new SolveStats());
+    }
 }

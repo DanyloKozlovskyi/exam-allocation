@@ -24,6 +24,7 @@ public class SolveRunsConfiguration : IEntityTypeConfiguration<SolveRun>
         builder.Property(x => x.InputHash).HasMaxLength(SolveRunConstraints.InputHashLength).IsRequired();
         builder.Property(x => x.Diagnostics).HasColumnType(ColumnTypes.Jsonb).IsRequired();
         builder.Property(x => x.Stats).HasColumnType(ColumnTypes.Jsonb);
+        builder.Property(x => x.FailureReason).HasConversion<string>().HasMaxLength(ColumnTypes.EnumMaxLength);
         builder.Property(x => x.ErrorMessage).HasMaxLength(SolveRunConstraints.ErrorMessageMaxLength);
         builder.Property(x => x.CreatedAt);
         builder.Property(x => x.StartedAt);

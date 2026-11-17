@@ -20,6 +20,7 @@ import { useRulesListQuery } from '../../Queries/rules';
 import { MANUAL_ALLOCATION_INDEX } from '../../Allocations/Common/constants';
 import { SOLVE_STAGE_ORDER } from '../Common/constants';
 import DiagnosticsPanel from '../Common/DiagnosticsPanel';
+import FailureReasonAlert from '../Common/FailureReasonAlert';
 import { formatDateTime, formatNumber } from '../Common/formatters';
 import ObjectiveChart from '../Common/ObjectiveChart';
 import StatusChip from '../Common/StatusChip';
@@ -132,7 +133,11 @@ const SolveRunView = ({ sessionId, runId, transport }: Props) => {
         </Stack>
       </Paper>
 
-      {run.errorMessage && <Alert severity="error">{t('view.error', { message: run.errorMessage })}</Alert>}
+      {run.status === SolveRunStatus.Failed ? (
+        <FailureReasonAlert run={run} sessionId={sessionId} />
+      ) : (
+        run.errorMessage && <Alert severity="error">{t('view.error', { message: run.errorMessage })}</Alert>
+      )}
 
       {allocationIds.length > 0 && (
         <Box>
@@ -155,7 +160,14 @@ const SolveRunView = ({ sessionId, runId, transport }: Props) => {
         </Typography>
       )}
 
-      {(diagnostics.length > 0 || run.status === SolveRunStatus.Infeasible) && <DiagnosticsPanel diagnostics={diagnostics} sessionId={sessionId} rules={rules} />}
+      {(diagnostics.length > 0 || run.status === SolveRunStatus.Infeasible) && (
+        <DiagnosticsPanel
+          diagnostics={diagnostics}
+          sessionId={sessionId}
+          rules={rules}
+          emptyText={run.status === SolveRunStatus.Infeasible ? t('diagnostics.unexplained') : undefined}
+        />
+      )}
 
       <ConfirmDialog
         open={confirmCancel}

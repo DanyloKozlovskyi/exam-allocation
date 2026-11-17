@@ -1,7 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ParticipantSortField, SortDirection } from '../../../api/dtos';
-import { ParticipantsTestId } from '../../../enums/Participants';
+import { routes } from '../../../constants/routes';
+import { AccessibleFilter, ParticipantsTestId } from '../../../enums/Participants';
 import { resources, Language } from '../../../i18n';
 import { MockAttributeKey, ParticipantsQueryParam } from '../../../mocks/handlers/participants';
 import { MOCK_SESSION_KYIV_ID, resetMockStore } from '../../../mocks/handlers/sessions';
@@ -45,6 +46,16 @@ describe('Participants list', () => {
     expect(lastRequest().get(ParticipantsQueryParam.Page)).toBe('1');
     expect(lastRequest().get(ParticipantsQueryParam.PageSize)).toBe('50');
     expect(within(grid()).getAllByRole('row').length).toBeGreaterThan(1);
+  });
+
+  it('presets filters from the URL (deep links from solver diagnostics)', async () => {
+    renderWithProviders(<ParticipantsList sessionId={MOCK_SESSION_KYIV_ID} />, {
+      route: routes.participants.list(MOCK_SESSION_KYIV_ID, { group: '11-А', accessible: AccessibleFilter.Yes }),
+    });
+
+    await waitFor(() => expect(lastRequest()?.get(ParticipantsQueryParam.Group)).toBe('11-А'));
+    expect(lastRequest()?.get(ParticipantsQueryParam.NeedsAccessibleSeat)).toBe('true');
+    expect(screen.getByDisplayValue('11-А')).toBeInTheDocument();
   });
 
   it('sends search, filters, sorting and paging to the server', async () => {

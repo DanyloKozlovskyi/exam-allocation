@@ -103,7 +103,8 @@ exam-allocation/
 │     ├─ DataGen/
 │     └─ Bench/
 └─ client/
-   ├─ package.json, vite.config.mts, tsconfig.json, jest.config.js, .eslintrc, .prettierrc
+   ├─ package.json, vite.config.mts, tsconfig.json, jest.config.cjs, eslint.config.js, .prettierrc
+   ├─ e2e/   Playwright specs (Phase 3, H2)
    └─ src/   (see 06 and 10 §7)
 ```
 
@@ -139,8 +140,12 @@ Client: HubConnection to /hubs/solve-progress, Invoke(SubscribeToRun, runId),
 - One worker (runs execute one at a time); CP-SAT uses all cores itself. The stage-1 time limit and
   the number of alternatives are per-run options (`SolveOptionsDto`, defaults in `SolveRunOptions`).
 - Cancel: `POST solve-runs/{runId}/cancel` → `CancelSolveRunCommand` → token → `StopSearch()`.
-- Startup (`ApplicationDbContextInitialiser`): runs left `Queued` or `Running` → `Failed` (the queue is
-  in memory) with the error message "Interrupted by server restart".
+- Startup (`ApplicationDbContextInitialiser`): applies EF migrations, then runs left `Queued` or `Running` →
+  `Failed` (the queue is in memory) with `failureReason = Interrupted` and the error message
+  "Interrupted by server restart".
+- `Failed` runs carry a `SolveRunFailureReason`: `Interrupted` (restart), `NoSolutionInTime` (solver status
+  `NoSolutionInTime`, message "No solution found within the time limit") or `SolverError` (unexpected
+  exception, message = exception text). `Infeasible` is a separate status with diagnostics, not a failure.
 
 ## Key decisions
 
@@ -167,8 +172,10 @@ Client: HubConnection to /hubs/solve-progress, Invoke(SubscribeToRun, runId),
 }
 ```
 
-Client `src/config.json` (pal-suite style) or Vite env: `api_url`, `google_maps_api_key`,
-`google_maps_map_id`, `use_mocks`. Read once in `constants/config.ts`.
+Client `src/config.json` (pal-suite style, camelCase keys): `apiUrl` (default `http://localhost:5080`),
+`googleMapsApiKey` (empty → coordinates-form fallback instead of the map), `googleMapsMapId`,
+`useMocks` (default `false` since Phase 2; `true` starts the MSW browser worker and serves every request
+from `src/mocks/handlers`, solve progress via polling). Read once in `constants/config.ts` (`appConfig`).
 
 ## Commands
 
@@ -182,5 +189,6 @@ Client `src/config.json` (pal-suite style) or Vite env: `api_url`, `google_maps_
 | Client dev | `cd client && npm run dev` (http://localhost:3000, pal-suite port) |
 | Regenerate API types | `cd client && npm run gen:api` (`openapi-typescript --enum --enum-values`) |
 | Client checks | `cd client && npm run ci` (typecheck + lint + test + build) |
+| E2E (Phase 3, H2) | `cd client && npm run e2e:mocks` (MSW mocks, no API) · `npm run e2e:api` (real API + DB running) · `npm run e2e` (both); Playwright, specs in `client/e2e/` |
 | Synthetic data | `dotnet run --project api/tools/DataGen -- --size small --out samples/generated` |
 | Benchmarks | `dotnet run -c Release --project api/tools/Bench -- --size large` |

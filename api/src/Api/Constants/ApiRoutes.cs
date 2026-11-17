@@ -56,6 +56,7 @@ public static class ApiRoutes
         public const string List = Sessions.ById + "/pins";
         public const string Create = List + "/create";
         public const string ByParticipant = List + "/{participantId:guid}";
+        public const string DeleteAll = List + "/delete-all";
         public const string PinAll = Allocations.ById + "/pin-all";
     }
 

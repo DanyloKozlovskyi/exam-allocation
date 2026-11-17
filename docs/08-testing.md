@@ -38,7 +38,76 @@ Must-have solver test cases:
 
 - Unit/component: Jest + ts-jest (jsdom) + Testing Library + MSW (pal-suite uses Jest).
 - `npm run typecheck`, `npm run lint` must be clean.
-- e2e (Phase 3): Playwright against MSW mocks (`VITE_USE_MOCKS=true`), happy path in 06.
+- e2e (Phase 3): Playwright, happy path in 06 — see **End-to-end tests** below.
+
+### End-to-end tests (Playwright, H2)
+
+One spec, `client/e2e/happy-path.spec.ts`, automates the walk of `docs/smoke-test-phase2.md`:
+session (stepper) → center from the map fallback coordinates form → room wizard (6×5×2, two seats
+marked accessible on the grid, ×8 via `create-bulk`) → import of `samples/generated/small/participants.xlsx`
+→ rules R2 SeparateByAttribute (group / Room ≤ 4, hard), R3 NoAdjacentByAttribute (group, hard),
+R4 AccessibleSeating → precheck → solve with live progress → results overview, alternative tabs,
+export (all 4 formats fetched from the page: 200), participants search → room seating manual move,
+validate, apply (forced if the move breaks a hard rule) → dashboard last run, no stale warning →
+pin all → re-run → runs list: the first run carries the stale badge. Each phase is a `test.step`.
+
+| Project | Client | Backend | Dev server |
+|---|---|---|---|
+| `mocks` | `VITE_USE_MOCKS=true` (MSW service worker) | none — the spec fails if any API call is not answered by the service worker | `:3001` |
+| `real-api` | `VITE_USE_MOCKS=false`, `VITE_API_URL=http://localhost:5080` | API + docker-compose Postgres; SignalR progress (`ProgressUpdated`, `RunCompleted` frames asserted) | `:3000` (the only CORS origin) |
+
+Mock-specific steps: the mock import validates 48 rows with errors (so "skip invalid rows" is ticked) and
+commits 48 participants instead of 300; progress arrives by polling (`data-transport="Polling"`).
+Navigation after the first page load is click-only in both projects — the MSW store lives in the page.
+
+Conventions: selectors are `data-qa` ids from the feature `TestId` enums (`src/enums/*`, `constants/testIds.ts`),
+texts come from `src/i18n/uk/*.json` (`e2e/support/texts.ts`, imported with `with { type: 'json' }`), routes from
+`RoutePath`, scenario sizes and timeouts are named constants (`e2e/support/constants.ts`). The e2e code is
+typechecked by `npm run typecheck` (`e2e/tsconfig.json`) and linted by `npm run lint`.
+
+How to run (from `client/`):
+
+| | |
+|---|---|
+| Both projects | `npm run e2e` |
+| Mocks only | `npm run e2e:mocks` |
+| Real API only | `docker compose up -d db` (repo root), then `npm run e2e:api` |
+| Client on mocks by hand | `npm run dev:mocks` |
+
+`playwright.config.ts` starts only the servers of the selected projects (`--project=…`) and reuses running
+ones: Vite via `e2e/vite.config.mts` (the regular config + `define __APP_CONFIG_OVERRIDES__` from
+`VITE_USE_MOCKS` / `VITE_API_URL`, read by `src/constants/config.ts`; absent in `npm run dev`, the build and
+Jest), and for `real-api` the API with `dotnet run --project ../api/src/Api` (health check `GET /health`;
+`dotnet` must be on `PATH`, the database must be up). Session names carry a timestamp (the API rejects
+duplicates). Reports go to `client/playwright-report/`, traces/screenshots of failures to `client/test-results/`
+(both gitignored). If the Chromium revision bundled with `@playwright/test` is not downloaded, point
+`E2E_CHROMIUM_EXECUTABLE` at an installed Chromium (e.g. `/opt/pw-browsers/chromium` on the agent machines).
+
+#### Results (2026-11-17, 2 cores shared with other agents; API already running, Vite started by Playwright)
+
+Run back to back with `E2E_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium`:
+
+| # | Command | Result | Test time | Wall (incl. Vite start) |
+|---|---|---|---|---|
+| 1 | `npm run e2e:mocks` | ✅ 1 passed | 1.1 min | 69 s |
+| 2 | `npm run e2e:mocks` | ✅ 1 passed | 1.2 min | 72 s |
+| 3 | `npm run e2e:api` | ✅ 1 passed | 56 s | 57 s |
+| 4 | `npm run e2e:api` | ✅ 1 passed | 1.0 min | 63 s |
+
+Each real-API run creates a fresh session (2 solves, 300 participants, 6 allocations + a manual version).
+`npm run ci` (typecheck incl. e2e, lint, Jest 66/66, build) stays green.
+
+#### Results after Phase 3 integration (2026-11-17, integrated `phase-3`, quiet machine, 2 cores)
+
+`E2E_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium npm run e2e` (both projects, API started by Playwright),
+two consecutive runs:
+
+| Run | `mocks` | `real-api` | Total |
+|---|---|---|---|
+| 1 | ✅ 50.0 s | ✅ 55.2 s | 2 passed (1.9 min) |
+| 2 | ✅ 49.6 s | ✅ 49.7 s | 2 passed (1.8 min) |
+
+On a machine where `npx playwright install chromium` was run, `E2E_CHROMIUM_EXECUTABLE` is not needed.
 
 ## Synthetic data — `api/tools/DataGen`
 
@@ -76,6 +145,7 @@ CLI: `--size small|medium|large --alternatives 0 --repeat 3 --workers 0`.
 Prints a Markdown table: stage timings (precheck, stage 1, stage 2, feedback iterations,
 alternatives), model sizes (classes, vars, constraints), objective, validator result.
 Exit code ≠ 0 if validation fails or time exceeds the target in 04 §12 by > 50 %.
+Measured results (machine, before/after per phase, reproduce command): [`docs/benchmarks.md`](benchmarks.md).
 
 Extra options: `--input <solver-input.json>` (load instead of generate; no time target unless
 `--size` is also given), `--seed N`. The time target applies only to best-only runs

@@ -9,6 +9,7 @@ import imports from './uk/imports.json';
 import rules from './uk/rules.json';
 import solveRuns from './uk/solveRuns.json';
 import allocations from './uk/allocations.json';
+import pins from './uk/pins.json';
 
 export enum I18nNamespace {
   Common = 'common',
@@ -20,6 +21,7 @@ export enum I18nNamespace {
   Rules = 'rules',
   SolveRuns = 'solveRuns',
   Allocations = 'allocations',
+  Pins = 'pins',
 }
 
 export enum Language {
@@ -27,7 +29,7 @@ export enum Language {
 }
 
 export const resources = {
-  [Language.Ukrainian]: { common, sessions, centers, rooms, participants, imports, rules, solveRuns, allocations },
+  [Language.Ukrainian]: { common, sessions, centers, rooms, participants, imports, rules, solveRuns, allocations, pins },
 } as const;
 
 void i18n.use(initReactI18next).init({

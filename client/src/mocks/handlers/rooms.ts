@@ -12,6 +12,8 @@ import {
 } from '../../api/dtos';
 import { appConfig } from '../../constants/config';
 import { apiRoutes } from '../../constants/apiRoutes';
+import { findMockCenter, isMockFixtureCenter, MOCK_CENTER_FIXTURES, registerCenterRoomStats } from './centers';
+import { registerMockStore, touchMockSessionInput } from './sessions';
 
 // ---------- shared mock helpers (used by the other WS-F handler files) ----------
 
@@ -111,9 +113,36 @@ const standardLayout = (rows: number, columns: number, aisles: number[], accessi
   disabledSeats,
 });
 
+const FIXTURE_CENTER_ROWS = 5;
+const FIXTURE_ROOM_NUMBER_BASE = 100;
+
+/** Rooms of a WS-E fixture center (`mocks/handlers/centers.ts`) matching its `roomCount` and `capacity`. */
+const fixtureCenterRooms = (centerId: string, room: (name: string, layout: RoomLayoutDto) => RoomDto): RoomDto[] => {
+  const center = MOCK_CENTER_FIXTURES.find((item) => item.id === centerId);
+  const count = center?.roomCount ?? 0;
+  if (!count) {
+    return [];
+  }
+  const perRoom = Math.round((center?.capacity ?? 0) / count);
+  const seatsPerDesk = perRoom % 2 === 0 ? 2 : 1;
+  const columns = Math.max(Math.round(perRoom / (FIXTURE_CENTER_ROWS * seatsPerDesk)), 1);
+  const accessibleSeats = [seatKey(0, 0, 0), seatKey(0, columns - 1, 0)];
+  return Array.from({ length: count }, (_, index) =>
+    room(`Ауд. ${FIXTURE_ROOM_NUMBER_BASE + index + 1}`, { ...standardLayout(FIXTURE_CENTER_ROWS, columns, [], accessibleSeats), seatsPerDesk })
+  );
+};
+
 const seedRooms = (centerId: string): RoomDto[] => {
   const room = (name: string, layout: RoomLayoutDto, costOverride: number | null = null, isActive = true) =>
     withDerived({ id: mockGuid('a0'), centerId, name, layout, costOverride, isActive, version: 1 });
+
+  if (isMockFixtureCenter(centerId)) {
+    return fixtureCenterRooms(centerId, room);
+  }
+  if (findMockCenter(centerId)) {
+    // A center created in the mock store starts without rooms (as in the API).
+    return [];
+  }
 
   switch (centerId) {
     case MOCK_CENTERS[0].id:
@@ -142,10 +171,27 @@ export const getMockRooms = (centerId: string) => {
 
 export const findMockRoom = (roomId: string) => {
   MOCK_CENTERS.forEach((center) => getMockRooms(center.id));
+  MOCK_CENTER_FIXTURES.forEach((center) => center.id && getMockRooms(center.id));
   return [...roomsByCenter.values()].flat().find((room) => room.id === roomId);
 };
 
 export const resetRoomsMocks = () => roomsByCenter.clear();
+
+registerCenterRoomStats((centerId) => {
+  const rooms = getMockRooms(centerId);
+  const active = rooms.filter((room) => room.isActive);
+  return {
+    roomCount: rooms.length,
+    activeRooms: active.length,
+    capacity: active.reduce((sum, room) => sum + (room.capacity ?? 0), 0),
+    accessibleCapacity: active.reduce((sum, room) => sum + (room.accessibleCapacity ?? 0), 0),
+  };
+});
+
+registerMockStore({ totals: () => ({}), removeSession: () => undefined, reset: resetRoomsMocks });
+
+/** Room changes alter the solver input of the center's session (stale runs). */
+const touchCenterSession = (centerId: string) => touchMockSessionInput(findMockCenter(centerId)?.sessionId);
 
 const nameTaken = (centerId: string, name: string | undefined, exceptId?: string | null) => getMockRooms(centerId).some((room) => room.name === name && room.id !== exceptId);
 
@@ -172,6 +218,7 @@ export const roomsHandlers: HttpHandler[] = [
     }
     const room = withDerived({ ...dto, id: mockGuid('a0'), centerId, version: 1 });
     getMockRooms(centerId).push(room);
+    touchCenterSession(centerId);
     return HttpResponse.json(room);
   }),
   http.post(mockApiUrl(apiRoutes.rooms.createBulk(':centerId')), async ({ params, request }) => {
@@ -183,6 +230,7 @@ export const roomsHandlers: HttpHandler[] = [
     }
     const created = names.map((name) => withDerived({ ...dto.template, name, id: mockGuid('a0'), centerId, version: 1 }));
     getMockRooms(centerId).push(...created);
+    touchCenterSession(centerId);
     return HttpResponse.json(created);
   }),
   http.put(mockApiUrl(apiRoutes.rooms.edit(':centerId')), async ({ params, request }) => {
@@ -200,6 +248,7 @@ export const roomsHandlers: HttpHandler[] = [
       return problem(409, ErrorCode.RoomAlreadyExists, 'Room already exists');
     }
     rooms[index] = withDerived({ ...dto, centerId, version: (dto.version ?? 0) + 1 });
+    touchCenterSession(centerId);
     return HttpResponse.json(rooms[index]);
   }),
   http.get(mockApiUrl(apiRoutes.rooms.byId(':centerId', ':roomId')), ({ params }) => {
@@ -213,6 +262,7 @@ export const roomsHandlers: HttpHandler[] = [
       return problem(404, ErrorCode.RoomNotFound, 'Room not found');
     }
     rooms.splice(index, 1);
+    touchCenterSession(String(params.centerId));
     return new HttpResponse(null, { status: 204 });
   }),
 ];

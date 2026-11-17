@@ -12,6 +12,7 @@ namespace Api.Controllers;
 public class SessionsController(ISender sender, ISessionsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Sessions.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<SessionSummaryDto>>> GetAll(
         CancellationToken cancellationToken)
     {
@@ -20,6 +21,8 @@ public class SessionsController(ISender sender, ISessionsControllerService contr
     }
 
     [HttpGet(ApiRoutes.Sessions.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SessionDto>> Get(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -29,6 +32,8 @@ public class SessionsController(ISender sender, ISessionsControllerService contr
     }
 
     [HttpGet(ApiRoutes.Sessions.Totals)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SessionTotalsDto>> Totals(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -38,6 +43,11 @@ public class SessionsController(ISender sender, ISessionsControllerService contr
     }
 
     [HttpPost(ApiRoutes.Sessions.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<SessionDto>> Create(
         [FromBody] SessionDto session,
         CancellationToken cancellationToken)
@@ -47,6 +57,11 @@ public class SessionsController(ISender sender, ISessionsControllerService contr
     }
 
     [HttpPut(ApiRoutes.Sessions.Edit)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<SessionDto>> Edit(
         [FromBody] SessionDto session,
         CancellationToken cancellationToken)
@@ -56,6 +71,11 @@ public class SessionsController(ISender sender, ISessionsControllerService contr
     }
 
     [HttpDelete(ApiRoutes.Sessions.ById)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)

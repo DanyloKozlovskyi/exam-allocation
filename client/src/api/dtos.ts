@@ -22,6 +22,7 @@ export {
   RuleScope,
   RuleType,
   SeparateByAttributeParametersDtoType,
+  SolveRunFailureReason,
   SolveRunStatus,
   SolveStage,
   SortDirection,

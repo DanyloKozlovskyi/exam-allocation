@@ -1,17 +1,24 @@
 {
   "name": "exam-allocation-client",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=22"
+  },
   "private": true,
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks",
     "dev": "vite",
+    "dev:mocks": "VITE_USE_MOCKS=true vite",
     "build": "tsc -p tsconfig.json --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p e2e/tsconfig.json --noEmit",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,json}\"",
     "test": "jest",
+    "e2e": "playwright test",
+    "e2e:mocks": "playwright test --project=mocks",
+    "e2e:api": "playwright test --project=real-api",
     "export:api": "dotnet run --project ../api/src/Api -- --export-openapi ../../../contracts/openapi.json",
     "gen:api": "openapi-typescript ../contracts/openapi.json --enum --enum-values -o src/api/generated/schema.ts && prettier --write src/api/generated/schema.ts",
     "ci": "npm run typecheck && npm run lint && npm run test && npm run build"

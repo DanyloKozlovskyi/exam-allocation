@@ -12,6 +12,7 @@ import {
 } from '../../api/dtos';
 import { apiRoutes } from '../../constants/apiRoutes';
 import { mockApiUrl, mockGuid, problem } from './rooms';
+import { registerMockStore, shouldSeedMockSession, touchMockSessionInput } from './sessions';
 
 export const MOCK_RULE_TYPES: RuleTypeInfoDto[] = [
   {
@@ -60,7 +61,9 @@ export const MOCK_ATTRIBUTES: AttributeInfoDto[] = [
   { key: 'language', distinctValues: 2, missingCount: 15, sampleValues: ['англійська', 'німецька'] },
 ];
 
-const seedRules = (sessionId: string): RuleDto[] => [
+const seedRules = (sessionId: string): RuleDto[] => (shouldSeedMockSession(sessionId) ? fixtureRules(sessionId) : []);
+
+const fixtureRules = (sessionId: string): RuleDto[] => [
   {
     id: mockGuid('b0'),
     sessionId,
@@ -112,6 +115,12 @@ export const getMockRules = (sessionId: string) => {
 
 export const resetRulesMocks = () => rulesBySession.clear();
 
+registerMockStore({
+  totals: (sessionId) => ({ rules: getMockRules(sessionId).length }),
+  removeSession: (sessionId) => rulesBySession.delete(sessionId),
+  reset: resetRulesMocks,
+});
+
 export const rulesHandlers: HttpHandler[] = [
   http.get(mockApiUrl(apiRoutes.rules.ruleTypes()), () => HttpResponse.json(MOCK_RULE_TYPES)),
   http.get(mockApiUrl(apiRoutes.rules.list(':sessionId')), ({ params }) => HttpResponse.json(getMockRules(String(params.sessionId)))),
@@ -120,6 +129,7 @@ export const rulesHandlers: HttpHandler[] = [
     const dto = (await request.json()) as RuleDto;
     const rule: RuleDto = { ...dto, id: mockGuid('b0'), sessionId, version: 1 };
     getMockRules(sessionId).push(rule);
+    touchMockSessionInput(sessionId);
     return HttpResponse.json(rule);
   }),
   http.put(mockApiUrl(apiRoutes.rules.edit(':sessionId')), async ({ params, request }) => {
@@ -133,6 +143,7 @@ export const rulesHandlers: HttpHandler[] = [
       return problem(409, ErrorCode.ConcurrencyConflict, 'Concurrency conflict');
     }
     rules[index] = { ...dto, version: (dto.version ?? 0) + 1 };
+    touchMockSessionInput(String(params.sessionId));
     return HttpResponse.json(rules[index]);
   }),
   http.delete(mockApiUrl(apiRoutes.rules.byId(':sessionId', ':ruleId')), ({ params }) => {
@@ -142,6 +153,7 @@ export const rulesHandlers: HttpHandler[] = [
       return problem(404, ErrorCode.RuleNotFound, 'Rule not found');
     }
     rules.splice(index, 1);
+    touchMockSessionInput(String(params.sessionId));
     return new HttpResponse(null, { status: 204 });
   }),
 ];

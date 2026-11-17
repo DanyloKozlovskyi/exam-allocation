@@ -106,6 +106,14 @@ public class ParticipantRepository(ApplicationDbContext dbContext)
         return entity ?? Option<Participant>.None;
     }
 
+    public async Task<IReadOnlyList<Participant>> GetByIds(ExamSessionId sessionId, IReadOnlyCollection<ParticipantId> ids, CancellationToken cancellationToken)
+    {
+        return await Context.Participants
+            .AsNoTracking()
+            .Where(x => x.SessionId == sessionId && ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Participant>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken)
     {
         return await Context.Participants

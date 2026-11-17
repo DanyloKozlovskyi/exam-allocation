@@ -19,7 +19,11 @@ import {
   type ViolationDto,
 } from '../../api/dtos';
 import { ApiQueryParam, apiRoutes } from '../../constants/apiRoutes';
-import { buildAdjacency, buildSeats, findMockRoom, getMockRooms, mockApiUrl, mockGuid, MOCK_CENTERS, problem } from './rooms';
+import { getMockSessionCenters } from './centers';
+import { mockSessionParticipants } from './participants';
+import { buildAdjacency, buildSeats, findMockRoom, getMockRooms, mockApiUrl, mockGuid, MOCK_CENTERS, problem, type MockCenter } from './rooms';
+import { storeMockPins } from './pins';
+import { mockSessionExists, touchMockSessionInput } from './sessions';
 
 // ---------- participants ----------
 
@@ -87,7 +91,40 @@ export const MOCK_PARTICIPANTS: ParticipantBriefDto[] = Array.from({ length: MOC
   school: SCHOOLS[(i * 5) % SCHOOLS.length],
 }));
 
-const participantById = new Map(MOCK_PARTICIPANTS.map((participant) => [participant.id!, participant]));
+// ---------- allocation context: whose centers and participants an allocation places ----------
+
+interface AllocationContext {
+  centers: MockCenter[];
+  participants: ParticipantBriefDto[];
+  participantById: Map<string, ParticipantBriefDto>;
+}
+
+const toContext = (centers: MockCenter[], participants: ParticipantBriefDto[]): AllocationContext => ({
+  centers,
+  participants,
+  participantById: new Map(participants.map((participant) => [participant.id!, participant])),
+});
+
+/** Session-agnostic fixture context (feature tests use ad-hoc session ids): first two `MOCK_CENTERS`, `MOCK_PARTICIPANTS`. */
+const FIXTURE_CONTEXT = toContext(MOCK_CENTERS.slice(0, 2), MOCK_PARTICIPANTS);
+
+/** A session of the mock store: its active centers (with their rooms) and its participants, as the API would place them. */
+const sessionContext = (sessionId: string): AllocationContext => {
+  const centers = getMockSessionCenters(sessionId)
+    .filter((center) => center.isActive && center.id)
+    .map((center) => ({ id: center.id!, name: center.name ?? '', latitude: center.latitude ?? 0, longitude: center.longitude ?? 0 }));
+  const participants = mockSessionParticipants(sessionId).map(({ id, lastName, firstName, middleName, group, school }) => ({
+    id: id ?? undefined,
+    lastName,
+    firstName,
+    middleName,
+    group,
+    school,
+  }));
+  return toContext(centers, participants);
+};
+
+const contextFor = (sessionId?: string) => (sessionId && mockSessionExists(sessionId) ? sessionContext(sessionId) : FIXTURE_CONTEXT);
 
 // ---------- allocations store ----------
 
@@ -99,22 +136,24 @@ interface Placement {
 interface MockAllocation {
   id: string;
   runId: string;
+  sessionId?: string;
   index: number;
+  context: AllocationContext;
   placements: Map<string, Placement>;
 }
 
 const allocations = new Map<string, MockAllocation>();
 
-/** Rooms used by fixture allocations: active rooms of the first two mock centers. */
-const allocationRooms = () => MOCK_CENTERS.slice(0, 2).flatMap((center) => getMockRooms(center.id).filter((room) => room.isActive));
+/** Rooms an allocation may use: active rooms of its context's centers. */
+const allocationRooms = (context: AllocationContext) => context.centers.flatMap((center) => getMockRooms(center.id).filter((room) => room.isActive));
 
 const seatsOf = (room: RoomDto) => buildSeats(room.layout ?? {});
 
 /** Fills rooms seat by seat; `shift` rotates participants so alternatives differ. */
-const generatePlacements = (shift: number) => {
+const generatePlacements = (shift: number, context: AllocationContext) => {
   const placements = new Map<string, Placement>();
-  const slots = allocationRooms().flatMap((room) => seatsOf(room).map((seat) => ({ roomId: room.id!, seatKey: seat.seatKey! })));
-  MOCK_PARTICIPANTS.forEach((participant, i) => {
+  const slots = allocationRooms(context).flatMap((room) => seatsOf(room).map((seat) => ({ roomId: room.id!, seatKey: seat.seatKey! })));
+  context.participants.forEach((participant, i) => {
     const slot = slots[(i * 2 + shift) % slots.length];
     if (slot && ![...placements.values()].some((p) => p.roomId === slot.roomId && p.seatKey === slot.seatKey)) {
       placements.set(participant.id!, slot);
@@ -126,9 +165,11 @@ const generatePlacements = (shift: number) => {
   return placements;
 };
 
-export const createMockAllocations = (runId: string, count: number) =>
+/** Creates `count` allocations of a run; with a `sessionId` of the mock store they place that session's participants in its rooms. */
+export const createMockAllocations = (runId: string, count: number, sessionId?: string) =>
   Array.from({ length: count }, (_, index) => {
-    const allocation: MockAllocation = { id: mockGuid('e0'), runId, index, placements: generatePlacements(index * 3) };
+    const context = contextFor(sessionId);
+    const allocation: MockAllocation = { id: mockGuid('e0'), runId, sessionId, index, context, placements: generatePlacements(index * 3, context) };
     allocations.set(allocation.id, allocation);
     return allocation.id;
   });
@@ -145,7 +186,7 @@ export const resetAllocationsMocks = () => allocations.clear();
 
 const VIOLATION_KINDS: AdjacencyKind[] = [AdjacencyKind.SameDesk, AdjacencyKind.Side];
 
-const roomViolations = (room: RoomDto, placements: Map<string, Placement>): ViolationDto[] => {
+const roomViolations = (room: RoomDto, placements: Map<string, Placement>, { participantById }: AllocationContext): ViolationDto[] => {
   const seats = seatsOf(room);
   const occupants = new Map<string, string[]>();
   placements.forEach((placement, participantId) => {
@@ -181,9 +222,9 @@ const roomViolations = (room: RoomDto, placements: Map<string, Placement>): Viol
 };
 
 const toAllocationDto = (allocation: MockAllocation): AllocationDto => {
-  const rooms = allocationRooms();
-  const violations = rooms.flatMap((room) => roomViolations(room, allocation.placements));
-  const centers = MOCK_CENTERS.slice(0, 2).map((center) => ({
+  const rooms = allocationRooms(allocation.context);
+  const violations = rooms.flatMap((room) => roomViolations(room, allocation.placements, allocation.context));
+  const centers = allocation.context.centers.map((center) => ({
     centerId: center.id,
     name: center.name,
     latitude: center.latitude,
@@ -241,7 +282,7 @@ export const allocationsHandlers: HttpHandler[] = [
     if (!allocation || !room) {
       return notFound();
     }
-    const violations = roomViolations(room, allocation.placements);
+    const violations = roomViolations(room, allocation.placements, allocation.context);
     const bySeat = new Map<string, string>();
     allocation.placements.forEach((placement, participantId) => placement.roomId === room.id && bySeat.set(placement.seatKey, participantId));
     const seating: RoomSeatingDto = {
@@ -250,7 +291,7 @@ export const allocationsHandlers: HttpHandler[] = [
         const participantId = bySeat.get(seat.seatKey!);
         return {
           seatKey: seat.seatKey,
-          participant: participantId ? participantById.get(participantId) : undefined,
+          participant: participantId ? allocation.context.participantById.get(participantId) : undefined,
           violations: violations.filter((violation) => violation.seatKey === seat.seatKey),
         };
       }),
@@ -266,14 +307,14 @@ export const allocationsHandlers: HttpHandler[] = [
     const search = (url.searchParams.get(ApiQueryParam.Search) ?? '').toLocaleLowerCase();
     const page = Number(url.searchParams.get(ApiQueryParam.Page) ?? 1);
     const pageSize = Number(url.searchParams.get(ApiQueryParam.PageSize) ?? 50);
-    const rows: AllocationRowDto[] = MOCK_PARTICIPANTS.filter((participant) =>
-      [participant.lastName, participant.firstName, participant.group].some((value) => value?.toLocaleLowerCase().includes(search))
-    ).map((participant) => {
-      const placement = allocation.placements.get(participant.id!);
-      const room = placement ? findMockRoom(placement.roomId) : undefined;
-      const center = MOCK_CENTERS.find((item) => item.id === room?.centerId);
-      return { participant, centerId: center?.id, centerName: center?.name, roomId: room?.id ?? undefined, roomName: room?.name, seatKey: placement?.seatKey };
-    });
+    const rows: AllocationRowDto[] = allocation.context.participants
+      .filter((participant) => [participant.lastName, participant.firstName, participant.group].some((value) => value?.toLocaleLowerCase().includes(search)))
+      .map((participant) => {
+        const placement = allocation.placements.get(participant.id!);
+        const room = placement ? findMockRoom(placement.roomId) : undefined;
+        const center = allocation.context.centers.find((item) => item.id === room?.centerId);
+        return { participant, centerId: center?.id, centerName: center?.name, roomId: room?.id ?? undefined, roomName: room?.name, seatKey: placement?.seatKey };
+      });
     const body: AllocationRowDtoPagedDto = { items: rows.slice((page - 1) * pageSize, page * pageSize), page, pageSize, total: rows.length };
     return HttpResponse.json(body);
   }),
@@ -283,7 +324,7 @@ export const allocationsHandlers: HttpHandler[] = [
       return notFound();
     }
     const placements = applyMoves(allocation, (await request.json()) as MovesDto);
-    const violations = allocationRooms().flatMap((room) => roomViolations(room, placements));
+    const violations = allocationRooms(allocation.context).flatMap((room) => roomViolations(room, placements, allocation.context));
     const report: ValidationReportDto = {
       isValid: !violations.some((violation) => violation.isHard),
       violations,
@@ -298,13 +339,13 @@ export const allocationsHandlers: HttpHandler[] = [
     }
     const moves = (await request.json()) as MovesDto;
     const placements = applyMoves(allocation, moves);
-    const hard = allocationRooms()
-      .flatMap((room) => roomViolations(room, placements))
+    const hard = allocationRooms(allocation.context)
+      .flatMap((room) => roomViolations(room, placements, allocation.context))
       .some((violation) => violation.isHard);
     if (hard && !moves.force) {
       return problem(409, ErrorCode.MoveViolatesHardRule, 'Move violates a hard rule');
     }
-    const manual: MockAllocation = { id: mockGuid('e0'), runId: allocation.runId, index: -1, placements };
+    const manual: MockAllocation = { ...allocation, id: mockGuid('e0'), index: -1, placements };
     allocations.set(manual.id, manual);
     return HttpResponse.json(toAllocationDto(manual));
   }),
@@ -317,6 +358,11 @@ export const allocationsHandlers: HttpHandler[] = [
     const pins: PinDto[] = [...allocation.placements.entries()]
       .filter(([, placement]) => !roomIds || roomIds.includes(placement.roomId))
       .map(([participantId, placement]) => ({ id: mockGuid('f0'), participantId, roomId: placement.roomId, seatKey: placement.seatKey }));
+    // Pins are solver input: the runs computed before them become stale.
+    if (allocation.sessionId) {
+      storeMockPins(allocation.sessionId, pins);
+    }
+    touchMockSessionInput(allocation.sessionId);
     return HttpResponse.json(pins);
   }),
   http.get(mockApiUrl(apiRoutes.exports.export(':allocationId')), ({ request }) => {

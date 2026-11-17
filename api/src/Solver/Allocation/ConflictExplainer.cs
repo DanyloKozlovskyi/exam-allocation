@@ -11,6 +11,9 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
 {
     private const int ExplainWorkers = 1;
 
+    /// <summary>Test seam: time limit of the assumption solve instead of <see cref="SolveOptions.Stage1TimeLimitSeconds"/>.</summary>
+    internal double? ProofTimeLimitSeconds { get; init; }
+
     public IReadOnlyList<Diagnostic> Explain(Stage1Request request, CancellationToken cancellationToken)
     {
         var options = request.Input.Options;
@@ -24,8 +27,15 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
         using var solver = new CpSolver();
         var literals = built.Enforcement.Select(e => e.Literal).ToList();
         built.Model.AddAssumptions(literals);
-        solver.StringParameters = CpSat.Parameters(ExplainWorkers, options.Stage1TimeLimitSeconds, options.RandomSeed);
-        if (CpSat.Solve(solver, built.Model, null, cancellationToken) != CpSolverStatus.Infeasible)
+        solver.StringParameters = CpSatParameters.Build(ExplainWorkers, ProofTimeLimitSeconds ?? options.Stage1TimeLimitSeconds, options.RandomSeed);
+        var status = CpSat.Solve(solver, built.Model, null, cancellationToken);
+        if (status == CpSolverStatus.Unknown && !cancellationToken.IsCancellationRequested)
+        {
+            // Not proven within the limit: stage 1 already proved the whole model infeasible, so all literals form a core (04 §7.2).
+            return [Core(built.Enforcement, ConflictCoreReason.Unminimized)];
+        }
+
+        if (status != CpSolverStatus.Infeasible)
         {
             return [];
         }
@@ -41,6 +51,11 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
         }
 
         core = Minimize(built.Model, solver, core, options.RandomSeed, cancellationToken);
+        return [Core(core, null)];
+    }
+
+    private static Diagnostic Core(IReadOnlyList<(BoolVar Literal, ConflictItem Item)> core, ConflictCoreReason? reason)
+    {
         var ruleIds = core.Select(c => c.Item.RuleId).OfType<Guid>().Distinct().ToList();
         var centerIds = core.Select(c => c.Item.CenterId).OfType<Guid>().Distinct().ToList();
         var arguments = new List<(DiagnosticArgument, object)> { (DiagnosticArgument.RuleIds, DiagnosticFactory.FormatList(ruleIds)) };
@@ -49,7 +64,12 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
             arguments.Add((DiagnosticArgument.CenterId, DiagnosticFactory.FormatList(centerIds)));
         }
 
-        return [DiagnosticFactory.Error(DiagnosticCode.ConflictCore, ruleIds.Count == 1 ? ruleIds[0] : null, [.. arguments])];
+        if (reason is { } value)
+        {
+            arguments.Add((DiagnosticArgument.Reason, value.ToString()));
+        }
+
+        return DiagnosticFactory.Error(DiagnosticCode.ConflictCore, ruleIds.Count == 1 ? ruleIds[0] : null, [.. arguments]);
     }
 
     /// <summary>Deletion-based minimization: drop a literal whenever the rest stays infeasible.</summary>
@@ -73,7 +93,7 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
             var candidate = current.Where((_, index) => index != i).ToList();
             model.ClearAssumptions();
             model.AddAssumptions(candidate.Select(c => c.Literal));
-            solver.StringParameters = CpSat.Parameters(ExplainWorkers, remaining, seed);
+            solver.StringParameters = CpSatParameters.Build(ExplainWorkers, remaining, seed);
             if (CpSat.Solve(solver, model, null, cancellationToken) == CpSolverStatus.Infeasible)
             {
                 current = candidate;
@@ -86,4 +106,11 @@ public sealed class ConflictExplainer(ISeatGenerator seatGenerator, IIndependent
 
         return current;
     }
+}
+
+/// <summary>Why a <see cref="DiagnosticCode.ConflictCore"/> is not a minimized core; rendered as <see cref="DiagnosticArgument.Reason"/>.</summary>
+public enum ConflictCoreReason
+{
+    /// <summary>The assumption solve did not prove infeasibility in time; the core lists every hard rule and center.</summary>
+    Unminimized = 1,
 }

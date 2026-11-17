@@ -72,7 +72,8 @@ public record SolveRunDto(
     IReadOnlyList<DiagnosticDto> Diagnostics,
     IReadOnlyList<Guid> AllocationIds,
     bool IsStale,
-    string? ErrorMessage)
+    string? ErrorMessage,
+    SolveRunFailureReason? FailureReason = null)
 {
     public static SolveRunDto FromDomain(SolveRun run, IReadOnlyList<Guid> allocationIds, bool isStale) => new(
         run.Id.Value,
@@ -85,7 +86,8 @@ public record SolveRunDto(
         run.Diagnostics.Select(DiagnosticDto.FromDomain).ToList(),
         allocationIds,
         isStale,
-        run.ErrorMessage);
+        run.ErrorMessage,
+        run.FailureReason);
 }
 
 public record SolveProgressDto(

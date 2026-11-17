@@ -14,6 +14,7 @@ import {
   pathParam,
   problem,
   registerMockStore,
+  touchMockSessionInput,
 } from './sessions';
 
 // Query string names of GET sessions/{id}/participants (docs/05 paging) — mock side only.
@@ -149,11 +150,16 @@ const sessionParticipants = (sessionId: string) => participants.filter((particip
 /** Used by the imports mock to commit rows. */
 export const mockAddParticipants = (sessionId: string, items: ParticipantDto[]) => {
   participants = [...participants, ...items.map((item) => ({ ...item, id: newId(), sessionId, version: INITIAL_VERSION }))];
+  touchMockSessionInput(sessionId);
 };
 
 export const mockRemoveSessionParticipants = (sessionId: string) => {
   participants = participants.filter((participant) => participant.sessionId !== sessionId);
+  touchMockSessionInput(sessionId);
 };
+
+/** Participants of a session (allocation mocks place them). */
+export const mockSessionParticipants = (sessionId: string) => sessionParticipants(sessionId);
 
 export const mockParticipantsCount = (sessionId: string) => sessionParticipants(sessionId).length;
 
@@ -205,14 +211,29 @@ const queryPage = (sessionId: string, query: URLSearchParams): ParticipantDtoPag
   return { items: sorted.slice(start, start + pageSize), page, pageSize, total: filtered.length };
 };
 
+/** Built-in attributes summarized first, like the API (`ParticipantRepository` → `AttributeKeys.Group`, `.School`). */
+export enum MockBuiltInAttributeKey {
+  Group = 'group',
+  School = 'school',
+}
+
+const builtInAttributeValue: Record<MockBuiltInAttributeKey, (participant: ParticipantDto) => string | null | undefined> = {
+  [MockBuiltInAttributeKey.Group]: (participant) => participant.group,
+  [MockBuiltInAttributeKey.School]: (participant) => participant.school,
+};
+
+const summarize = (key: string, items: ParticipantDto[], valueOf: (participant: ParticipantDto) => string | null | undefined): AttributeInfoDto => {
+  const values = items.map(valueOf).filter((value): value is string => Boolean(value?.trim()));
+  const distinct = [...new Set(values)];
+  return { key, distinctValues: distinct.length, missingCount: items.length - values.length, sampleValues: distinct.slice(0, SAMPLE_VALUES_LIMIT) };
+};
+
 const computeAttributes = (sessionId: string): AttributeInfoDto[] => {
   const items = sessionParticipants(sessionId);
+  const builtIn = Object.values(MockBuiltInAttributeKey).map((key) => summarize(key, items, builtInAttributeValue[key]));
   const keys = new Set(items.flatMap((participant) => Object.keys(participant.attributes ?? {})));
-  return [...keys].sort().map((key) => {
-    const values = items.map((participant) => participant.attributes?.[key]).filter((value): value is string => Boolean(value));
-    const distinct = [...new Set(values)];
-    return { key, distinctValues: distinct.length, missingCount: items.length - values.length, sampleValues: distinct.slice(0, SAMPLE_VALUES_LIMIT) };
-  });
+  const custom = [...keys].sort().map((key) => summarize(key, items, (participant) => participant.attributes?.[key]));
+  return [...builtIn, ...custom];
 };
 
 const sessionIdParam = pathParam(MockPathParam.SessionId);
@@ -242,6 +263,7 @@ export const participantsHandlers: HttpHandler[] = [
     }
     const created: ParticipantDto = { ...dto, id: newId(), sessionId, version: INITIAL_VERSION };
     participants = [...participants, created];
+    touchMockSessionInput(sessionId);
     return HttpResponse.json(created);
   }),
 
@@ -259,6 +281,7 @@ export const participantsHandlers: HttpHandler[] = [
     }
     const updated: ParticipantDto = { ...existing, ...dto, version: (existing.version ?? INITIAL_VERSION) + 1 };
     participants = participants.map((participant) => (participant.id === dto.id ? updated : participant));
+    touchMockSessionInput(existing.sessionId);
     return HttpResponse.json(updated);
   }),
 
@@ -272,6 +295,7 @@ export const participantsHandlers: HttpHandler[] = [
     if (!participants.some((participant) => participant.id === participantId)) {
       return problem(HttpStatus.NotFound, ErrorCode.ParticipantNotFound);
     }
+    touchMockSessionInput(participants.find((participant) => participant.id === participantId)?.sessionId);
     participants = participants.filter((participant) => participant.id !== participantId);
     return noContent();
   }),

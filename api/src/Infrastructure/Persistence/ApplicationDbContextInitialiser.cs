@@ -43,7 +43,7 @@ public class ApplicationDbContextInitialiser(
 
         foreach (var run in activeRuns)
         {
-            run.Complete(SolveRunStatus.Failed, [], null, InterruptedRunMessage, dateTimeProvider.UtcNow);
+            run.Complete(SolveRunStatus.Failed, [], null, InterruptedRunMessage, dateTimeProvider.UtcNow, SolveRunFailureReason.Interrupted);
         }
 
         if (activeRuns.Count != 0)

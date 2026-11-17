@@ -32,6 +32,24 @@ public class AllocationRepository(ApplicationDbContext dbContext)
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyDictionary<SolveRunId, IReadOnlyList<AllocationId>>> GetIdsByRuns(
+        IReadOnlyCollection<SolveRunId> runIds,
+        CancellationToken cancellationToken)
+    {
+        var rows = await Context.Allocations
+            .AsNoTracking()
+            .Where(x => runIds.Contains(x.RunId))
+            .OrderBy(x => x.Index == AllocationConstraints.ManualIndex)
+            .ThenBy(x => x.Index)
+            .ThenBy(x => x.Id)
+            .Select(x => new { x.RunId, x.Id })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .GroupBy(x => x.RunId)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<AllocationId>)g.Select(x => x.Id).ToList());
+    }
+
     public async Task<IReadOnlyList<AllocationItem>> GetItemsByRoom(AllocationId id, RoomId roomId, CancellationToken cancellationToken)
     {
         return await Context.AllocationItems

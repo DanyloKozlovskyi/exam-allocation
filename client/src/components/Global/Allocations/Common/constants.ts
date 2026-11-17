@@ -7,7 +7,7 @@ export const NO_GROUP_COLOR = '#CFD8DC';
 const HASH_SEED = 2166136261;
 const HASH_PRIME = 16777619;
 
-/** FNV-1a hash: the same group always gets the same colour across rooms and sessions. */
+/** FNV-1a hash: the same group always gets the same colour across rooms and sessions; may collide within a room — prefer `buildGroupColors` there. */
 export const groupColor = (group: string | null | undefined) => {
   if (!group) {
     return NO_GROUP_COLOR;
@@ -17,6 +17,28 @@ export const groupColor = (group: string | null | undefined) => {
     hash = Math.imul(hash ^ (char.codePointAt(0) ?? 0), HASH_PRIME) >>> 0;
   }
   return GROUP_PALETTE[hash % GROUP_PALETTE.length];
+};
+
+const FULL_TURN_DEGREES = 360;
+/** Lightness/saturation of generated hues: close to the palette's pastel tone, readable under dark text. */
+const GENERATED_SATURATION_PERCENT = 55;
+const GENERATED_LIGHTNESS_PERCENT = 68;
+
+/** `count` evenly spaced hues — maximally apart, used when a room has more groups than the palette. */
+export const generatedGroupColors = (count: number) =>
+  Array.from({ length: count }, (_, index) => `hsl(${Math.round((index * FULL_TURN_DEGREES) / count)}, ${GENERATED_SATURATION_PERCENT}%, ${GENERATED_LIGHTNESS_PERCENT}%)`);
+
+/**
+ * Colours that are distinct within one room: the distinct non-empty groups present, sorted, take
+ * palette entries in order (more groups than palette entries → evenly spaced generated hues).
+ * Use the same function for the seats and the legend so they always agree. Groups not in the
+ * list (and empty groups) fall back to `groupColor`.
+ */
+export const buildGroupColors = (groups: (string | null | undefined)[]) => {
+  const distinct = [...new Set(groups.filter((group): group is string => Boolean(group)))].sort((a, b) => a.localeCompare(b));
+  const colors = distinct.length <= GROUP_PALETTE.length ? GROUP_PALETTE : generatedGroupColors(distinct.length);
+  const byGroup = new Map(distinct.map((group, index) => [group, colors[index]]));
+  return (group: string | null | undefined) => (group && byGroup.get(group)) || groupColor(group);
 };
 
 export const EXPORT_FORMATS: ExportFormat[] = [ExportFormat.Xlsx, ExportFormat.Xml, ExportFormat.Csv, ExportFormat.Pdf];

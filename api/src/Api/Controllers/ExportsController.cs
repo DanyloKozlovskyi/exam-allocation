@@ -11,6 +11,8 @@ namespace Api.Controllers;
 public class ExportsController(IExportsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Exports.Export)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Export(
         [FromRoute] Guid allocationId,
         [FromQuery] ExportFormat format,

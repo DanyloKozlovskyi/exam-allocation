@@ -67,6 +67,7 @@ export const apiRoutes = {
     list: (sessionId: string) => `${session(sessionId)}/${PINS}`,
     create: (sessionId: string) => `${session(sessionId)}/${PINS}/${CREATE}`,
     byParticipant: (sessionId: string, participantId: string) => `${session(sessionId)}/${PINS}/${participantId}`,
+    deleteAll: (sessionId: string) => `${session(sessionId)}/${PINS}/delete-all`,
     pinAll: (allocationId: string) => `${allocation(allocationId)}/pin-all`,
   },
   imports: {

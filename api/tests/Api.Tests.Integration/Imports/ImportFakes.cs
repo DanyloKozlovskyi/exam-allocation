@@ -37,6 +37,9 @@ public sealed class FakeParticipantStore : IParticipantRepository, IParticipantQ
     public Task<IReadOnlyList<Participant>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken = default)
         => Task.FromResult<IReadOnlyList<Participant>>(All.Where(x => x.SessionId == sessionId).ToList());
 
+    public Task<IReadOnlyList<Participant>> GetByIds(ExamSessionId sessionId, IReadOnlyCollection<ParticipantId> ids, CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyList<Participant>>(All.Where(x => x.SessionId == sessionId && ids.Contains(x.Id)).ToList());
+
     public Task<int> RemoveAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken = default)
     {
         lock (sync)

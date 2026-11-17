@@ -240,7 +240,82 @@ seats cover `|P|` and the open accessible seats cover `|P_acc|`; all other `y_r 
 
 Measured effect (Bench medium, 2 cores): stage 1 from 12.5–15 s to 5.2–7.2 s (full run 8.7–12 s).
 A complete greedy hint (class counts too) was tried and rejected: it conflicts with the symmetry
-order and slowed medium to ~25 s.
+order and slowed medium to ~25 s. (Superseded by the two-step solve below, whose complete hint is
+built for the selected rooms only and is consistent with the symmetry order.)
+
+### 4.1 Two-step solve: room selection → assignment (Phase 3 H1, R-5)
+
+Used for `CostThenSoft` when the request has no previous solutions and no `CostBound` (i.e. the
+best allocation and its feedback re-solves; alternatives and `Weighted` keep the single model above).
+On large (400 rooms × 508 classes ≈ 200 000 `n_{k,r}`) the single model spends its whole limit
+without improving its first solution; the cost part of the problem, however, only depends on `y`.
+
+**Step S — room selection on room types** (`RoomSelection`). Rooms are aggregated into *types*
+`τ` by the symmetry key of §4 (layout hash — hence `cap`, `acc`, α — cost, and the center when R6
+or a Center-scoped R2 is enabled). A room with pins or feedback cuts is a type of its own.
+Variables `o_τ ∈ [pinnedRooms_τ, |τ|]` integer = number of open rooms of type `τ`.
+
+```
+minimize   Σ_τ cost_τ · o_τ
+subject to Σ_τ cap_τ · o_τ ≥ |P|                    (all participants, pins included)
+           Σ_τ acc_τ · o_τ ≥ |P_acc|
+           Σ_τ ℓ_τ(a) · o_τ ≥ max_v s_v(a)           for every key a with a hard per-room limit
+           Σ_τ ℓ^acc_τ(a) · o_τ ≥ max_v s^acc_v(a)   idem, for needs-accessible members
+```
+
+with `ℓ_τ(a) = min(cap_τ, m of every hard Room-scoped R2 on a, α_τ of every hard R3 on a)`,
+`ℓ^acc_τ(a) = min(acc_τ, the same m, α^acc_τ of every hard R3 on a)`, `s_v(a)` / `s^acc_v(a)` the
+number of participants (pins included) / needs-accessible participants with value `v`.
+Every constraint is a necessary condition of §4 (a room holds at most `ℓ_τ(a)` members of one value),
+so the optimum `C_S` — and the solver's best bound `LB ≤ C_S` when not proven — is a **lower bound
+of the stage-1 cost**. Center-scoped R2, cuts and R6 are not modelled (weaker bound, still valid).
+The selected set `R_S` = the first `o_τ` rooms of every type by index (pinned rooms first), which is
+exactly the order the symmetry breaking of §4 imposes.
+
+**Step E — evaluate the greedy assignment.** The greedy assignment (below) respects every hard
+stage-1 constraint inside `R_S` (a center-scoped R2 limit is shared by the rooms of a center, so after
+each placement the allowances of all rooms of that center are recomputed). If it is complete and step S was optimal, the §4 model is built over
+`R_S` with every `n_{k,r}` fixed to the greedy count (domain `[g, g]`), plus `Cost ≥ LB`, and solved
+for `SoftPenalty` (nothing is left to search; presolve is trivial). If that is feasible with penalty 0
+and `Cost = LB`, it is the stage-1 result and it is **optimal** (cost = a lower bound, penalty = 0).
+This is the common case: on large the open set is ~98 % full and R5 is 0.
+
+**Step A — assignment on the selected rooms.** The §4 model is built with `y_r = 0` and no
+`n_{k,r}` for `r ∉ R_S`, plus the redundant bound `Cost ≥ LB`. Hint: the previous solution when the
+request has one (feedback re-solve), otherwise the greedy assignment. If step S was optimal the cost
+is already fixed (`R_S` costs `C_S = LB`, and `Cost ≥ LB`), so only `SoftPenalty` is minimized;
+otherwise the usual lexicographic solve (cost, then soft). Every solution found has `Cost ≥ LB`, so
+`Cost = LB` proves the cost globally optimal. (Measured on large: CP-SAT presolve of this model —
+~90 000 variables — alone takes ~20 s on 2 cores, which is why step E exists.)
+
+Feedback re-solves (§6) run the same steps: the greedy assignment respects the cuts, so step E
+usually answers again; the whole allocation may change, not only the cut rooms.
+
+**Step C — global soft check.** Step A's soft optimum is only optimal among solutions inside `R_S`.
+If its soft penalty is 0 (or there are no soft rules) it is globally optimal. Otherwise the full model
+is solved with `Cost ≤ C*`, objective `SoftPenalty`, hinted with step A, in the remaining time; the
+better solution is kept, `Optimal` only if that solve proves it.
+
+**Step D — fallback.** If step A finds no solution (infeasible inside `R_S`, or time), the single
+model of §4 is solved with the remaining time, with `Cost ≥ LB` and the greedy `y` hint.
+
+Time split of `Stage1TimeLimitSeconds = T`: step S ≤ 0.1 T, step E ≤ 0.1 T, step A ≤ 0.5 T,
+steps C/D the rest. Status `Optimal` iff step S was optimal, the cost is `LB`, and the soft part was
+proven (penalty 0, or step C optimal).
+
+**Greedy assignment** (`GreedyAssignment`, hint for step A). Rooms `R_S`; per room it tracks free
+seats `cap_r − pin_r`, free accessible seats, and the count of every (key, value) — per room, and per
+center for Center-scoped R2 — pins included. A participant of class `k` fits room `r` iff a seat is
+free (an accessible one if `k` needs it), every hard R2 limit `m`, every hard R3 bound `α_r`
+(`α^acc_r` for needs-accessible members) and every cut of `r` would still hold. Classes are placed
+needs-accessible first, then by descending size of their largest limited value; each participant goes
+to the fitting room with the most free seats (ties: lowest index), which balances fill and keeps R5
+low. Rooms left empty get `y_r = 0`. If somebody fits nowhere the hint is still given (partial);
+CP-SAT repairs it.
+
+Measured (Bench, 2 shared cores, docs/benchmarks.md): large stage 1 0.7–1.5 s (was: no solution in
+40 s, or all 400 rooms at cost 480 000), `Optimal` with 176 rooms at cost 204 100 = `LB`; medium stage 1
+0.04–0.2 s (was 5–12 s), unchanged cost.
 
 **Model size guardrail**: if |K| × |eligible rooms| > 2 000 000, emit `ModelTooLarge`
 diagnostic and abort with a clear message (MVP; later: split by center). Stage 1 then returns
@@ -381,6 +456,14 @@ capacity. In this mode domains are not tightened by capacity or rules (`n_{k,r} 
 symmetry breaking, cuts, soft rules and objective are omitted, and the model is solved with
 one worker. Arguments: `RuleIds` and `CenterId` (comma-separated, invariant format).
 
+Fallback (Phase 3 H1, R-21): stage 1 already proved the full model infeasible, so the set of *all*
+enforcement literals is a (non-minimal) core. When the assumption solve does not answer
+`INFEASIBLE` within its limit (`UNKNOWN`), `Explain` emits `ConflictCore` with every hard rule and
+center of the explain model and the extra argument `Reason = Unminimized`
+(`ConflictCoreReason` enum name) instead of an empty list. (A core whose minimization is cut short
+by its 10 s budget is reported as before, without `Reason`.) If the explain model is `FEASIBLE` (stage-1 infeasibility came from a part the explain model omits)
+or the run was cancelled, nothing is emitted.
+
 ---
 
 ## 8. Alternatives (`Solver/Alternatives/`)
@@ -394,7 +477,8 @@ For `i = 1..N`:
      `D = max(1, ⌈DiversityRatio · |P|⌉)` (each moved participant changes two cells), with
      `|·|` via `AddAbsEquality` on auxiliary ints;
    - objective: minimize `SoftPenalty`.
-2. If stage 1 becomes infeasible (e.g. room assignment is forced), switch to
+2. If stage 1 becomes infeasible (e.g. room assignment is forced), or finds no room-level alternative
+   within its time limit while the alternatives budget is not used up, switch to
    **seat-level diversity**: keep `n⁰`, and in stage 2 require, per room, Hamming distance
    `Σ_p |A_{k,p} − Aʲ_{k,p}|` ≥ 2 vs previous seatings (only rooms with ≥ 2 classes), using
    a different random seed.
@@ -413,6 +497,15 @@ Implementation notes (WS-A): `IAlternativesGenerator.Generate` returns `Alternat
 is an `AlternativesLimitReason` enum name (`TimeBudgetExhausted`, `NoDistinctAllocation`,
 `Cancelled`). The pipeline validates every alternative and drops invalid ones
 (`InternalValidationFailed` warning).
+
+Phase 3 H1 (R-20): `AlternativesRequest.Cuts` carries the feedback cuts the pipeline learned for
+`A_0`; every stage-1 alternative starts with them (they are rooms × values that stage 2 could not
+seat, so re-discovering them would only cost re-solves). The budget `Stage1TimeLimitSeconds × 2`
+covers the whole loop: a deadline token (linked to the caller's token) cancels stage 1 **and**
+stage 2 when it is spent; before each realization the remaining time is checked, and the per-room
+stage-2 limit is `min(Stage2TimeLimitSecondsPerRoom, ⌈remaining⌉)`. Hitting the deadline ends the
+loop with `AlternativesLimited(TimeBudgetExhausted)`; the caller's cancellation still yields
+`Cancelled`.
 
 ---
 
@@ -488,6 +581,10 @@ max_time_in_seconds   = per stage as above
 random_seed           = Options.RandomSeed
 log_search_progress   = true only when env EXAM_SOLVER_LOG=1
 ```
+
+One builder, `Solver/Layout/CpSatParameters.Build`, produces the parameter string for every model
+(stage 1, conflict core, stage 2, α); `Allocation/CpSat` keeps only worker resolution, status mapping
+and the cancellable solve (R-22). Time limits below 0.05 s are raised to 0.05 s.
 
 Progress: a `CpSolverSolutionCallback` subclass reports objective/bound at most every 500 ms.
 Cancellation: `CancellationToken.Register(() => solver.StopSearch())`.

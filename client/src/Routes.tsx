@@ -21,6 +21,7 @@ const ParticipantsImportView = lazy(() => import('./views/Participants/Import'))
 const RulesListView = lazy(() => import('./views/Rules/List'));
 const RulesCreateView = lazy(() => import('./views/Rules/Create'));
 const RulesEditView = lazy(() => import('./views/Rules/Edit'));
+const PinsListView = lazy(() => import('./views/Pins/List'));
 const SolveRunsListView = lazy(() => import('./views/SolveRuns/List'));
 const SolveRunsViewView = lazy(() => import('./views/SolveRuns/View'));
 const AllocationsViewView = lazy(() => import('./views/Allocations/View'));
@@ -46,6 +47,7 @@ const AppRoutes = () => (
         <Route path={RoutePath.Rules} element={<RulesListView />} />
         <Route path={RoutePath.RuleCreate} element={<RulesCreateView />} />
         <Route path={RoutePath.RuleEdit} element={<RulesEditView />} />
+        <Route path={RoutePath.Pins} element={<PinsListView />} />
         <Route path={RoutePath.SolveRuns} element={<SolveRunsListView />} />
         <Route path={RoutePath.SolveRunView} element={<SolveRunsViewView />} />
         <Route path={RoutePath.AllocationView} element={<AllocationsViewView />} />

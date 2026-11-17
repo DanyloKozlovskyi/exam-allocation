@@ -14,6 +14,7 @@ namespace Api.Controllers;
 public class PinsController(ISender sender, IPinsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Pins.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<PinDto>>> GetAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -23,6 +24,11 @@ public class PinsController(ISender sender, IPinsControllerService controllerSer
     }
 
     [HttpPost(ApiRoutes.Pins.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<PinDto>> Upsert(
         [FromRoute] Guid sessionId,
         [FromBody] PinDto pin,
@@ -35,6 +41,11 @@ public class PinsController(ISender sender, IPinsControllerService controllerSer
     }
 
     [HttpDelete(ApiRoutes.Pins.ByParticipant)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
@@ -44,8 +55,27 @@ public class PinsController(ISender sender, IPinsControllerService controllerSer
         return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
+    /// <summary>Removes every pin of the session.</summary>
+    [HttpPost(ApiRoutes.Pins.DeleteAll)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> DeleteAll(
+        [FromRoute] Guid sessionId,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new DeleteAllPinsCommand { SessionId = sessionId }, cancellationToken);
+        return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
+    }
+
     /// <summary>Pins every participant of an allocation (or of the given rooms) to their current room and seat.</summary>
     [HttpPost(ApiRoutes.Pins.PinAll)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<PinDto>>> PinAll(
         [FromRoute] Guid allocationId,
         [FromBody] PinAllDto request,

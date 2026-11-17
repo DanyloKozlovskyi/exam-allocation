@@ -16,6 +16,15 @@ placement constraints (e.g. groupmates may not share a room or sit at adjacent d
 | 09 | [Implementation plan](09-implementation-plan.md) | Phases, parallel workstreams, file ownership, acceptance checks |
 | 10 | [Coding conventions](10-conventions.md) | pal-suite patterns (MediatR CQRS, FluentValidation, LanguageExt, repositories), no magic strings, client enums |
 
+| Document | What it answers |
+|----------|-----------------|
+| [User guide (Ukrainian)](user-guide.md) | End-to-end workflow for an exam administrator, UI labels, troubleshooting |
+| [Benchmarks](benchmarks.md) | Measured solver timings per dataset size vs the 04 §12 targets (Phase 3, H1) |
+| [Phase 2 smoke test](smoke-test-phase2.md) | Real-API happy-path walk through the UI, with results |
+| [Phase 2 review](review-phase2.md) | Independent review findings (R-1…R-25) and their resolution |
+| [Change requests](change-requests.md) | Cross-workstream change requests and their status |
+
+Quick start (prerequisites, run, tests, benchmarks): [`/README.md`](../README.md#quick-start).
 Agent working rules live in [`/CLAUDE.md`](../CLAUDE.md).
 
 **Source-of-truth order** when documents disagree: `10` (how code is written) → `09` (who

@@ -17,6 +17,10 @@ Swagger document exported to `contracts/openapi.json` (committed).
   `*ArgumentException` → 400, `*UnknownException` → 500.
 - **Validation** failures (FluentValidation via `ValidationBehaviour`) → 400
   `ValidationProblemDetails { errors: { field: [msg] }, code: "ValidationFailed" }`.
+- **Declared responses**: every action lists its success status (200 with the DTO, 202, 204).
+  Write actions (commands) also list every `ProblemDetails` status their feature's error factory can
+  return (400/404/409/413/422/500); read actions list 400 for invalid query parameters and 404 where
+  they return `NotFound()` — an unexpected server error (500) is not declared on reads.
 - **Paging** (participants, allocation rows): query `page`, `pageSize`, `search`, `sortDirection`
   (`SortDirection` enum) → `PagedDto<T> { items, page, pageSize, total }`. Participants also take
   `sortBy` (`ParticipantSortField` enum); allocation rows are always sorted by name.
@@ -72,9 +76,10 @@ Swagger document exported to `contracts/openapi.json` (committed).
 `oneOf` with discriminator `type` — no free-form JSON on the wire.
 
 ### Pins — `PinsController`
-| GET | `sessions/{sessionId}/pins` | | `PinDto[]` |
+| GET | `sessions/{sessionId}/pins` | | `PinDto[]` with read-only `participantName`, `roomName`, `centerId` |
 | POST | `sessions/{sessionId}/pins/create` | `PinDto { participantId, roomId, seatKey? }` | `PinDto` (upsert) |
 | DELETE | `sessions/{sessionId}/pins/{participantId}` | | `204` |
+| POST | `sessions/{sessionId}/pins/delete-all` | | `204` (removes every pin of the session) |
 | POST | `allocations/{allocationId}/pin-all` | `PinAllDto { roomIds?: Guid[] }` | `PinDto[]` |
 
 ### Imports — `ImportsController` (details in 07)
@@ -88,7 +93,7 @@ Swagger document exported to `contracts/openapi.json` (committed).
 ### Solve runs — `SolveRunsController`
 | POST | `sessions/{sessionId}/solve-runs/create` | `SolveOptionsDto { alternatives?, diversityRatio?, costSlack?, timeLimitSeconds?, objectiveMode?: ObjectiveMode, seed? }` | `SolveRunDto` (status `Queued`) |
 | GET | `sessions/{sessionId}/solve-runs` | | `SolveRunDto[]` newest first |
-| GET | `solve-runs/{runId}` | | `SolveRunDto { id, status: SolveRunStatus, createdAt, startedAt, finishedAt, stats, diagnostics: DiagnosticDto[], allocationIds[], isStale }`; `allocationIds`: solver allocations by index (best first), then manual versions |
+| GET | `solve-runs/{runId}` | | `SolveRunDto { id, status: SolveRunStatus, createdAt, startedAt, finishedAt, stats, diagnostics: DiagnosticDto[], allocationIds[], isStale, errorMessage?, failureReason?: SolveRunFailureReason }`; `allocationIds`: solver allocations by index (best first), then manual versions; `isStale` is computed for finished runs only (active runs report `false`); `failureReason` (`Interrupted`, `NoSolutionInTime`, `SolverError`) is set only for `Failed` runs, `errorMessage` is free-text detail |
 | POST | `solve-runs/{runId}/cancel` | | `202` |
 | POST | `sessions/{sessionId}/precheck` | | `DiagnosticDto[] { code: DiagnosticCode, severity: DiagnosticSeverity, message, ruleId?, arguments }` |
 

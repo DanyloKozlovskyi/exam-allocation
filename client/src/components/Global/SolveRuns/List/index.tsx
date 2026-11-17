@@ -8,6 +8,7 @@ import { SolveRunsTestId } from '../../../../enums/SolveRuns';
 import { I18nNamespace } from '../../../../i18n';
 import { useSolveRunsListQuery } from '../../Queries/solveRuns';
 import { durationSeconds, formatDateTime } from '../Common/formatters';
+import { runFailureReason } from '../Common/failureReason';
 import StatusChip from '../Common/StatusChip';
 import RunDialog from '../RunDialog';
 
@@ -19,6 +20,7 @@ interface Props {
 const DATE_WIDTH_PX = 180;
 const STATUS_MIN_WIDTH_PX = 260;
 const NUMBER_WIDTH_PX = 140;
+const REASON_MIN_WIDTH_PX = 220;
 
 const SolveRunsList = ({ sessionId, onOpen }: Props) => {
   const { t } = useTranslation(I18nNamespace.SolveRuns);
@@ -36,6 +38,21 @@ const SolveRunsList = ({ sessionId, onOpen }: Props) => {
       valueGetter: (_value, row) => {
         const seconds = durationSeconds(row.startedAt, row.finishedAt);
         return seconds === null ? '' : t('list.durationValue', { seconds });
+      },
+    },
+    {
+      field: 'failureReason',
+      headerName: t('list.reason'),
+      flex: 1,
+      minWidth: REASON_MIN_WIDTH_PX,
+      sortable: false,
+      renderCell: ({ row }) => {
+        const reason = runFailureReason(row);
+        return reason ? (
+          <Typography variant="body2" color="error" component="span" data-qa={SolveRunsTestId.ListFailureReason} data-reason={reason}>
+            {t(`failureReason.short.${reason}`)}
+          </Typography>
+        ) : null;
       },
     },
     { field: 'allocations', headerName: t('list.alternatives'), width: NUMBER_WIDTH_PX, type: 'number', valueGetter: (_value, row) => row.allocationIds?.length ?? 0 },

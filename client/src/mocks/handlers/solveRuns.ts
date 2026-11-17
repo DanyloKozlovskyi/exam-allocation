@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers -- in-memory fixture data for MSW mocks */
 import { http, HttpResponse, type HttpHandler } from 'msw';
-import { DiagnosticCode, DiagnosticSeverity, ErrorCode, SolveRunStatus, type DiagnosticDto, type SolveOptionsDto, type SolveRunDto } from '../../api/dtos';
+import { DiagnosticArgument, DiagnosticCode, DiagnosticSeverity, ErrorCode, SolveRunStatus, type DiagnosticDto, type SolveOptionsDto, type SolveRunDto } from '../../api/dtos';
 import { apiRoutes } from '../../constants/apiRoutes';
 import { createMockAllocations, getAllocationIdsForRun, resetAllocationsMocks } from './allocations';
 import { mockApiUrl, mockGuid, MOCK_CENTERS, problem } from './rooms';
+import { mockSessionExists, mockSessionInputVersion, mockSessionTotals, registerMockStore, shouldSeedMockSession } from './sessions';
 
 /** Simulated run timeline (polling only — there is no SignalR hub on mocks). */
 export const MOCK_RUN_QUEUED_MS = 800;
@@ -16,6 +17,8 @@ interface MockRun {
   alternatives: number;
   /** Fixed final status for seeded runs; live runs are derived from elapsed time. */
   frozen: boolean;
+  /** Session input version at start (`touchMockSessionInput`); undefined for seeded runs (fixed `isStale`). */
+  inputVersion?: number;
 }
 
 const runs = new Map<string, MockRun[]>();
@@ -80,7 +83,7 @@ const seedRuns = (sessionId: string): MockRun[] => {
 
 export const getMockRuns = (sessionId: string) => {
   if (!runs.has(sessionId)) {
-    runs.set(sessionId, seedRuns(sessionId));
+    runs.set(sessionId, shouldSeedMockSession(sessionId) ? seedRuns(sessionId) : []);
   }
   return runs.get(sessionId)!;
 };
@@ -96,7 +99,7 @@ const snapshot = (run: MockRun): SolveRunDto => {
     const elapsed = Date.now() - run.startedAtMs;
     if (elapsed >= MOCK_RUN_DURATION_MS) {
       run.frozen = true;
-      createMockAllocations(run.dto.id!, run.alternatives + 1);
+      createMockAllocations(run.dto.id!, run.alternatives + 1, run.dto.sessionId ?? undefined);
       run.dto = {
         ...run.dto,
         status: SolveRunStatus.Succeeded,
@@ -107,7 +110,46 @@ const snapshot = (run: MockRun): SolveRunDto => {
       run.dto = { ...run.dto, status: SolveRunStatus.Running, startedAt: run.dto.startedAt ?? iso(run.startedAtMs + MOCK_RUN_QUEUED_MS) };
     }
   }
-  return { ...run.dto, allocationIds: getAllocationIdsForRun(run.dto.id!) };
+  const isStale = run.inputVersion === undefined ? run.dto.isStale : run.inputVersion !== mockSessionInputVersion(run.dto.sessionId ?? '');
+  return { ...run.dto, isStale, allocationIds: getAllocationIdsForRun(run.dto.id!) };
+};
+
+registerMockStore({
+  totals: (sessionId) => {
+    const latest = getMockRuns(sessionId)
+      .map(snapshot)
+      .filter((run) => run.status === SolveRunStatus.Succeeded)
+      .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
+    return { isStale: latest?.isStale ?? false };
+  },
+  removeSession: (sessionId) => runs.delete(sessionId),
+  reset: resetSolveRunsMocks,
+});
+
+/** Precheck of a mock-store session from its totals (capacity, accessible seats, active rooms — docs/04 §7.1). */
+const sessionPrecheck = (sessionId: string): DiagnosticDto[] => {
+  const totals = mockSessionTotals(sessionId);
+  const diagnostics: DiagnosticDto[] = [];
+  if (!totals.rooms) {
+    diagnostics.push({ code: DiagnosticCode.NoActiveRooms, severity: DiagnosticSeverity.Error, message: 'Немає активних аудиторій.', arguments: {} });
+  }
+  if ((totals.participants ?? 0) > (totals.totalCapacity ?? 0)) {
+    diagnostics.push({
+      code: DiagnosticCode.CapacityTotalExceeded,
+      severity: DiagnosticSeverity.Error,
+      message: `Учасників: ${totals.participants}, доступних місць в активних аудиторіях: ${totals.totalCapacity}.`,
+      arguments: { [DiagnosticArgument.Size]: String(totals.participants), [DiagnosticArgument.Limit]: String(totals.totalCapacity) },
+    });
+  }
+  if ((totals.needsAccessibleSeat ?? 0) > (totals.accessibleCapacity ?? 0)) {
+    diagnostics.push({
+      code: DiagnosticCode.AccessibleCapacityExceeded,
+      severity: DiagnosticSeverity.Error,
+      message: `Потребують доступного місця: ${totals.needsAccessibleSeat}, доступних місць: ${totals.accessibleCapacity}.`,
+      arguments: { [DiagnosticArgument.Size]: String(totals.needsAccessibleSeat), [DiagnosticArgument.Limit]: String(totals.accessibleCapacity) },
+    });
+  }
+  return diagnostics;
 };
 
 const findRun = (runId: string) => [...runs.values()].flat().find((run) => run.dto.id === runId);
@@ -118,7 +160,10 @@ const isActive = (run: MockRun) => {
 };
 
 export const solveRunsHandlers: HttpHandler[] = [
-  http.post(mockApiUrl(apiRoutes.solveRuns.precheck(':sessionId')), () => HttpResponse.json(PRECHECK_DIAGNOSTICS)),
+  http.post(mockApiUrl(apiRoutes.solveRuns.precheck(':sessionId')), ({ params }) => {
+    const sessionId = String(params.sessionId);
+    return HttpResponse.json(shouldSeedMockSession(sessionId) ? PRECHECK_DIAGNOSTICS : sessionPrecheck(sessionId));
+  }),
   http.get(mockApiUrl(apiRoutes.solveRuns.list(':sessionId')), ({ params }) =>
     HttpResponse.json(
       getMockRuns(String(params.sessionId))
@@ -138,6 +183,7 @@ export const solveRunsHandlers: HttpHandler[] = [
       frozen: false,
       alternatives: options.alternatives ?? 2,
       startedAtMs: now,
+      inputVersion: mockSessionExists(sessionId) ? mockSessionInputVersion(sessionId) : undefined,
       dto: { id: mockGuid('90'), sessionId, status: SolveRunStatus.Queued, createdAt: iso(now), startedAt: null, finishedAt: null, diagnostics: [], isStale: false },
     };
     list.push(run);

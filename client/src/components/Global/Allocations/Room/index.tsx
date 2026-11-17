@@ -18,7 +18,7 @@ import { defaultSeatState, type Box as SeatBox, type GridSeat } from '../../../C
 import { parseSeatKey, toDisplayNumber } from '../../../Common/RoomGrid/seatKey';
 import { useRoomSeatingQuery } from '../../Queries/allocations';
 import { formatNumber } from '../../SolveRuns/Common/formatters';
-import { GROUP_BAR_HEIGHT_PX, groupColor, SEAT_TEXT_FONT_SIZE_PX, SEAT_TEXT_OFFSET_PX, SEATING_SEAT_WIDTH_PX } from '../Common/constants';
+import { buildGroupColors, GROUP_BAR_HEIGHT_PX, SEAT_TEXT_FONT_SIZE_PX, SEAT_TEXT_OFFSET_PX, SEATING_SEAT_WIDTH_PX } from '../Common/constants';
 import ExportMenu from '../Common/components/ExportMenu';
 import PinAndRerun from '../Common/components/PinAndRerun';
 import { fullName, truncate } from '../Common/helpers';
@@ -163,12 +163,16 @@ const RoomSeating = ({ sessionId, allocationId, roomId, onBack, onOpenAllocation
     }
   };
 
+  const groups = [...new Set([...occupantBySeat.values()].map((participant) => participant.group ?? ''))].sort();
+  // Distinct colours within this room (seats and legend use the same mapping).
+  const colorOf = buildGroupColors(groups);
+
   const renderSeat = (seat: GridSeat, box: SeatBox) => {
     const occupant = occupantBySeat.get(seat.key);
     if (!occupant) return null;
     return (
       <>
-        <rect x={box.x} y={box.y} width={box.width} height={GROUP_BAR_HEIGHT_PX} fill={groupColor(occupant.group)} pointerEvents="none" />
+        <rect x={box.x} y={box.y} width={box.width} height={GROUP_BAR_HEIGHT_PX} fill={colorOf(occupant.group)} pointerEvents="none" />
         <text
           x={box.x + box.width / HALF}
           y={box.y + (box.height + GROUP_BAR_HEIGHT_PX) / HALF}
@@ -215,7 +219,6 @@ const RoomSeating = ({ sessionId, allocationId, roomId, onBack, onOpenAllocation
   };
 
   const filled = occupantBySeat.size;
-  const groups = [...new Set([...occupantBySeat.values()].map((participant) => participant.group ?? ''))].sort();
   const violationKinds = [...new Set([...violationsBySeat.values()].flat().map((violation) => violation.kind))].filter((kind): kind is ViolationKind => Boolean(kind));
   const hardCount = (report?.violations ?? []).filter((violation) => violation.isHard).length;
 
@@ -269,7 +272,7 @@ const RoomSeating = ({ sessionId, allocationId, roomId, onBack, onOpenAllocation
           <Typography variant="subtitle2">{t('seating.groups')}</Typography>
           <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
             {groups.map((group) => (
-              <Chip key={group} size="small" label={group || '—'} sx={{ bgcolor: groupColor(group) }} />
+              <Chip key={group} size="small" label={group || '—'} sx={{ bgcolor: colorOf(group) }} />
             ))}
           </Stack>
         </Box>

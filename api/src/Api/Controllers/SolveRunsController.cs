@@ -12,6 +12,7 @@ namespace Api.Controllers;
 public class SolveRunsController(ISender sender, ISolveRunsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.SolveRuns.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<SolveRunDto>>> GetAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -21,6 +22,11 @@ public class SolveRunsController(ISender sender, ISolveRunsControllerService con
     }
 
     [HttpPost(ApiRoutes.SolveRuns.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<SolveRunDto>> Create(
         [FromRoute] Guid sessionId,
         [FromBody] SolveOptionsDto options,
@@ -33,6 +39,8 @@ public class SolveRunsController(ISender sender, ISolveRunsControllerService con
     }
 
     [HttpGet(ApiRoutes.SolveRuns.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SolveRunDto>> Get(
         [FromRoute] Guid runId,
         CancellationToken cancellationToken)
@@ -43,8 +51,10 @@ public class SolveRunsController(ISender sender, ISolveRunsControllerService con
 
     [HttpPost(ApiRoutes.SolveRuns.Cancel)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Cancel(
         [FromRoute] Guid runId,
         CancellationToken cancellationToken)
@@ -54,6 +64,11 @@ public class SolveRunsController(ISender sender, ISolveRunsControllerService con
     }
 
     [HttpPost(ApiRoutes.SolveRuns.Precheck)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<DiagnosticDto>>> Precheck(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)

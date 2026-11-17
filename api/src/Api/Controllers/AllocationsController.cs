@@ -13,6 +13,7 @@ namespace Api.Controllers;
 public class AllocationsController(ISender sender, IAllocationsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Allocations.ByRun)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<AllocationSummaryDto>>> GetByRun(
         [FromRoute] Guid runId,
         CancellationToken cancellationToken)
@@ -22,6 +23,8 @@ public class AllocationsController(ISender sender, IAllocationsControllerService
     }
 
     [HttpGet(ApiRoutes.Allocations.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AllocationDto>> Get(
         [FromRoute] Guid allocationId,
         CancellationToken cancellationToken)
@@ -31,6 +34,8 @@ public class AllocationsController(ISender sender, IAllocationsControllerService
     }
 
     [HttpGet(ApiRoutes.Allocations.RoomSeating)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoomSeatingDto>> RoomSeating(
         [FromRoute] Guid allocationId,
         [FromRoute] Guid roomId,
@@ -41,6 +46,9 @@ public class AllocationsController(ISender sender, IAllocationsControllerService
     }
 
     [HttpGet(ApiRoutes.Allocations.Participants)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PagedDto<AllocationRowDto>>> Participants(
         [FromRoute] Guid allocationId,
         CancellationToken cancellationToken,
@@ -54,6 +62,11 @@ public class AllocationsController(ISender sender, IAllocationsControllerService
     }
 
     [HttpPost(ApiRoutes.Allocations.ValidateMoves)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ValidationReportDto>> ValidateMoves(
         [FromRoute] Guid allocationId,
         [FromBody] MovesDto moves,
@@ -65,6 +78,11 @@ public class AllocationsController(ISender sender, IAllocationsControllerService
     }
 
     [HttpPost(ApiRoutes.Allocations.ApplyMoves)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<AllocationDto>> ApplyMoves(
         [FromRoute] Guid allocationId,
         [FromBody] MovesDto moves,

@@ -39,6 +39,9 @@ public class SolveRun : IEntity<SolveRunId>, IVersioned
 
     public string? ErrorMessage { get; private set; }
 
+    /// <summary>Set only for <see cref="SolveRunStatus.Failed"/>.</summary>
+    public SolveRunFailureReason? FailureReason { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset? StartedAt { get; private set; }
@@ -74,7 +77,13 @@ public class SolveRun : IEntity<SolveRunId>, IVersioned
         InputHash = inputHash;
     }
 
-    public void Complete(SolveRunStatus status, IReadOnlyList<SolveDiagnostic> diagnostics, SolveRunStats? stats, string? errorMessage, DateTimeOffset now)
+    public void Complete(
+        SolveRunStatus status,
+        IReadOnlyList<SolveDiagnostic> diagnostics,
+        SolveRunStats? stats,
+        string? errorMessage,
+        DateTimeOffset now,
+        SolveRunFailureReason? failureReason = null)
     {
         Guard.IsTrue(IsActive, nameof(Status));
         Guard.IsTrue(status is not (SolveRunStatus.Queued or SolveRunStatus.Running), nameof(status));
@@ -83,5 +92,6 @@ public class SolveRun : IEntity<SolveRunId>, IVersioned
         Stats = stats;
         ErrorMessage = errorMessage is null ? null : errorMessage[..Math.Min(errorMessage.Length, SolveRunConstraints.ErrorMessageMaxLength)];
         FinishedAt = now;
+        FailureReason = status == SolveRunStatus.Failed ? failureReason ?? SolveRunFailureReason.SolverError : null;
     }
 }

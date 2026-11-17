@@ -129,7 +129,7 @@ public sealed class SolverPipeline(
         {
             progress.Report(new SolveProgress(SolveStage.Alternatives, 0, null, null, null, null, 0));
             stopwatch.Restart();
-            var request = new AlternativesRequest(input, classes, stage1, best);
+            var request = new AlternativesRequest(input, classes, stage1, best, cuts.ToList());
             var alternatives = await Task.Run(() => alternativesGenerator.Generate(request, progress, cancellationToken), CancellationToken.None);
             run.Stats = run.Stats with { AlternativesMs = stopwatch.ElapsedMilliseconds };
             cancellationToken.ThrowIfCancellationRequested();

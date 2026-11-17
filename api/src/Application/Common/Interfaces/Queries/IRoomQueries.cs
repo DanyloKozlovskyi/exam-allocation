@@ -15,4 +15,7 @@ public interface IRoomQueries
 
     /// <summary>All rooms of the session (active or not) with seats and center; used to read stored allocations.</summary>
     Task<IReadOnlyList<Room>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken = default);
+
+    /// <summary>Rooms with the given ids, without seats (names and centers only).</summary>
+    Task<IReadOnlyList<Room>> GetByIds(IReadOnlyCollection<RoomId> ids, CancellationToken cancellationToken = default);
 }

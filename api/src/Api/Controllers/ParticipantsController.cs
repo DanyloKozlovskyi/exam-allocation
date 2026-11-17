@@ -14,6 +14,8 @@ namespace Api.Controllers;
 public class ParticipantsController(ISender sender, IParticipantsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Participants.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PagedDto<ParticipantDto>>> GetPage(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken,
@@ -33,6 +35,8 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpGet(ApiRoutes.Participants.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ParticipantDto>> Get(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
@@ -43,6 +47,11 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpPost(ApiRoutes.Participants.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ParticipantDto>> Create(
         [FromRoute] Guid sessionId,
         [FromBody] ParticipantDto participant,
@@ -53,6 +62,11 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpPut(ApiRoutes.Participants.Edit)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ParticipantDto>> Edit(
         [FromRoute] Guid sessionId,
         [FromBody] ParticipantDto participant,
@@ -63,6 +77,11 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpDelete(ApiRoutes.Participants.ById)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid participantId,
@@ -73,6 +92,11 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpPost(ApiRoutes.Participants.DeleteAll)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -82,6 +106,7 @@ public class ParticipantsController(ISender sender, IParticipantsControllerServi
     }
 
     [HttpGet(ApiRoutes.Participants.Attributes)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<AttributeInfoDto>>> Attributes(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)

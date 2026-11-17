@@ -12,6 +12,12 @@ namespace Api.Controllers;
 public class ImportsController(ISender sender, IImportsControllerService controllerService) : ControllerBase
 {
     [HttpPost(ApiRoutes.Imports.Upload)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ImportPreviewDto>> Upload(
         [FromRoute] Guid sessionId,
         IFormFile file,
@@ -31,6 +37,12 @@ public class ImportsController(ISender sender, IImportsControllerService control
     }
 
     [HttpPost(ApiRoutes.Imports.Preview)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ImportPreviewDto>> Preview(
         [FromRoute] Guid importId,
         [FromBody] ImportPreviewRequestDto request,
@@ -41,6 +53,12 @@ public class ImportsController(ISender sender, IImportsControllerService control
     }
 
     [HttpPost(ApiRoutes.Imports.Validate)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ImportValidationDto>> Validate(
         [FromRoute] Guid importId,
         [FromBody] ImportMappingDto mapping,
@@ -51,6 +69,12 @@ public class ImportsController(ISender sender, IImportsControllerService control
     }
 
     [HttpPost(ApiRoutes.Imports.Commit)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ImportResultDto>> Commit(
         [FromRoute] Guid importId,
         [FromBody] ImportMappingDto mapping,
@@ -61,6 +85,7 @@ public class ImportsController(ISender sender, IImportsControllerService control
     }
 
     [HttpGet(ApiRoutes.Imports.Template)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult Template()
     {
         var template = controllerService.Template();

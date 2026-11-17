@@ -10,6 +10,7 @@ export enum NavigationItemKey {
   Rooms = 'rooms',
   Participants = 'participants',
   Rules = 'rules',
+  Pins = 'pins',
   SolveRuns = 'solveRuns',
   Results = 'results',
 }
@@ -45,6 +46,7 @@ export const buildNavigation = ({ sessionId, centerId, totals, runs = [] }: Navi
   items.push(
     { key: NavigationItemKey.Participants, to: routes.participants.list(sessionId), badge: totals?.participants },
     { key: NavigationItemKey.Rules, to: routes.rules.list(sessionId), badge: totals?.rules },
+    { key: NavigationItemKey.Pins, to: routes.pins.list(sessionId) },
     { key: NavigationItemKey.SolveRuns, to: routes.solveRuns.list(sessionId), badge: runs.length }
   );
 

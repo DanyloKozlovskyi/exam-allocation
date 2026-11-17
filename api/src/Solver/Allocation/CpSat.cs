@@ -1,32 +1,17 @@
 using System.Diagnostics;
-using System.Globalization;
 using Google.OrTools.Sat;
+using Solver.Layout;
 using Solver.Model;
 
 namespace Solver.Allocation;
 
-/// <summary>CP-SAT parameter handling shared by WS-A models (04 §11).</summary>
+/// <summary>CP-SAT helpers of the stage-1 models (04 §11): worker count, status mapping, cancellable solve. Parameters come from <see cref="CpSatParameters"/>.</summary>
 internal static class CpSat
 {
-    public const string LogEnvironmentVariable = "EXAM_SOLVER_LOG";
-    public const string LogEnabledValue = "1";
-    public const double MinTimeLimitSeconds = 0.05;
-
-    private const string NumWorkersParameter = "num_workers";
-    private const string MaxTimeParameter = "max_time_in_seconds";
-    private const string RandomSeedParameter = "random_seed";
-    private const string LogSearchParameter = "log_search_progress";
+    /// <summary>Smallest time limit passed to CP-SAT (see <see cref="CpSatParameters.MinTimeLimitSeconds"/>).</summary>
+    public const double MinTimeLimitSeconds = CpSatParameters.MinTimeLimitSeconds;
 
     public static int Workers(int configured) => configured <= 0 ? Environment.ProcessorCount : configured;
-
-    public static string Parameters(int numWorkers, double timeLimitSeconds, int randomSeed)
-    {
-        var log = Environment.GetEnvironmentVariable(LogEnvironmentVariable) == LogEnabledValue;
-        var seconds = Math.Max(MinTimeLimitSeconds, timeLimitSeconds);
-        return string.Create(
-            CultureInfo.InvariantCulture,
-            $"{NumWorkersParameter}:{numWorkers} {MaxTimeParameter}:{seconds:0.###} {RandomSeedParameter}:{randomSeed} {LogSearchParameter}:{(log ? "true" : "false")}");
-    }
 
     public static SolveStatus Map(CpSolverStatus status, bool cancelled) => status switch
     {

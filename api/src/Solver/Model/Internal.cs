@@ -55,11 +55,13 @@ public sealed record SeatingResult(
     long Penalty,
     IReadOnlyDictionary<Guid, long> PenaltyByRule);
 
+/// <param name="Cuts">Feedback cuts learned for the best allocation; every stage-1 alternative starts with them (04 §8, R-20).</param>
 public sealed record AlternativesRequest(
     SolverInput Input,
     IReadOnlyList<ParticipantClass> Classes,
     Stage1Result Best,
-    SolvedAllocation BestAllocation);
+    SolvedAllocation BestAllocation,
+    IReadOnlyList<Stage1Cut>? Cuts = null);
 
 public sealed record Violation(
     ViolationKind Kind,

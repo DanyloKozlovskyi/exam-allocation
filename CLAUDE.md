@@ -80,6 +80,7 @@
 | Export OpenAPI | `cd client && npm run export:api` (then `npm run gen:api`) |
 | Migration (WS-C / integrator only) | `dotnet ef migrations add <Name> -p api/src/Infrastructure -s api/src/Api -o Persistence/Migrations` |
 | Client | `cd client && npm run dev` · `npm run gen:api` · `npm run ci` |
+| E2E (Playwright) | `cd client && npm run e2e:mocks` · `npm run e2e:api` (needs `docker compose up -d db`) · `npm run e2e` |
 | Synthetic data | `dotnet run --project api/tools/DataGen -- --size small --out samples/generated` |
 | Benchmark | `dotnet run -c Release --project api/tools/Bench -- --size medium` |
 

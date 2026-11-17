@@ -12,6 +12,7 @@ namespace Api.Controllers;
 public class RulesController(ISender sender, IRulesControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Rules.List)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<RuleDto>>> GetAll(
         [FromRoute] Guid sessionId,
         CancellationToken cancellationToken)
@@ -21,6 +22,8 @@ public class RulesController(ISender sender, IRulesControllerService controllerS
     }
 
     [HttpGet(ApiRoutes.Rules.ById)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RuleDto>> Get(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid ruleId,
@@ -31,12 +34,18 @@ public class RulesController(ISender sender, IRulesControllerService controllerS
     }
 
     [HttpGet(ApiRoutes.Rules.RuleTypes)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IReadOnlyList<RuleTypeInfoDto>> RuleTypes()
     {
         return Ok(controllerService.RuleTypes());
     }
 
     [HttpPost(ApiRoutes.Rules.Create)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RuleDto>> Create(
         [FromRoute] Guid sessionId,
         [FromBody] RuleDto rule,
@@ -47,6 +56,11 @@ public class RulesController(ISender sender, IRulesControllerService controllerS
     }
 
     [HttpPut(ApiRoutes.Rules.Edit)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RuleDto>> Edit(
         [FromRoute] Guid sessionId,
         [FromBody] RuleDto rule,
@@ -57,6 +71,11 @@ public class RulesController(ISender sender, IRulesControllerService controllerS
     }
 
     [HttpDelete(ApiRoutes.Rules.ById)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid sessionId,
         [FromRoute] Guid ruleId,

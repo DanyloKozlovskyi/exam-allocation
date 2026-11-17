@@ -63,7 +63,7 @@ public class SolveRunExecutor(
         catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
         {
             logger.LogError(exception, "Solve run {RunId} failed", runId);
-            await Complete(run, SolveRunStatus.Failed, [], null, exception.Message, cancellationToken);
+            await Complete(run, SolveRunStatus.Failed, [], null, exception.Message, cancellationToken, SolveRunFailureReason.SolverError);
         }
         finally
         {
@@ -81,6 +81,12 @@ public class SolveRunExecutor(
         var diagnostics = output.Diagnostics.Select(SolverModelMapper.ToDomainDiagnostic).ToList();
         var stats = SolverModelMapper.ToDomainStats(output.Stats);
         var message = output.Status == SolveStatus.NoSolutionInTime ? NoSolutionInTimeMessage : null;
+        SolveRunFailureReason? reason = output.Status switch
+        {
+            SolveStatus.NoSolutionInTime => SolveRunFailureReason.NoSolutionInTime,
+            SolveStatus.Failed when output.Diagnostics.Any(d => d.Code == Solver.Model.DiagnosticCode.ModelTooLarge) => SolveRunFailureReason.ModelTooLarge,
+            _ => null,
+        };
 
         if (status == SolveRunStatus.Succeeded && output.Allocations.Count != 0)
         {
@@ -88,7 +94,7 @@ public class SolveRunExecutor(
             await allocationRepository.AddRangeAsync(allocations, saveChanges: true, stoppingToken);
         }
 
-        await Complete(run, status, diagnostics, stats, message, stoppingToken);
+        await Complete(run, status, diagnostics, stats, message, stoppingToken, reason);
     }
 
     private async Task Complete(
@@ -97,7 +103,8 @@ public class SolveRunExecutor(
         IReadOnlyList<SolveDiagnostic> diagnostics,
         SolveRunStats? stats,
         string? message,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        SolveRunFailureReason? failureReason = null)
     {
         var current = await runRepository.GetById(run.Id, cancellationToken);
         var tracked = current.Match(x => x, () => run);
@@ -106,7 +113,7 @@ public class SolveRunExecutor(
             return;
         }
 
-        tracked.Complete(status, diagnostics, stats, message, dateTimeProvider.UtcNow);
+        tracked.Complete(status, diagnostics, stats, message, dateTimeProvider.UtcNow, failureReason);
         if (!await runRepository.TryUpdate(tracked, cancellationToken))
         {
             logger.LogInformation("Solve run {RunId} was completed concurrently; keeping that result", run.Id);

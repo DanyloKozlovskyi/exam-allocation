@@ -3,7 +3,17 @@ using Domain.Pins;
 
 namespace Api.Dtos;
 
-public record PinDto(Guid? Id, Guid ParticipantId, Guid RoomId, string? SeatKey)
+/// <param name="ParticipantName">Read-only (filled by <c>GET pins</c>, ignored on create).</param>
+/// <param name="RoomName">Read-only (filled by <c>GET pins</c>, ignored on create).</param>
+/// <param name="CenterId">Read-only (filled by <c>GET pins</c>, ignored on create).</param>
+public record PinDto(
+    Guid? Id,
+    Guid ParticipantId,
+    Guid RoomId,
+    string? SeatKey,
+    string? ParticipantName = null,
+    string? RoomName = null,
+    Guid? CenterId = null)
 {
     public UpsertPinCommand ToUpsertCommand(Guid sessionId) => new()
     {

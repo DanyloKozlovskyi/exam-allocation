@@ -6,12 +6,12 @@ import { DataGrid, GridActionsCellItem, type GridColDef, type GridPaginationMode
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import type { ParticipantDto } from '../../../../api/dtos';
 import { MutationKey } from '../../../../constants/mutationKeys';
 import { QueryKey, queryKeys } from '../../../../constants/queryKeys';
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from '../../../../constants/queryParams';
-import { routes } from '../../../../constants/routes';
+import { ParticipantsQueryParam, routes } from '../../../../constants/routes';
 import { AccessibleFilter, ParticipantColumn, ParticipantsTestId } from '../../../../enums/Participants';
 import { I18nNamespace } from '../../../../i18n';
 import ConfirmDialog from '../../../Common/ConfirmDialog';
@@ -43,11 +43,15 @@ const ParticipantsList = ({ sessionId }: Props) => {
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: FIRST_GRID_PAGE, pageSize: DEFAULT_PAGE_SIZE });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
-  const [group, setGroup] = useState('');
-  const [school, setSchool] = useState('');
-  const [accessible, setAccessible] = useState<AccessibleFilter>(AccessibleFilter.Any);
+  // Filters can be preset by deep links (routes.participants.list(sessionId, filter)).
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get(ParticipantsQueryParam.Search) ?? '';
+  const initialAccessible = Object.values(AccessibleFilter).find((value) => value === searchParams.get(ParticipantsQueryParam.Accessible)) ?? AccessibleFilter.Any;
+  const [searchInput, setSearchInput] = useState(initialSearch);
+  const [search, setSearch] = useState(initialSearch);
+  const [group, setGroup] = useState(searchParams.get(ParticipantsQueryParam.Group) ?? '');
+  const [school, setSchool] = useState(searchParams.get(ParticipantsQueryParam.School) ?? '');
+  const [accessible, setAccessible] = useState<AccessibleFilter>(initialAccessible);
   const [toDelete, setToDelete] = useState<ParticipantDto | null>(null);
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
 

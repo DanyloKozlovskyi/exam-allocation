@@ -2,6 +2,7 @@ using Api.Dtos;
 using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Solving.Services;
+using Domain.Allocations;
 using Domain.Sessions;
 using Domain.SolveRuns;
 using LanguageExt;
@@ -22,14 +23,9 @@ public class SolveRunsControllerService(
             return [];
         }
 
-        var currentHash = await fingerprint.Compute(id, cancellationToken);
-        var result = new List<SolveRunDto>(runs.Count);
-        foreach (var run in runs)
-        {
-            result.Add(await ToDto(run, currentHash, cancellationToken));
-        }
-
-        return result;
+        var allocationIds = await allocationQueries.GetIdsByRuns(runs.Select(x => x.Id).ToList(), cancellationToken);
+        var currentHash = runs.Any(x => !x.IsActive) ? await fingerprint.Compute(id, cancellationToken) : null;
+        return runs.Select(run => ToDto(run, allocationIds, currentHash)).ToList();
     }
 
     public async Task<Option<SolveRunDto>> Get(Guid runId, CancellationToken cancellationToken)
@@ -41,14 +37,17 @@ public class SolveRunsControllerService(
         }
 
         var found = run.Match(x => x, () => throw new InvalidOperationException());
-        var currentHash = await fingerprint.Compute(found.SessionId, cancellationToken);
-        return await ToDto(found, currentHash, cancellationToken);
+        var allocationIds = await allocationQueries.GetIdsByRuns([found.Id], cancellationToken);
+
+        // Active runs are polled every few seconds; staleness only matters for finished results (docs/05).
+        var currentHash = found.IsActive ? null : await fingerprint.Compute(found.SessionId, cancellationToken);
+        return ToDto(found, allocationIds, currentHash);
     }
 
-    private async Task<SolveRunDto> ToDto(SolveRun run, string currentHash, CancellationToken cancellationToken)
+    private static SolveRunDto ToDto(SolveRun run, IReadOnlyDictionary<SolveRunId, IReadOnlyList<AllocationId>> allocationIds, string? currentHash)
     {
-        var allocations = await allocationQueries.GetByRun(run.Id, cancellationToken);
-        var isStale = !string.Equals(run.InputHash, currentHash, StringComparison.Ordinal);
-        return SolveRunDto.FromDomain(run, allocations.Select(x => x.Id.Value).ToList(), isStale);
+        var ids = allocationIds.TryGetValue(run.Id, out var found) ? found.Select(x => x.Value).ToList() : [];
+        var isStale = currentHash is not null && !run.IsActive && !string.Equals(run.InputHash, currentHash, StringComparison.Ordinal);
+        return SolveRunDto.FromDomain(run, ids, isStale);
     }
 }

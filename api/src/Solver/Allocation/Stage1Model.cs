@@ -26,7 +26,7 @@ internal sealed class Stage1Model
 
     public required IReadOnlyList<(BoolVar Literal, ConflictItem Item)> Enforcement { get; init; }
 
-    public void AddHint(IReadOnlyList<RoomClassCount> counts, IReadOnlyDictionary<Guid, int> roomIndexById)
+    public void AddHint(IReadOnlyList<RoomClassCount> counts, IReadOnlyDictionary<Guid, int> roomIndexById, IReadOnlySet<int> pinnedRooms)
     {
         var values = counts
             .Where(c => roomIndexById.ContainsKey(c.RoomId))
@@ -40,7 +40,7 @@ internal sealed class Stage1Model
         var openRooms = values.Where(v => v.Value > 0).Select(v => v.Key.Item2).ToHashSet();
         for (var r = 0; r < Open.Count; r++)
         {
-            Model.AddHint(Open[r], openRooms.Contains(r));
+            Model.AddHint(Open[r], openRooms.Contains(r) || pinnedRooms.Contains(r));
         }
     }
 
@@ -57,4 +57,14 @@ internal sealed class Stage1Model
             Model.AddHint(open, solver.BooleanValue(open));
         }
     }
+}
+
+/// <summary>Two-step solve options of 04 §4.1 for <see cref="Stage1ModelBuilder"/>.</summary>
+/// <param name="Rooms">Selected rooms; the others stay closed (step A). Null = all rooms.</param>
+/// <param name="CostLowerBound">Redundant <c>Cost ≥ LB</c> from room selection (scaled).</param>
+/// <param name="Hint">Hint used when the request has none.</param>
+/// <param name="Fixed">The counts of <paramref name="Hint"/> become constants: the model only evaluates that assignment.</param>
+internal sealed record Stage1BuildOptions(IReadOnlySet<int>? Rooms, long? CostLowerBound, IReadOnlyList<RoomClassCount>? Hint, bool Fixed = false)
+{
+    public static Stage1BuildOptions Default { get; } = new(null, null, null);
 }

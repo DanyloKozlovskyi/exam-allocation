@@ -6,6 +6,7 @@ import { importsHandlers } from './imports';
 import { rulesHandlers } from './rules';
 import { solveRunsHandlers } from './solveRuns';
 import { allocationsHandlers } from './allocations';
+import { pinsHandlers } from './pins';
 
 export const handlers = [
   ...sessionsHandlers,
@@ -16,4 +17,5 @@ export const handlers = [
   ...rulesHandlers,
   ...solveRunsHandlers,
   ...allocationsHandlers,
+  ...pinsHandlers,
 ];

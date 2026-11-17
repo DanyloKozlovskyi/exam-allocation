@@ -19,6 +19,7 @@ export enum MutationKey {
   DeleteRule = 'delete-rule',
   UpsertPin = 'upsert-pin',
   DeletePin = 'delete-pin',
+  DeleteAllPins = 'delete-all-pins',
   PinAll = 'pin-all',
   UploadImport = 'upload-import',
   PreviewImport = 'preview-import',
