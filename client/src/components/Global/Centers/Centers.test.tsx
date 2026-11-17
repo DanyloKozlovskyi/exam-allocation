@@ -6,7 +6,7 @@ import { CentersTestId } from '../../../enums/Centers';
 import { resources, Language } from '../../../i18n';
 import { MOCK_CENTER_KNU_ID } from '../../../mocks/handlers/centers';
 import { MOCK_SESSION_KYIV_ID, resetMockStore } from '../../../mocks/handlers/sessions';
-import { renderWithProviders } from '../Sessions/Common/testing';
+import { renderWithProviders } from '../../../test-utils';
 import CenterCreate from './Create';
 import CenterEdit from './Edit';
 import CentersList from './List';

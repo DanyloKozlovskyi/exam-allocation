@@ -1,8 +1,10 @@
 using System.Net.WebSockets;
+using System.Text.Json.Serialization;
 using LanguageExt;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Tests.Common;
@@ -47,6 +49,7 @@ public static class TestsExtensions
                     return new ValueTask<WebSocket>(webSocketTask);
                 };
             })
+            .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
             .Build();
     }
 }

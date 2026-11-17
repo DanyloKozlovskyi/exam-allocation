@@ -8,6 +8,7 @@ import {
   type ImportErrorDto,
   type ImportMappingDto,
   type ImportPreviewDto,
+  type ImportPreviewRequestDto,
   type ImportResultDto,
   type ImportValidationDto,
   type ParticipantDto,
@@ -120,6 +121,17 @@ export const importsHandlers: HttpHandler[] = [
     const preview = createPreview();
     importsById.set(preview.importId ?? '', { sessionId, preview });
     return HttpResponse.json(preview);
+  }),
+
+  http.post(mockUrl(apiRoutes.imports.preview(importIdParam)), async ({ params, request }) => {
+    const pending = findImport(params[MockPathParam.ImportId]);
+    if (!pending) {
+      return problem(HttpStatus.NotFound, ErrorCode.ImportNotFound);
+    }
+    // One mock sheet: a later header row skips the sample rows above it.
+    const { headerRow = 1 } = (await request.json()) as ImportPreviewRequestDto;
+    const { preview } = pending;
+    return HttpResponse.json({ ...preview, sampleRows: (preview.sampleRows ?? []).slice(Math.max(headerRow - 1, 0)) });
   }),
 
   http.post(mockUrl(apiRoutes.imports.validate(importIdParam)), async ({ params, request }) => {

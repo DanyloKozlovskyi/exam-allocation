@@ -13,7 +13,7 @@ import { resetSolveRunsMocks } from '../../../../mocks/handlers/solveRuns';
 import RulesCreateView from '../../../../views/Rules/Create';
 import RulesEditView from '../../../../views/Rules/Edit';
 import RulesListView from '../../../../views/Rules/List';
-import { allByQa, byQa, renderWithProviders } from '../../SolveRuns/Common/testUtils/renderWithProviders';
+import { allByQa, byQa, renderWithProviders } from '../../../../test-utils';
 import { PARAMETER_FORMS } from '../Common/components/ParameterForms';
 import { defaultParametersState, toParametersDto } from '../Common/parameters';
 

@@ -2,6 +2,7 @@ using Application.Common.Errors;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Api.Modules;
 
@@ -15,7 +16,7 @@ internal static class ExceptionHandlingModule
 }
 
 /// <summary>Maps FluentValidation failures from ValidationBehaviour to 400 ValidationProblemDetails.</summary>
-internal sealed class ValidationExceptionHandler : IExceptionHandler
+internal sealed class ValidationExceptionHandler(IOptions<JsonOptions> jsonOptions) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
@@ -34,8 +35,9 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
         };
         problem.Extensions[ErrorExtensionKeys.Code] = ErrorCode.ValidationFailed;
 
+        // Serialize with the MVC JSON options so enums (the error code) are written as strings, like every other error.
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problem, jsonOptions.Value.JsonSerializerOptions, contentType: null, cancellationToken);
         return true;
     }
 }

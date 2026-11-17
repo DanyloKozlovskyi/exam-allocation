@@ -39,7 +39,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
                 break;
             }
 
-            var attempt = state.SeatLevel ? null : TryStage1Alternative(state, index, progress, cancellationToken);
+            var attempt = state.SeatLevel ? null : TryStage1Alternative(state, index, cancellationToken);
             if (attempt is { Outcome: AttemptOutcome.OutOfTime })
             {
                 reason = cancellationToken.IsCancellationRequested ? AlternativesLimitReason.Cancelled : AlternativesLimitReason.TimeBudgetExhausted;
@@ -49,7 +49,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             if (attempt is null or { Outcome: AttemptOutcome.Exhausted })
             {
                 state.SeatLevel = true;
-                attempt = TrySeatLevelAlternative(state, index, progress, cancellationToken);
+                attempt = TrySeatLevelAlternative(state, index, cancellationToken);
             }
 
             if (cancellationToken.IsCancellationRequested)
@@ -82,7 +82,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
         return new AlternativesResult(state.Allocations, diagnostics);
     }
 
-    private Attempt TryStage1Alternative(GenerationState state, int index, IProgress<SolveProgress> progress, CancellationToken cancellationToken)
+    private Attempt TryStage1Alternative(GenerationState state, int index, CancellationToken cancellationToken)
     {
         var input = state.Request.Input;
         for (var iteration = 0; iteration <= input.Options.MaxFeedbackIterations; iteration++)
@@ -91,7 +91,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             var limited = input with { Options = input.Options with { Stage1TimeLimitSeconds = seconds } };
             var stage1 = stage1Solver.Solve(
                 new Stage1Request(limited, state.Request.Classes, state.Cuts, state.PreviousCounts, state.CostBound, null),
-                progress,
+                SilentProgress.Instance,
                 cancellationToken);
             if (stage1.Status == SolveStatus.Infeasible)
             {
@@ -104,7 +104,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             }
 
             var realization = state.Realizer
-                .SeatAsync(input, state.Request.Classes, stage1.Counts, input.Options.RandomSeed + index, null, progress, cancellationToken)
+                .SeatAsync(input, state.Request.Classes, stage1.Counts, input.Options.RandomSeed + index, null, SilentProgress.Instance, cancellationToken)
                 .GetAwaiter()
                 .GetResult();
             if (realization.Cancelled)
@@ -131,7 +131,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
         return new Attempt(AttemptOutcome.Exhausted, null, null, null);
     }
 
-    private Attempt TrySeatLevelAlternative(GenerationState state, int index, IProgress<SolveProgress> progress, CancellationToken cancellationToken)
+    private Attempt TrySeatLevelAlternative(GenerationState state, int index, CancellationToken cancellationToken)
     {
         var input = state.Request.Input;
         var counts = state.Request.Best.Counts;
@@ -140,7 +140,7 @@ public sealed class AlternativesGenerator(IStage1Solver stage1Solver, ISeatingSo
             .GroupBy(e => e.Key)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<IReadOnlyList<ClassSeatAssignment>>)g.Select(e => e.Value).ToList());
         var realization = state.Realizer
-            .SeatAsync(input, state.Request.Classes, counts, input.Options.RandomSeed + index, previous, progress, cancellationToken)
+            .SeatAsync(input, state.Request.Classes, counts, input.Options.RandomSeed + index, previous, SilentProgress.Instance, cancellationToken)
             .GetAwaiter()
             .GetResult();
         if (realization.Cancelled || realization.FailedRooms.Count > 0)

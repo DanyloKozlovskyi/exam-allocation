@@ -54,30 +54,12 @@ public class UploadImportCommandHandler(
 
     private Either<ImportException, Unit> EnsureSize(Guid importId, byte[] content)
     {
-        var maxBytes = settings.Import.MaxFileSizeMb * ImportLimits.BytesPerMegabyte;
+        var maxBytes = settings.Import.MaxFileSizeBytes;
         return content.LongLength > maxBytes
             ? new ImportFileTooLargeException(importId, maxBytes)
             : Unit.Default;
     }
 
     private ImportPreview CreatePreview(Guid importId, WorkbookPreview workbook)
-    {
-        var sheet = workbook.Sheets[0];
-        var headerIndex = ImportLimits.DefaultHeaderRow - 1;
-        var headers = sheet.Rows.Count > headerIndex
-            ? sheet.Rows[headerIndex].Select(x => x?.Trim() ?? string.Empty).ToList()
-            : [];
-        var sampleRows = sheet.Rows
-            .Skip(ImportLimits.DefaultHeaderRow)
-            .Where(row => row.Any(cell => !string.IsNullOrWhiteSpace(cell)))
-            .Take(ImportPreview.SampleRowCount)
-            .ToList();
-
-        return new ImportPreview(
-            importId,
-            workbook.Sheets.Select(x => x.Name).ToList(),
-            headers,
-            sampleRows,
-            suggester.Suggest(headers));
-    }
+        => ImportPreviewBuilder.Build(importId, workbook, workbook.Sheets[0], ImportLimits.DefaultHeaderRow, suggester);
 }

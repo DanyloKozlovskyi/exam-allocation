@@ -1,12 +1,17 @@
 using Api.Dtos;
 using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
+using Application.Solving.Services;
 using Domain.Sessions;
+using Domain.SolveRuns;
 using LanguageExt;
 
 namespace Api.Services.Implementation;
 
-public class SessionsControllerService(IExamSessionQueries sessionQueries) : ISessionsControllerService
+public class SessionsControllerService(
+    IExamSessionQueries sessionQueries,
+    ISolveRunQueries runQueries,
+    ISessionFingerprint fingerprint) : ISessionsControllerService
 {
     public async Task<IReadOnlyList<SessionSummaryDto>> GetAll(CancellationToken cancellationToken)
     {
@@ -24,7 +29,26 @@ public class SessionsControllerService(IExamSessionQueries sessionQueries) : ISe
     {
         var totals = await sessionQueries.GetTotals(new ExamSessionId(sessionId), cancellationToken);
 
-        // Stale detection against the latest solve run is wired in Phase 2 (SolveRuns).
-        return totals.Map(x => SessionTotalsDto.FromModel(x, false));
+        if (totals.IsNone)
+        {
+            return Option<SessionTotalsDto>.None;
+        }
+
+        var isStale = await IsStale(new ExamSessionId(sessionId), cancellationToken);
+        return totals.Map(x => SessionTotalsDto.FromModel(x, isStale));
+    }
+
+    /// <summary>Stale when the latest succeeded run was computed from different solver-relevant data.</summary>
+    private async Task<bool> IsStale(ExamSessionId sessionId, CancellationToken cancellationToken)
+    {
+        var runs = await runQueries.GetAll(sessionId, cancellationToken);
+        var latest = runs.FirstOrDefault(x => x.Status == SolveRunStatus.Succeeded);
+        if (latest is null)
+        {
+            return false;
+        }
+
+        var current = await fingerprint.Compute(sessionId, cancellationToken);
+        return !string.Equals(latest.InputHash, current, StringComparison.Ordinal);
     }
 }

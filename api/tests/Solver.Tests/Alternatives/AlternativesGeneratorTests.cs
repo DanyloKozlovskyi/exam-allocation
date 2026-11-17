@@ -43,6 +43,25 @@ public class AlternativesGeneratorTests
     }
 
     [Fact]
+    public async Task ShouldReportOnlyAlternativesProgressOnceAlternativesStart()
+    {
+        // Arrange — nested stage 1/2 solves of each alternative must not move clients' stage back.
+        var input = SolverPipelineTests.SmallInput();
+        input = input with { Options = input.Options with { Alternatives = 2, CostSlack = 0.5 } };
+        var progress = new RecordingProgress();
+
+        // Act
+        await TestSolver.Pipeline().RunAsync(input, progress, CancellationToken.None);
+
+        // Assert
+        var stages = progress.Reports.Select(p => p.Stage).ToList();
+        var start = stages.IndexOf(SolveStage.Alternatives);
+        start.Should().BeGreaterThan(0);
+        stages.Skip(start).Should().OnlyContain(s => s == SolveStage.Alternatives || s == SolveStage.Done);
+        progress.Reports.Last(p => p.Stage == SolveStage.Alternatives).AlternativesDone.Should().Be(2);
+    }
+
+    [Fact]
     public async Task ShouldFallBackToSeatLevelDiversityWhenRoomsAreForced()
     {
         // Arrange — one room exactly full: stage-1 diversity is impossible.

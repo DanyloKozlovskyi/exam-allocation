@@ -8,7 +8,7 @@ import { I18nNamespace } from '../../../../i18n';
 import CustomBackdrop from '../../../Common/CustomBackdrop';
 import { initialSessionState, toSessionDto } from '../Common';
 import Steps from '../Common/components/Steps';
-import { useFeedback } from '../Common/useFeedback';
+import { useFeedback } from '../../../../hooks/useFeedback';
 import { createSession } from './mutations';
 
 interface Props {

@@ -2,8 +2,10 @@ using Application.Common.Interfaces.Queries;
 using Application.Common.Interfaces.Repositories;
 using Domain.Sessions;
 using Domain.SolveRuns;
+using Infrastructure.Persistence.Configurations;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -48,5 +50,49 @@ public class SolveRunRepository(ApplicationDbContext dbContext)
     {
         var entity = await Context.SolveRuns.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         return entity ?? Option<SolveRun>.None;
+    }
+
+    public async Task<bool> TryAddActive(SolveRun entity, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Context.SolveRuns.AddAsync(entity, cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+        {
+            SqlState: PostgresErrorCodes.UniqueViolation,
+            ConstraintName: SolveRunsConfiguration.ActiveRunIndexName,
+        })
+        {
+            return false;
+        }
+        finally
+        {
+            Context.ChangeTracker.Clear();
+        }
+    }
+
+    public async Task<bool> TryUpdate(SolveRun entity, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (Context.Entry(entity).State == EntityState.Detached)
+            {
+                Context.SolveRuns.Update(entity);
+            }
+
+            await Context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return false;
+        }
+        finally
+        {
+            Context.ChangeTracker.Clear();
+        }
     }
 }

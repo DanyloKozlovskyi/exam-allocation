@@ -84,7 +84,7 @@ Extra options: `--input <solver-input.json>` (load instead of generate; no time 
 Optimal/Feasible or no allocation), `5` unexpected solver exception, `64` usage error.
 The validator column also flags a mismatch between the validator's soft penalty and
 `Objective.SoftPenalty` (warning only).
-Bench does not reference `Microsoft.Extensions.DependencyInjection`; it resolves the real
-`AddSolver()` registrations with a minimal constructor-injecting resolver (`MinimalServiceProvider`).
+Bench resolves the real `AddSolver()` registrations with
+`new ServiceCollection().AddSolver().BuildServiceProvider()` (`Microsoft.Extensions.DependencyInjection`).
 
 Results of each benchmark run worth keeping go to `docs/benchmarks.md` (append).

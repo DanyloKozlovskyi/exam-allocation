@@ -15,7 +15,9 @@ import { processError } from '../../../../helpers/processError';
 import { useSolveProgress } from '../../../../hooks/useSolveProgress';
 import { I18nNamespace } from '../../../../i18n';
 import ConfirmDialog from '../../../Common/ConfirmDialog';
+import { useAllocationsByRunQuery } from '../../Queries/allocations';
 import { useRulesListQuery } from '../../Queries/rules';
+import { MANUAL_ALLOCATION_INDEX } from '../../Allocations/Common/constants';
 import { SOLVE_STAGE_ORDER } from '../Common/constants';
 import DiagnosticsPanel from '../Common/DiagnosticsPanel';
 import { formatDateTime, formatNumber } from '../Common/formatters';
@@ -47,6 +49,7 @@ const SolveRunView = ({ sessionId, runId, transport }: Props) => {
   const queryClient = useQueryClient();
   const { run, progress, history, transport: currentTransport, isActive, isLoading } = useSolveProgress(runId, { transport });
   const { data: rules = [] } = useRulesListQuery(sessionId);
+  const { data: allocationSummaries } = useAllocationsByRunQuery(run?.allocationIds?.length ? runId : undefined);
   const [confirmCancel, setConfirmCancel] = useState(false);
 
   const cancel = useMutation({
@@ -66,6 +69,13 @@ const SolveRunView = ({ sessionId, runId, transport }: Props) => {
   }
 
   const allocationIds = run.allocationIds ?? [];
+  // Solver allocations come first (best = index 0), manual versions after them: label by index, not position.
+  const indexById = new Map((allocationSummaries ?? []).map((summary) => [summary.id, summary.index]));
+  const allocationLabel = (allocationId: string, position: number) => {
+    const index = indexById.get(allocationId) ?? position;
+    if (index === MANUAL_ALLOCATION_INDEX) return t('view.manualAllocation');
+    return index === 0 ? t('view.bestAllocation') : t('view.allocation', { index });
+  };
   const diagnostics = run.diagnostics ?? [];
   const failedStage = run.status === SolveRunStatus.Infeasible || run.status === SolveRunStatus.Failed || run.status === SolveRunStatus.Cancelled;
 
@@ -131,7 +141,7 @@ const SolveRunView = ({ sessionId, runId, transport }: Props) => {
             {allocationIds.map((allocationId, index) => (
               <ListItem key={allocationId}>
                 <Link component={RouterLink} to={routes.allocations.view(sessionId, allocationId)} data-qa={SolveRunsTestId.AllocationLink}>
-                  {index === 0 ? t('view.bestAllocation') : t('view.allocation', { index })}
+                  {allocationLabel(allocationId, index)}
                 </Link>
               </ListItem>
             ))}

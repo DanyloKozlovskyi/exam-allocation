@@ -71,8 +71,8 @@ exam-allocation/
 │  │  │  ├─ Sessions/  Centers/  Rooms/  Participants/  Rules/  Pins/
 │  │  │  │                        Commands/ (Command+Handler, Validator), Exceptions/
 │  │  │  ├─ Imports/               Commands/ (Upload, Validate, Commit), Exceptions/, Services/
-│  │  │  ├─ Solving/               Commands/ (StartSolveRun, CancelSolveRun, RunPrecheck), Services/ (SolverInputBuilder,
-│  │  │  │                        SolveRunExecutor, SessionFingerprint), Exceptions/
+│  │  │  ├─ SolveRuns/             Commands/ (StartSolveRun, CancelSolveRun, RunPrecheck), Exceptions/
+│  │  │  ├─ Solving/               Services/ (SolverInputBuilder, SolveRunExecutor, SessionFingerprint), Mapping/
 │  │  │  └─ Allocations/           Commands/ (ApplyMoves, PinAll), Services/ (AllocationExportModelBuilder), Exceptions/
 │  │  ├─ Infrastructure/
 │  │  │  ├─ ConfigureServices.cs
@@ -124,19 +124,23 @@ converts Domain → `SolverInput` and `SolverOutput` → `Allocation` entities.
 
 ```
 Client ─POST sessions/{id}/solve-runs/create─► SolveRunsController
-   └─ sender.Send(StartSolveRunCommand) ─► handler: validate, snapshot → SolverInput,
-        SolveRun(Queued) via ISolveRunRepository, ISolveQueue.Enqueue(runId) ─► 200 SolveRunDto
+   └─ sender.Send(StartSolveRunCommand) ─► handler: validate, session fingerprint,
+        SolveRun(Queued) via ISolveRunRepository (unique index: one Queued/Running run per session),
+        ISolveQueue.Enqueue(runId) ─► 200 SolveRunDto
 SolveWorker (BackgroundService, Infrastructure) ◄── Channel ── dequeue runId
-   └─ scope → SolveRunExecutor (Application): load run, ISolverPipeline.RunAsync(input, progress, ct)
+   └─ scope → SolveRunExecutor (Application): load run, fingerprint again + Running (xmin-checked),
+        snapshot → SolverInput, ISolverPipeline.RunAsync(input, progress, ct)
         progress ─► ISolveProgressNotifier ─► SignalR group "run:{runId}" (SolveProgressHub)
         result   ─► IAllocationRepository.AddRangeAsync, SolveRun → Succeeded|Infeasible|Failed|Cancelled
 Client: HubConnection to /hubs/solve-progress, Invoke(SubscribeToRun, runId),
         on(ProgressUpdated) / on(RunCompleted); fallback polling GET solve-runs/{runId}
 ```
 
-- One worker; `Solver:MaxConcurrentRuns = 1`. CP-SAT uses all cores itself.
+- One worker (runs execute one at a time); CP-SAT uses all cores itself. The stage-1 time limit and
+  the number of alternatives are per-run options (`SolveOptionsDto`, defaults in `SolveRunOptions`).
 - Cancel: `POST solve-runs/{runId}/cancel` → `CancelSolveRunCommand` → token → `StopSearch()`.
-- Startup (`ApplicationDbContextInitialiser`): runs left `Running` → `Failed` with `ErrorCode.RunInterrupted`.
+- Startup (`ApplicationDbContextInitialiser`): runs left `Queued` or `Running` → `Failed` (the queue is
+  in memory) with the error message "Interrupted by server restart".
 
 ## Key decisions
 
@@ -154,12 +158,9 @@ Client: HubConnection to /hubs/solve-progress, Invoke(SubscribeToRun, runId),
 {
   "ConnectionStrings": { "DefaultConnection": "Host=localhost;Port=5432;Database=exam_allocation;Username=exam;Password=exam" },
   "Solver": {
-    "MaxConcurrentRuns": 1,
     "NumWorkers": 0,
-    "Stage1TimeLimitSeconds": 60,
     "Stage2TimeLimitSecondsPerRoom": 5,
-    "MaxFeedbackIterations": 5,
-    "DefaultAlternatives": 5
+    "MaxFeedbackIterations": 5
   },
   "Import": { "MaxFileSizeMb": 20, "MaxRows": 100000, "CacheMinutes": 60 },
   "Cors": { "Origins": [ "http://localhost:3000" ] }

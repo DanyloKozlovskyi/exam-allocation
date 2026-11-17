@@ -21,6 +21,7 @@ import DiagnosticsPanel from '../../SolveRuns/Common/DiagnosticsPanel';
 import { runPrecheck } from '../../SolveRuns/Common/mutations';
 import { editRule } from '../Edit/mutations';
 import { deleteRule } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   sessionId: string;
@@ -42,7 +43,7 @@ const RulesList = ({ sessionId, onCreate, onEdit }: Props) => {
   const [diagnostics, setDiagnostics] = useState<DiagnosticDto[] | null>(null);
 
   const notifyError = (error: unknown) => processError(error, tc, (message) => enqueueSnackbar(message, { variant: SNACKBAR_ERROR }));
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.rules.list(sessionId) });
+  const invalidate = () => Promise.all([queryClient.invalidateQueries({ queryKey: queryKeys.rules.list(sessionId) }), invalidateSessionInputs(queryClient)]);
   const ruleName = (rule: RuleDto) => rule.displayName || (rule.type ? t(`ruleType.${rule.type}`) : '');
 
   const toggle = useMutation({

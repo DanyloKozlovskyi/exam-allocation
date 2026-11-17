@@ -11,20 +11,22 @@ import CustomBackdrop from '../../../Common/CustomBackdrop';
 import CustomStepper from '../../../Common/CustomStepper';
 import { fetchImportTemplate } from '../../Queries/imports';
 import { FULL_GRID_SIZE } from '../../Sessions/Common/constants';
-import { useFeedback } from '../../Sessions/Common/useFeedback';
+import { useFeedback } from '../../../../hooks/useFeedback';
 import {
   hasMappingErrors,
   ImportReducerAction,
   importReducer,
   initialImportState,
   isCommitBlocked,
+  needsRePreview,
   TEMPLATE_FILE_NAME,
   toImportMappingDto,
   validateMapping,
   type MappingValidationErrors,
 } from '../Common';
 import { buildImportSteps } from '../Common/components/Steps';
-import { commitImport, uploadImport, validateImport } from './mutations';
+import { commitImport, previewImport, uploadImport, validateImport } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   sessionId: string;
@@ -66,6 +68,16 @@ const ImportWizard = ({ sessionId, onFinished }: Props) => {
     onError: notifyError,
   });
 
+  const previewMutation = useMutation({
+    mutationKey: [MutationKey.PreviewImport],
+    mutationFn: () => previewImport(importId, { sheet: state.sheet, headerRow: Number(state.headerRow) }),
+    onSuccess: (preview) => {
+      dispatch({ type: ImportReducerAction.RePreview, payload: { preview } });
+      setStep(ImportWizardStep.Mapping);
+    },
+    onError: notifyError,
+  });
+
   const validateMutation = useMutation({
     mutationKey: [MutationKey.ValidateImport],
     mutationFn: ({ dto }: ValidateRequest) => validateImport(importId, dto),
@@ -84,7 +96,7 @@ const ImportWizard = ({ sessionId, onFinished }: Props) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [QueryKey.Participants, sessionId] }),
         queryClient.invalidateQueries({ queryKey: queryKeys.participants.attributes(sessionId) }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.sessions.totals(sessionId) }),
+        invalidateSessionInputs(queryClient),
       ]);
       notifySuccess(t('messages.committed', { count: result.inserted ?? 0 }));
     },
@@ -111,6 +123,13 @@ const ImportWizard = ({ sessionId, onFinished }: Props) => {
         }
         uploadMutation.mutate(state.file);
         return true;
+      case ImportWizardStep.Sheet:
+        // Headers, sample rows and the suggested mapping depend on the sheet and header row.
+        if (!needsRePreview(state)) {
+          return false;
+        }
+        previewMutation.mutate();
+        return true;
       case ImportWizardStep.Mapping: {
         const errors = validateMapping(state);
         setMappingErrors(errors);
@@ -131,11 +150,13 @@ const ImportWizard = ({ sessionId, onFinished }: Props) => {
 
   const busyLabel = uploadMutation.isPending
     ? t('wizard.uploading')
-    : validateMutation.isPending
-      ? t('wizard.validating')
-      : commitMutation.isPending
-        ? t('wizard.committing')
-        : null;
+    : previewMutation.isPending
+      ? t('wizard.previewing')
+      : validateMutation.isPending
+        ? t('wizard.validating')
+        : commitMutation.isPending
+          ? t('wizard.committing')
+          : null;
   const isNextDisabled = (step === ImportWizardStep.Upload && (!state.file || Boolean(state.fileError))) || (step === ImportWizardStep.Commit && isCommitBlocked(state));
 
   if (state.result) {

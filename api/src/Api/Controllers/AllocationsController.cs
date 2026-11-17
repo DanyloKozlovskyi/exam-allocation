@@ -1,64 +1,79 @@
 using Api.Constants;
 using Api.Dtos;
+using Api.Modules.Errors;
+using Api.Services.Abstract;
+using Application.Allocations.Commands;
 using Application.Common.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
-public class AllocationsController : ControllerBase
+public class AllocationsController(ISender sender, IAllocationsControllerService controllerService) : ControllerBase
 {
     [HttpGet(ApiRoutes.Allocations.ByRun)]
-    public Task<ActionResult<IReadOnlyList<AllocationSummaryDto>>> GetByRun(
+    public async Task<ActionResult<IReadOnlyList<AllocationSummaryDto>>> GetByRun(
         [FromRoute] Guid runId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<AllocationSummaryDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var allocations = await controllerService.GetByRun(runId, cancellationToken);
+        return Ok(allocations);
     }
 
     [HttpGet(ApiRoutes.Allocations.ById)]
-    public Task<ActionResult<AllocationDto>> Get(
+    public async Task<ActionResult<AllocationDto>> Get(
         [FromRoute] Guid allocationId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<AllocationDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var allocation = await controllerService.Get(allocationId, cancellationToken);
+        return allocation.Match<ActionResult<AllocationDto>>(dto => dto, () => NotFound());
     }
 
     [HttpGet(ApiRoutes.Allocations.RoomSeating)]
-    public Task<ActionResult<RoomSeatingDto>> RoomSeating(
+    public async Task<ActionResult<RoomSeatingDto>> RoomSeating(
         [FromRoute] Guid allocationId,
         [FromRoute] Guid roomId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<RoomSeatingDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var seating = await controllerService.RoomSeating(allocationId, roomId, cancellationToken);
+        return seating.Match<ActionResult<RoomSeatingDto>>(dto => dto, () => NotFound());
     }
 
     [HttpGet(ApiRoutes.Allocations.Participants)]
-    public Task<ActionResult<PagedDto<AllocationRowDto>>> Participants(
+    public async Task<ActionResult<PagedDto<AllocationRowDto>>> Participants(
         [FromRoute] Guid allocationId,
         CancellationToken cancellationToken,
         [FromQuery] int page = PageRequest.FirstPage,
         [FromQuery] int pageSize = PageRequest.DefaultPageSize,
-        [FromQuery] string? search = null)
+        [FromQuery] string? search = null,
+        [FromQuery] SortDirection sortDirection = SortDirection.Ascending)
     {
-        return Task.FromResult<ActionResult<PagedDto<AllocationRowDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var rows = await controllerService.Participants(allocationId, new PageRequest(page, pageSize, search, sortDirection), cancellationToken);
+        return rows.Match<ActionResult<PagedDto<AllocationRowDto>>>(dto => dto, () => NotFound());
     }
 
     [HttpPost(ApiRoutes.Allocations.ValidateMoves)]
-    public Task<ActionResult<ValidationReportDto>> ValidateMoves(
+    public async Task<ActionResult<ValidationReportDto>> ValidateMoves(
         [FromRoute] Guid allocationId,
         [FromBody] MovesDto moves,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<ValidationReportDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var command = new ValidateMovesCommand { AllocationId = allocationId, Moves = moves.Moves.Select(x => x.ToModel()).ToList() };
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<ValidationReportDto>>(report => ValidationReportDto.FromModel(report), e => e.ToObjectResult());
     }
 
     [HttpPost(ApiRoutes.Allocations.ApplyMoves)]
-    public Task<ActionResult<AllocationDto>> ApplyMoves(
+    public async Task<ActionResult<AllocationDto>> ApplyMoves(
         [FromRoute] Guid allocationId,
         [FromBody] MovesDto moves,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<AllocationDto>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var command = new ApplyMovesCommand { AllocationId = allocationId, Moves = moves.Moves.Select(x => x.ToModel()).ToList(), Force = moves.Force };
+        var result = await sender.Send(command, cancellationToken);
+        return await result.MatchAsync<ActionResult<AllocationDto>>(
+            async allocation => (await controllerService.Get(allocation.Id.Value, cancellationToken)).Match<ActionResult<AllocationDto>>(dto => dto, () => NotFound()),
+            e => e.ToObjectResult());
     }
 }

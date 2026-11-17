@@ -9,7 +9,7 @@ import { MOCK_IMPORT_VALID_ROWS, MockImportHeader } from '../../../mocks/handler
 import { mockParticipantsCount } from '../../../mocks/handlers/participants';
 import { MOCK_SESSION_KYIV_ID, mockUrl, resetMockStore } from '../../../mocks/handlers/sessions';
 import { server } from '../../../mocks/server';
-import { renderWithProviders } from '../Sessions/Common/testing';
+import { renderWithProviders } from '../../../test-utils';
 import { checkFile, FileError, toAttributeKey } from './Common';
 import ImportWizard from './Create';
 
@@ -106,6 +106,31 @@ describe('Import wizard', () => {
 
     await user.click(byQa(ImportsTestId.FinishButton));
     expect(onFinished).toHaveBeenCalled();
+    server.events.removeAllListeners();
+  });
+
+  it('re-reads headers when the header row changes', async () => {
+    const user = userEvent.setup();
+    const previewBodies: unknown[] = [];
+    server.events.on('request:start', ({ request }) => {
+      if (request.url.endsWith('/preview')) {
+        void request
+          .clone()
+          .json()
+          .then((body) => previewBodies.push(body));
+      }
+    });
+    renderWithProviders(<ImportWizard sessionId={MOCK_SESSION_KYIV_ID} onFinished={jest.fn()} />);
+
+    await user.upload(byQa(ImportsTestId.FileInput), xlsxFile());
+    await user.click(next());
+    await waitFor(() => expect(byQa(ImportsTestId.HeaderRowField)).toBeInTheDocument());
+    await user.clear(byQa(ImportsTestId.HeaderRowField));
+    await user.type(byQa(ImportsTestId.HeaderRowField), '2');
+    await user.click(next());
+
+    await waitFor(() => expect(byQa(`${ImportsTestId.MappingField}-${ParticipantField.LastName}`)).toBeInTheDocument());
+    expect(previewBodies).toEqual([{ sheet: 'Учасники', headerRow: 2 }]);
     server.events.removeAllListeners();
   });
 

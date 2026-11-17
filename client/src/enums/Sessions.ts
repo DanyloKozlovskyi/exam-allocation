@@ -51,4 +51,5 @@ export enum SessionsTestId {
   Checklist = 'session-checklist',
   StaleWarning = 'session-stale-warning',
   EditButton = 'session-edit-button',
+  LastRun = 'session-last-run',
 }

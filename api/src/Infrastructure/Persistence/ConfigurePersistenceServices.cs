@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Queries;
 using Application.Common.Interfaces.Repositories;
 using Infrastructure.Persistence.Repositories;
@@ -20,6 +21,7 @@ public static class ConfigurePersistenceServices
         services.AddDbContext<ApplicationDbContext>(options => options.UseApplicationDatabase(dataSource));
 
         services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<ITransactionRunner, EfTransactionRunner>();
         services.AddRepositories();
     }
 

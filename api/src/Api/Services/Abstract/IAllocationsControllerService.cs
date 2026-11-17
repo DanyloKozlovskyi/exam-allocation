@@ -12,5 +12,5 @@ public interface IAllocationsControllerService
 
     Task<Option<RoomSeatingDto>> RoomSeating(Guid allocationId, Guid roomId, CancellationToken cancellationToken);
 
-    Task<PagedDto<AllocationRowDto>> Participants(Guid allocationId, PageRequest page, CancellationToken cancellationToken);
+    Task<Option<PagedDto<AllocationRowDto>>> Participants(Guid allocationId, PageRequest page, CancellationToken cancellationToken);
 }

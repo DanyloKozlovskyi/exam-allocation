@@ -13,6 +13,7 @@ import { useRuleQuery, useRuleTypesQuery, useSessionAttributesQuery } from '../.
 import { fromRuleDto, initialRuleState, ruleReducer, RuleReducerAction, toRuleDto } from '../Common';
 import Steps from '../Common/components/Steps';
 import { editRule } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   sessionId: string;
@@ -43,6 +44,7 @@ const RuleEdit = ({ sessionId, ruleId, onFinish }: Props) => {
     mutationFn: () => editRule(sessionId, toRuleDto(state, sessionId)),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.rules.list(sessionId) });
+      void invalidateSessionInputs(queryClient);
       enqueueSnackbar(t('messages.saved'), { variant: SNACKBAR_SUCCESS });
       onFinish();
     },

@@ -2,6 +2,7 @@
 import type { components } from './generated/schema';
 
 export {
+  AccessibleSeatingParametersDtoType,
   AdjacencyKind,
   DedupeStrategy,
   DiagnosticArgument,
@@ -9,16 +10,22 @@ export {
   DiagnosticSeverity,
   ErrorCode,
   ExportFormat,
+  FillFromFrontParametersDtoType,
   ImportErrorCode,
   ImportMode,
+  KeepTogetherInCenterParametersDtoType,
+  MinRoomFillParametersDtoType,
+  NoAdjacentByAttributeParametersDtoType,
   ObjectiveMode,
   ParticipantField,
   ParticipantSortField,
   RuleScope,
   RuleType,
+  SeparateByAttributeParametersDtoType,
   SolveRunStatus,
   SolveStage,
   SortDirection,
+  SpreadInRoomParametersDtoType,
   ViolationKind,
 } from './generated/schema';
 
@@ -40,6 +47,7 @@ export type FillFromFrontParametersDto = Schemas['FillFromFrontParametersDto'];
 export type ImportErrorDto = Schemas['ImportErrorDto'];
 export type ImportMappingDto = Schemas['ImportMappingDto'];
 export type ImportPreviewDto = Schemas['ImportPreviewDto'];
+export type ImportPreviewRequestDto = Schemas['ImportPreviewRequestDto'];
 export type ImportResultDto = Schemas['ImportResultDto'];
 export type ImportValidationDto = Schemas['ImportValidationDto'];
 export type KeepTogetherInCenterParametersDto = Schemas['KeepTogetherInCenterParametersDto'];

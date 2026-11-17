@@ -1,4 +1,3 @@
-using System.Transactions;
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Queries;
 using Application.Common.Interfaces.Repositories;
@@ -34,7 +33,8 @@ public class CommitImportCommandHandler(
     IParticipantFileReader reader,
     IParticipantRowValidator validator,
     IParticipantQueries participantQueries,
-    IParticipantRepository participantRepository)
+    IParticipantRepository participantRepository,
+    ITransactionRunner transactionRunner)
     : IRequestHandler<CommitImportCommand, Either<ImportException, ImportResult>>
 {
     public async Task<Either<ImportException, ImportResult>> Handle(
@@ -69,7 +69,15 @@ public class CommitImportCommandHandler(
             ? new ImportRowsInvalidException(request.ImportId, validation.ErrorRows)
             : Unit.Default;
 
-    private async Task<ImportResult> Write(
+    private Task<ImportResult> Write(
+        Guid sessionGuid,
+        ImportOptions options,
+        ImportValidation validation,
+        IReadOnlyList<Participant> existing,
+        CancellationToken cancellationToken)
+        => transactionRunner.RunAsync(token => WriteRows(sessionGuid, options, validation, existing, token), cancellationToken);
+
+    private async Task<ImportResult> WriteRows(
         Guid sessionGuid,
         ImportOptions options,
         ImportValidation validation,
@@ -81,7 +89,6 @@ public class CommitImportCommandHandler(
         var inserted = new List<Participant>();
         var updated = 0;
 
-        using var scope = new TransactionScope(TransactionScopeOption.Required, TransactionScopeAsyncFlowOption.Enabled);
         if (options.Mode == ImportMode.Replace)
         {
             await participantRepository.RemoveAllBySession(sessionId, cancellationToken);
@@ -109,7 +116,6 @@ public class CommitImportCommandHandler(
             await participantRepository.AddRangeAsync(inserted, saveChanges: true, cancellationToken);
         }
 
-        scope.Complete();
         return new ImportResult(inserted.Count, updated, validation.ErrorRows);
     }
 }

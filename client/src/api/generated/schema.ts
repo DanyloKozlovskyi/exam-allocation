@@ -135,6 +135,7 @@ export interface paths {
           page?: number;
           pageSize?: number;
           search?: string;
+          sortDirection?: components['schemas']['SortDirection'];
         };
         header?: never;
         path: {
@@ -317,6 +318,51 @@ export interface paths {
             /** Format: binary */
             file?: string;
           };
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': components['schemas']['ImportPreviewDto'];
+            'application/json': components['schemas']['ImportPreviewDto'];
+            'text/json': components['schemas']['ImportPreviewDto'];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/imports/{importId}/preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          importId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: {
+        content: {
+          'application/json': components['schemas']['ImportPreviewRequestDto'];
+          'text/json': components['schemas']['ImportPreviewRequestDto'];
+          'application/*+json': components['schemas']['ImportPreviewRequestDto'];
         };
       };
       responses: {
@@ -1765,12 +1811,34 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description OK */
-        200: {
+        /** @description Accepted */
+        202: {
           headers: {
             [name: string]: unknown;
           };
           content?: never;
+        };
+        /** @description Not Found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': components['schemas']['ProblemDetails'];
+            'application/json': components['schemas']['ProblemDetails'];
+            'text/json': components['schemas']['ProblemDetails'];
+          };
+        };
+        /** @description Conflict */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            'text/plain': components['schemas']['ProblemDetails'];
+            'application/json': components['schemas']['ProblemDetails'];
+            'text/json': components['schemas']['ProblemDetails'];
+          };
         };
       };
     };
@@ -2039,6 +2107,8 @@ export interface components {
     AllocationDto: {
       /** Format: uuid */
       id?: string;
+      /** Format: uuid */
+      runId?: string;
       /** Format: int32 */
       index?: number;
       objective?: components['schemas']['ObjectiveDto'];
@@ -2174,6 +2244,11 @@ export interface components {
       headers?: string[];
       sampleRows?: string[][];
       suggestedMapping?: components['schemas']['ColumnMappingDto'];
+    };
+    ImportPreviewRequestDto: {
+      sheet?: string;
+      /** Format: int32 */
+      headerRow?: number;
     };
     ImportResultDto: {
       /** Format: int32 */
@@ -2799,5 +2874,6 @@ export enum ViolationKind {
   KeepTogetherSplit = 'KeepTogetherSplit',
   SpreadViolated = 'SpreadViolated',
   FillFromFront = 'FillFromFront',
+  UnknownParticipant = 'UnknownParticipant',
 }
 export type operations = Record<string, never>;

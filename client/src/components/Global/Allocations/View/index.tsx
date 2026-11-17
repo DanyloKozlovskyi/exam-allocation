@@ -6,11 +6,10 @@ import { AllocationsTestId, AllocationViewTab } from '../../../../enums/Allocati
 import { I18nNamespace } from '../../../../i18n';
 import { useAllocationQuery, useAllocationsByRunQuery } from '../../Queries/allocations';
 import { useRulesListQuery } from '../../Queries/rules';
-import { useSolveRunsListQuery } from '../../Queries/solveRuns';
 import { formatNumber } from '../../SolveRuns/Common/formatters';
 import { fillRatioColor } from '../Common/constants';
 import AlternativeTabs from '../Common/components/AlternativeTabs';
-import CentersMapPlaceholder from '../Common/components/CentersMapPlaceholder';
+import CentersMap from '../../Centers/Map/CentersMap';
 import ExportMenu from '../Common/components/ExportMenu';
 import ParticipantsGrid from '../Common/components/ParticipantsGrid';
 import PinAndRerun from '../Common/components/PinAndRerun';
@@ -51,10 +50,7 @@ const AllocationView = ({ sessionId, allocationId, onSelectAllocation, onOpenRoo
   const [tab, setTab] = useState(AllocationViewTab.Overview);
   const [selectedCenterId, setSelectedCenterId] = useState<string | null>(null);
   const { data: allocation, isLoading } = useAllocationQuery(allocationId);
-  const { data: runs = [] } = useSolveRunsListQuery(sessionId);
-  // AllocationDto has no runId (see change-requests): find the run that produced this allocation.
-  const run = runs.find((item) => item.allocationIds?.includes(allocationId));
-  const { data: alternatives = [] } = useAllocationsByRunQuery(run?.id);
+  const { data: alternatives = [] } = useAllocationsByRunQuery(allocation?.runId);
   const { data: rules = [] } = useRulesListQuery(sessionId);
 
   const centers = useMemo(() => (allocation?.centers ?? []).map(toCenter), [allocation]);
@@ -94,12 +90,17 @@ const AllocationView = ({ sessionId, allocationId, onSelectAllocation, onOpenRoo
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: MAP_COLUMNS }}>
             <Stack spacing={2}>
-              <CentersMapPlaceholder
-                centers={centers}
-                selectedCenterId={selectedCenterId}
-                onSelect={(centerId) => setSelectedCenterId((current) => (current === centerId ? null : centerId))}
-                getMarkerColor={(center) => fillRatioColor(fillById.get(center.id ?? undefined) ?? 0)}
-              />
+              <Box data-qa={AllocationsTestId.OverviewMap}>
+                <Typography variant="subtitle1" gutterBottom>
+                  {t('overview.map')}
+                </Typography>
+                <CentersMap
+                  centers={centers}
+                  selectedCenterId={selectedCenterId}
+                  onSelect={(centerId) => setSelectedCenterId((current) => (current === centerId ? null : centerId))}
+                  getMarkerColor={(center) => fillRatioColor(fillById.get(center.id ?? undefined) ?? 0)}
+                />
+              </Box>
               <Paper variant="outlined" sx={{ p: 2 }}>
                 <Typography variant="subtitle1">{t('overview.penalties')}</Typography>
                 {penalties.length === 0 ? (

@@ -30,6 +30,16 @@ public class ImportsController(ISender sender, IImportsControllerService control
         return result.Match<ActionResult<ImportPreviewDto>>(p => ImportPreviewDto.FromModel(p), e => e.ToObjectResult());
     }
 
+    [HttpPost(ApiRoutes.Imports.Preview)]
+    public async Task<ActionResult<ImportPreviewDto>> Preview(
+        [FromRoute] Guid importId,
+        [FromBody] ImportPreviewRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(request.ToCommand(importId), cancellationToken);
+        return result.Match<ActionResult<ImportPreviewDto>>(p => ImportPreviewDto.FromModel(p), e => e.ToObjectResult());
+    }
+
     [HttpPost(ApiRoutes.Imports.Validate)]
     public async Task<ActionResult<ImportValidationDto>> Validate(
         [FromRoute] Guid importId,

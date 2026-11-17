@@ -21,6 +21,7 @@ export enum MutationKey {
   DeletePin = 'delete-pin',
   PinAll = 'pin-all',
   UploadImport = 'upload-import',
+  PreviewImport = 'preview-import',
   ValidateImport = 'validate-import',
   CommitImport = 'commit-import',
   StartSolveRun = 'start-solve-run',

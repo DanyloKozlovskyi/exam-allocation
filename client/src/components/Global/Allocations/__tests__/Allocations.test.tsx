@@ -10,7 +10,7 @@ import { resetRulesMocks } from '../../../../mocks/handlers/rules';
 import { getMockRuns, resetSolveRunsMocks } from '../../../../mocks/handlers/solveRuns';
 import AllocationsRoomView from '../../../../views/Allocations/Room';
 import AllocationsViewView from '../../../../views/Allocations/View';
-import { allByQa, byQa, LOCATION_TEST_ID, renderWithProviders } from '../../SolveRuns/Common/testUtils/renderWithProviders';
+import { allByQa, byQa, LOCATION_TEST_ID, renderWithProviders } from '../../../../test-utils';
 import { groupColor, GROUP_PALETTE, NO_GROUP_COLOR } from '../Common/constants';
 import { buildExportUrl } from '../Common/helpers';
 

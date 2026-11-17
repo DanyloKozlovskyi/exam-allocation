@@ -10,16 +10,22 @@ namespace Infrastructure.Persistence.Repositories;
 public class TestCenterRepository(ApplicationDbContext dbContext)
     : RepositoryBase<TestCenter, TestCenterId>(dbContext), ITestCenterRepository, ITestCenterQueries
 {
-    /// <summary>
-    /// Tracked lookup. <see cref="ExamSessionId.Empty"/> as <paramref name="sessionId"/> matches any session
-    /// (room commands only know the center id; see docs/change-requests.md).
-    /// </summary>
+    /// <summary>Tracked lookup within a session.</summary>
     public async Task<Option<TestCenter>> GetById(ExamSessionId sessionId, TestCenterId id, CancellationToken cancellationToken)
     {
-        var anySession = sessionId == ExamSessionId.Empty();
         var entity = await Context.TestCenters
             .Include(x => x.Rooms)
-            .FirstOrDefaultAsync(x => (anySession || x.SessionId == sessionId) && x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.SessionId == sessionId && x.Id == id, cancellationToken);
+
+        return entity ?? Option<TestCenter>.None;
+    }
+
+    /// <summary>Tracked lookup by id only.</summary>
+    public async Task<Option<TestCenter>> GetById(TestCenterId id, CancellationToken cancellationToken)
+    {
+        var entity = await Context.TestCenters
+            .Include(x => x.Rooms)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         return entity ?? Option<TestCenter>.None;
     }

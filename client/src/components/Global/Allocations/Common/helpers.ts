@@ -1,13 +1,13 @@
 import { ExportFormat, type ParticipantBriefDto } from '../../../../api/dtos';
 import { appConfig } from '../../../../constants/config';
-import { apiRoutes } from '../../../../constants/apiRoutes';
-import { ELLIPSIS, ExportQueryParam, SURNAME_MAX_CHARS } from './constants';
+import { ApiQueryParam, apiRoutes } from '../../../../constants/apiRoutes';
+import { ELLIPSIS, SURNAME_MAX_CHARS } from './constants';
 
 /** Absolute download URL of an export; `roomId` applies to PDF only. */
 export const buildExportUrl = (allocationId: string, format: ExportFormat, roomId?: string) => {
-  const query = new URLSearchParams({ [ExportQueryParam.Format]: format });
+  const query = new URLSearchParams({ [ApiQueryParam.Format]: format });
   if (roomId && format === ExportFormat.Pdf) {
-    query.set(ExportQueryParam.RoomId, roomId);
+    query.set(ApiQueryParam.RoomId, roomId);
   }
   return `${appConfig.apiUrl}/${apiRoutes.exports.export(allocationId)}?${query.toString()}`;
 };

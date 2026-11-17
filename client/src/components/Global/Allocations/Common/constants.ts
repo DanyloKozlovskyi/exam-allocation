@@ -19,12 +19,6 @@ export const groupColor = (group: string | null | undefined) => {
   return GROUP_PALETTE[hash % GROUP_PALETTE.length];
 };
 
-/** Query parameter names of `allocations/{id}/export` (mirror ExportsController). */
-export enum ExportQueryParam {
-  Format = 'format',
-  RoomId = 'roomId',
-}
-
 export const EXPORT_FORMATS: ExportFormat[] = [ExportFormat.Xlsx, ExportFormat.Xml, ExportFormat.Csv, ExportFormat.Pdf];
 
 /** Index of the hand-edited allocation (`apply-moves`). */
@@ -38,7 +32,6 @@ export const ELLIPSIS = '…';
 export const GROUP_BAR_HEIGHT_PX = 6;
 export const SEAT_TEXT_OFFSET_PX = 4;
 export const SEAT_TEXT_FONT_SIZE_PX = 11;
-export const SEARCH_DEBOUNCE_MS = 300;
 
 /** Fill-ratio colouring of overview markers: [min ratio, colour], checked from the top. */
 const FILL_RATIO_HIGH = 0.9;

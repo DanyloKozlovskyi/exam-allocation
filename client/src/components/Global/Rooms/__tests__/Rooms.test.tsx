@@ -6,7 +6,7 @@ import { getMockRooms, MOCK_CENTERS, resetRoomsMocks } from '../../../../mocks/h
 import RoomsCreateView from '../../../../views/Rooms/Create';
 import RoomsEditView from '../../../../views/Rooms/Edit';
 import RoomsListView from '../../../../views/Rooms/List';
-import { byQa, LOCATION_TEST_ID, renderWithProviders } from '../../SolveRuns/Common/testUtils/renderWithProviders';
+import { byQa, LOCATION_TEST_ID, renderWithProviders } from '../../../../test-utils';
 import { fromRoomDto, roomReducer, RoomReducerAction, initialRoomState, validateDetails, RoomField, RoomValidationError } from '../Common';
 
 const SESSION_ID = 's1';

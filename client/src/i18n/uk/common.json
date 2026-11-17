@@ -15,9 +15,11 @@
     "sessions": "Сесії",
     "overview": "Огляд",
     "centers": "Центри",
+    "rooms": "Аудиторії",
     "participants": "Учасники",
     "rules": "Правила",
-    "solveRuns": "Розрахунок"
+    "solveRuns": "Розрахунок",
+    "results": "Результати"
   },
   "placeholder": "Сторінка буде реалізована у фазі 1.",
   "views": {

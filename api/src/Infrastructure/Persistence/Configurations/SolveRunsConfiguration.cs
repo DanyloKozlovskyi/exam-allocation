@@ -7,6 +7,13 @@ namespace Infrastructure.Persistence.Configurations;
 
 public class SolveRunsConfiguration : IEntityTypeConfiguration<SolveRun>
 {
+    public const string ActiveRunIndexName = "ix_solve_runs_session_id_active";
+
+    private const string StatusColumn = "status";
+
+    private static readonly string ActiveRunFilter =
+        $"{StatusColumn} IN ('{nameof(SolveRunStatus.Queued)}', '{nameof(SolveRunStatus.Running)}')";
+
     public void Configure(EntityTypeBuilder<SolveRun> builder)
     {
         builder.HasKey(x => x.Id);
@@ -21,6 +28,7 @@ public class SolveRunsConfiguration : IEntityTypeConfiguration<SolveRun>
         builder.Property(x => x.CreatedAt);
         builder.Property(x => x.StartedAt);
         builder.Property(x => x.FinishedAt);
+        builder.Property(x => x.Version).IsRowVersion();
         builder.Ignore(x => x.IsActive);
 
         builder.HasOne<ExamSession>()
@@ -30,5 +38,11 @@ public class SolveRunsConfiguration : IEntityTypeConfiguration<SolveRun>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => new { x.SessionId, x.CreatedAt });
+
+        // At most one Queued/Running run per session, enforced by the database (concurrent creates).
+        builder.HasIndex(x => x.SessionId)
+            .IsUnique()
+            .HasFilter(ActiveRunFilter)
+            .HasDatabaseName(ActiveRunIndexName);
     }
 }

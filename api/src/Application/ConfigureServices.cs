@@ -22,5 +22,6 @@ public static class ConfigureServices
         services.AddScoped<ISolveRunExecutor, SolveRunExecutor>();
         services.AddScoped<ISessionFingerprint, SessionFingerprint>();
         services.AddScoped<IAllocationExportModelBuilder, AllocationExportModelBuilder>();
+        services.AddScoped<IAllocationEvaluator, AllocationEvaluator>();
     }
 }

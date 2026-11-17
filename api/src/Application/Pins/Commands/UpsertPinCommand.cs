@@ -82,7 +82,7 @@ public class UpsertPinCommandHandler(
 
     private async Task<Either<PinException, Room>> GetRoom(ExamSessionId sessionId, RoomId roomId, CancellationToken cancellationToken)
     {
-        var room = await roomRepository.GetById(TestCenterId.Empty(), roomId, cancellationToken);
+        var room = await roomRepository.GetById(roomId, cancellationToken);
         return room
             .Filter(r => r.Center is not null && r.Center.SessionId == sessionId)
             .Match<Either<PinException, Room>>(

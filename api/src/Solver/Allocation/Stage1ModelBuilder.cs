@@ -112,6 +112,10 @@ internal sealed class Stage1ModelBuilder
         {
             result.AddHint(hint, context.RoomIndexById);
         }
+        else if (!explain)
+        {
+            AddGreedyOpenHint(costs);
+        }
 
         return result;
     }
@@ -181,6 +185,11 @@ internal sealed class Stage1ModelBuilder
 
     private void AddCapacity()
     {
+        if (!explain)
+        {
+            AddAggregateCapacity();
+        }
+
         var literalByCenter = new Dictionary<Guid, BoolVar>();
         foreach (var room in context.Rooms)
         {
@@ -222,6 +231,62 @@ internal sealed class Stage1ModelBuilder
             }
 
             Enforce(model.Add(RoomLoad(room, accessibleClasses) <= limit), literal);
+        }
+    }
+
+    /// <summary>
+    /// Search hint for y (04 §4): open the cheapest rooms per seat (pinned rooms first, lowest index first among
+    /// equals, matching the symmetry breaking) until all participants and all accessible-seat needs fit.
+    /// </summary>
+    private void AddGreedyOpenHint(long[] costs)
+    {
+        var participants = context.Classes.Sum(c => (long)c.Size) + context.Pins.Pinned.Count;
+        var accessible = context.Classes.Where(c => c.NeedsAccessibleSeat).Sum(c => (long)c.Size)
+            + context.Pins.Pinned.Count(p => p.Participant.NeedsAccessibleSeat);
+        var ordered = context.Rooms
+            .Where(r => r.Capacity > 0)
+            .OrderByDescending(r => context.Pins.Count(r.Room.RoomId) > 0)
+            .ThenBy(r => (double)costs[r.Index] / r.Capacity)
+            .ThenBy(r => r.Index)
+            .ToList();
+        var chosen = new HashSet<int>();
+        long seats = 0;
+        long accessibleSeats = 0;
+        foreach (var room in ordered)
+        {
+            var pinned = context.Pins.Count(room.Room.RoomId) > 0;
+            var needsSeats = seats < participants;
+            var needsAccessible = accessibleSeats < accessible && room.AccessibleCapacity > 0;
+            if (!pinned && !needsSeats && !needsAccessible)
+            {
+                continue;
+            }
+
+            chosen.Add(room.Index);
+            seats += room.Capacity;
+            accessibleSeats += room.AccessibleCapacity;
+        }
+
+        for (var r = 0; r < open.Count; r++)
+        {
+            model.AddHint(open[r], chosen.Contains(r));
+        }
+    }
+
+    /// <summary>
+    /// Redundant covering knapsacks (04 §4): open rooms must seat everyone, and their accessible seats everyone
+    /// who needs one. Implied by coverage + capacity, but stated directly they let CP-SAT bound the cost early.
+    /// </summary>
+    private void AddAggregateCapacity()
+    {
+        var participants = context.Classes.Sum(c => (long)c.Size) + context.Pins.Pinned.Count;
+        model.Add(LinearExpr.WeightedSum(open, context.Rooms.Select(r => (long)r.Capacity)) >= participants);
+
+        var accessible = context.Classes.Where(c => c.NeedsAccessibleSeat).Sum(c => (long)c.Size)
+            + context.Pins.Pinned.Count(p => p.Participant.NeedsAccessibleSeat);
+        if (accessible > 0)
+        {
+            model.Add(LinearExpr.WeightedSum(open, context.Rooms.Select(r => (long)r.AccessibleCapacity)) >= accessible);
         }
     }
 
@@ -277,12 +342,26 @@ internal sealed class Stage1ModelBuilder
                 }
 
                 var alpha = context.Alpha.Get(room, parameters, cancellationToken);
-                if (upper <= alpha)
+                if (upper > alpha)
+                {
+                    Enforce(model.Add(RoomLoad(room, classes) + pinned <= alpha), literal);
+                }
+
+                // Accessible-seat classes may only use accessible seats: bound them by α over those seats.
+                // Pinned needs-accessible members of the value count on the left as well (04 §4).
+                var accessibleClasses = classes.Where(c => c.NeedsAccessibleSeat).ToList();
+                var accessiblePinned = context.Pins.AccessibleValue(parameters.AttributeKey, value, room.Room.RoomId);
+                var accessibleUpper = UpperBound(room, accessibleClasses) + accessiblePinned;
+                if (accessibleUpper < 2)
                 {
                     continue;
                 }
 
-                Enforce(model.Add(RoomLoad(room, classes) + pinned <= alpha), literal);
+                var accessibleAlpha = context.Alpha.GetAccessible(room, parameters, cancellationToken);
+                if (accessibleUpper > accessibleAlpha)
+                {
+                    Enforce(model.Add(RoomLoad(room, accessibleClasses) + accessiblePinned <= accessibleAlpha), literal);
+                }
             }
         }
     }
@@ -291,7 +370,8 @@ internal sealed class Stage1ModelBuilder
     {
         foreach (var room in context.Rooms.Where(r => r.Capacity > 0))
         {
-            var target = (long)Math.Ceiling(parameters.MinFillRatio * room.Capacity);
+            // Same rounding as the validator (04 §10): ⌈ratio·cap − 1e-9⌉.
+            var target = (long)Math.Ceiling((parameters.MinFillRatio * room.Capacity) - SolverDefaults.FillRatioTolerance);
             if (target <= 0)
             {
                 continue;

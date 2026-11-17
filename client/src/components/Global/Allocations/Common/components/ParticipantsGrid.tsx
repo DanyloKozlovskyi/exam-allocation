@@ -8,7 +8,7 @@ import { AllocationsTestId } from '../../../../../enums/Allocations';
 import { I18nNamespace } from '../../../../../i18n';
 import { parseSeatKey, toDisplayNumber } from '../../../../Common/RoomGrid/seatKey';
 import { useAllocationParticipantsQuery } from '../../../Queries/allocations';
-import { SEARCH_DEBOUNCE_MS } from '../constants';
+import { SEARCH_DEBOUNCE_MS } from '../../../../../constants/ui';
 
 interface Props {
   allocationId: string;

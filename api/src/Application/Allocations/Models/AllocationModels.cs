@@ -1,4 +1,5 @@
 using Domain.Allocations;
+using Domain.Pins;
 using Domain.Rooms;
 
 namespace Application.Allocations.Models;
@@ -34,3 +35,5 @@ public sealed record ExportSeat(string SeatKey, int Row, int Column, int SeatInd
 public sealed record ExportParticipant(Guid Id, string? ExternalId, string LastName, string FirstName, string? MiddleName, string? Group, string? School);
 
 public sealed record ExportFile(string FileName, string ContentType, byte[] Content);
+
+public sealed record PinnedSeat(Pin Pin, string SeatKey);

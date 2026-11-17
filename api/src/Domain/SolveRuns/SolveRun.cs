@@ -3,7 +3,7 @@ using Domain.Sessions;
 
 namespace Domain.SolveRuns;
 
-public class SolveRun : IEntity<SolveRunId>
+public class SolveRun : IEntity<SolveRunId>, IVersioned
 {
     private SolveRun(SolveRunId id, ExamSessionId sessionId, SolveRunOptions options, string inputHash, DateTimeOffset createdAt)
     {
@@ -45,6 +45,9 @@ public class SolveRun : IEntity<SolveRunId>
 
     public DateTimeOffset? FinishedAt { get; private set; }
 
+    /// <summary>xmin: the executor and cancel must not overwrite each other's status change.</summary>
+    public uint Version { get; private set; }
+
     public bool IsActive => Status is SolveRunStatus.Queued or SolveRunStatus.Running;
 
     public static SolveRun New(SolveRunId id, ExamSessionId sessionId, SolveRunOptions options, string inputHash, DateTimeOffset now)
@@ -60,6 +63,15 @@ public class SolveRun : IEntity<SolveRunId>
         Guard.IsTrue(Status == SolveRunStatus.Queued, nameof(Status));
         Status = SolveRunStatus.Running;
         StartedAt = now;
+    }
+
+    /// <summary>Starts the run with the fingerprint of the inputs it will actually solve (taken when execution begins).</summary>
+    public void MarkRunning(DateTimeOffset now, string inputHash)
+    {
+        Guard.NotNullOrEmptyOrWhiteSpace(inputHash, nameof(inputHash));
+        Guard.MaxLength(inputHash, SolveRunConstraints.InputHashLength, nameof(inputHash));
+        MarkRunning(now);
+        InputHash = inputHash;
     }
 
     public void Complete(SolveRunStatus status, IReadOnlyList<SolveDiagnostic> diagnostics, SolveRunStats? stats, string? errorMessage, DateTimeOffset now)

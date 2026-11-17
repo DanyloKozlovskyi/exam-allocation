@@ -37,13 +37,15 @@ public class IntegrationTestWebFactory : WebApplicationFactory<Program>, IAsyncL
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureTestServices(RegisterDatabase)
-            .ConfigureAppConfiguration((_, config) =>
-            {
-                config
-                    .AddJsonFile(TestSettingsFile, optional: true)
-                    .AddEnvironmentVariables();
-            });
+        // UseConfiguration (not ConfigureAppConfiguration): Program binds ApplicationSettings eagerly from
+        // builder.Configuration, before deferred app-configuration callbacks of the factory would run.
+        var testConfiguration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile(TestSettingsFile, optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+        builder.UseConfiguration(testConfiguration);
+        builder.ConfigureTestServices(RegisterDatabase);
     }
 
     private void RegisterDatabase(IServiceCollection services)

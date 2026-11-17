@@ -255,7 +255,7 @@ public sealed class SeatingSolver(ISeatGenerator seatGenerator, IAdjacencyBuilde
         }
 
         var timeLimit = context.Request.TimeLimitSeconds > 0 ? context.Request.TimeLimitSeconds : SolverDefaults.Stage2TimeLimitSecondsPerRoom;
-        var solver = new CpSolver { StringParameters = CpSatParameters.Build(Workers, timeLimit, context.Request.RandomSeed) };
+        using var solver = new CpSolver { StringParameters = CpSatParameters.Build(Workers, timeLimit, context.Request.RandomSeed) };
 
         CpSolverStatus cpStatus;
         using (cancellationToken.Register(solver.StopSearch))

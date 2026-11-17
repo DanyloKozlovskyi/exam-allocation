@@ -2,6 +2,9 @@ namespace Solver.Model;
 
 public static class SolverDefaults
 {
+    /// <summary>R5 target rounding ⌈ratio·cap − tolerance⌉ (04 §10) guards against floating-point noise (e.g. 0.7 · 10); shared by stage 1 and the validator.</summary>
+    public const double FillRatioTolerance = 1e-9;
+
     public const int Alternatives = 5;
     public const double DiversityRatio = 0.10;
     public const double CostSlack = 0.10;

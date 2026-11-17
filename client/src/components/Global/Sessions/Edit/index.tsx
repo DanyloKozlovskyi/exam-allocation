@@ -8,9 +8,9 @@ import { I18nNamespace } from '../../../../i18n';
 import CustomBackdrop from '../../../Common/CustomBackdrop';
 import { useSessionQuery } from '../../Queries/sessions';
 import { fromSessionDto, toSessionDto } from '../Common';
-import { FORM_SKELETON_HEIGHT_PX } from '../Common/constants';
+import { FORM_SKELETON_HEIGHT_PX } from '../../../../constants/ui';
 import Steps from '../Common/components/Steps';
-import { useFeedback } from '../Common/useFeedback';
+import { useFeedback } from '../../../../hooks/useFeedback';
 import { editSession } from './mutations';
 
 interface Props {

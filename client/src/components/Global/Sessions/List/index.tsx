@@ -16,9 +16,9 @@ import { SessionsTestId } from '../../../../enums/Sessions';
 import { I18nNamespace } from '../../../../i18n';
 import ConfirmDialog from '../../../Common/ConfirmDialog';
 import { useSessionsListQuery } from '../../Queries/sessions';
-import { GRID_HEIGHT_PX } from '../Common/constants';
+import { GRID_HEIGHT_PX } from '../../../../constants/ui';
 import { formatDate, formatDateTime } from '../Common/formatters';
-import { useFeedback } from '../Common/useFeedback';
+import { useFeedback } from '../../../../hooks/useFeedback';
 import { deleteSession } from './mutations';
 
 const NAME_FLEX = 2;

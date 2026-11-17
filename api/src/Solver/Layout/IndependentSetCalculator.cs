@@ -103,7 +103,7 @@ public sealed class IndependentSetCalculator(ISeatGenerator seatGenerator, IAdja
 
         model.Maximize(LinearExpr.Sum(x));
 
-        var solver = new CpSolver
+        using var solver = new CpSolver
         {
             StringParameters = CpSatParameters.Build(Workers, SolverDefaults.IndependentSetTimeLimitSeconds, SolverDefaults.RandomSeed),
         };

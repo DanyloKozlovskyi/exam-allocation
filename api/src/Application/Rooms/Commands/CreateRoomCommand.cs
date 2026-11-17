@@ -46,7 +46,7 @@ public class CreateRoomCommandHandler(
 
     private async Task<Either<RoomException, TestCenter>> EnsureCenterExists(RoomId id, TestCenterId centerId, CancellationToken cancellationToken)
     {
-        var center = await centerRepository.GetById(ExamSessionId.Empty(), centerId, cancellationToken);
+        var center = await centerRepository.GetById(centerId, cancellationToken);
         return center.Match<Either<RoomException, TestCenter>>(
             c => c,
             () => new RoomCenterNotFoundException(id, centerId.Value));

@@ -20,6 +20,27 @@ public class PinRepository(ApplicationDbContext dbContext)
         return entity ?? Option<Pin>.None;
     }
 
+    public async Task<IReadOnlyList<Pin>> GetAllTracked(ExamSessionId sessionId, CancellationToken cancellationToken)
+    {
+        return await Context.Pins
+            .Where(x => x.SessionId == sessionId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task SaveBatchAsync(IReadOnlyList<Pin> added, IReadOnlyList<Pin> removed, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Context.Pins.RemoveRange(removed);
+            await Context.Pins.AddRangeAsync(added, cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
+        }
+        finally
+        {
+            Context.ChangeTracker.Clear();
+        }
+    }
+
     public async Task<IReadOnlyList<Pin>> GetAll(ExamSessionId sessionId, CancellationToken cancellationToken)
     {
         return await Context.Pins

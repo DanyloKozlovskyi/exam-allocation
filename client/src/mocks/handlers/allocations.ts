@@ -18,7 +18,7 @@ import {
   type ValidationReportDto,
   type ViolationDto,
 } from '../../api/dtos';
-import { apiRoutes } from '../../constants/apiRoutes';
+import { ApiQueryParam, apiRoutes } from '../../constants/apiRoutes';
 import { buildAdjacency, buildSeats, findMockRoom, getMockRooms, mockApiUrl, mockGuid, MOCK_CENTERS, problem } from './rooms';
 
 // ---------- participants ----------
@@ -196,6 +196,7 @@ const toAllocationDto = (allocation: MockAllocation): AllocationDto => {
   const usedRooms = centers.flatMap((center) => center.rooms).filter((room) => room.used);
   return {
     id: allocation.id,
+    runId: allocation.runId,
     index: allocation.index,
     objective: { roomsUsed: usedRooms.length, cost: usedRooms.length, softPenalty: violations.filter((violation) => !violation.isHard).length / 2, penaltyByRule: {} },
     centers,
@@ -216,11 +217,6 @@ const applyMoves = (allocation: MockAllocation, moves: MovesDto) => {
   });
   return placements;
 };
-
-const SEARCH_PARAM = 'search';
-const PAGE_PARAM = 'page';
-const PAGE_SIZE_PARAM = 'pageSize';
-const FORMAT_PARAM = 'format';
 
 const EXPORT_CONTENT_TYPE: Record<ExportFormat, string> = {
   [ExportFormat.Xlsx]: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -267,9 +263,9 @@ export const allocationsHandlers: HttpHandler[] = [
       return notFound();
     }
     const url = new URL(request.url);
-    const search = (url.searchParams.get(SEARCH_PARAM) ?? '').toLocaleLowerCase();
-    const page = Number(url.searchParams.get(PAGE_PARAM) ?? 1);
-    const pageSize = Number(url.searchParams.get(PAGE_SIZE_PARAM) ?? 50);
+    const search = (url.searchParams.get(ApiQueryParam.Search) ?? '').toLocaleLowerCase();
+    const page = Number(url.searchParams.get(ApiQueryParam.Page) ?? 1);
+    const pageSize = Number(url.searchParams.get(ApiQueryParam.PageSize) ?? 50);
     const rows: AllocationRowDto[] = MOCK_PARTICIPANTS.filter((participant) =>
       [participant.lastName, participant.firstName, participant.group].some((value) => value?.toLocaleLowerCase().includes(search))
     ).map((participant) => {
@@ -324,7 +320,7 @@ export const allocationsHandlers: HttpHandler[] = [
     return HttpResponse.json(pins);
   }),
   http.get(mockApiUrl(apiRoutes.exports.export(':allocationId')), ({ request }) => {
-    const format = (new URL(request.url).searchParams.get(FORMAT_PARAM) as ExportFormat | null) ?? ExportFormat.Csv;
+    const format = (new URL(request.url).searchParams.get(ApiQueryParam.Format) as ExportFormat | null) ?? ExportFormat.Csv;
     return new HttpResponse('mock export', { headers: { 'Content-Type': EXPORT_CONTENT_TYPE[format] ?? EXPORT_CONTENT_TYPE[ExportFormat.Csv] } });
   }),
 ];

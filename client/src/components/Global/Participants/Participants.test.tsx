@@ -6,7 +6,7 @@ import { resources, Language } from '../../../i18n';
 import { MockAttributeKey, ParticipantsQueryParam } from '../../../mocks/handlers/participants';
 import { MOCK_SESSION_KYIV_ID, resetMockStore } from '../../../mocks/handlers/sessions';
 import { server } from '../../../mocks/server';
-import { renderWithProviders } from '../Sessions/Common/testing';
+import { renderWithProviders } from '../../../test-utils';
 import ParticipantsList from './List';
 
 const texts = resources[Language.Ukrainian].participants;

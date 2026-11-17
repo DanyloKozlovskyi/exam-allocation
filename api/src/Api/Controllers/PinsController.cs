@@ -2,6 +2,7 @@ using Api.Constants;
 using Api.Dtos;
 using Api.Modules.Errors;
 using Api.Services.Abstract;
+using Application.Allocations.Commands;
 using Application.Pins.Commands;
 using Domain.ValueObjects;
 using MediatR;
@@ -43,13 +44,16 @@ public class PinsController(ISender sender, IPinsControllerService controllerSer
         return result.Match<ActionResult>(_ => NoContent(), e => e.ToObjectResult());
     }
 
-    /// <summary>Pins every participant of an allocation (Phase 2: Allocations).</summary>
+    /// <summary>Pins every participant of an allocation (or of the given rooms) to their current room and seat.</summary>
     [HttpPost(ApiRoutes.Pins.PinAll)]
-    public Task<ActionResult<IReadOnlyList<PinDto>>> PinAll(
+    public async Task<ActionResult<IReadOnlyList<PinDto>>> PinAll(
         [FromRoute] Guid allocationId,
         [FromBody] PinAllDto request,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<ActionResult<IReadOnlyList<PinDto>>>(StatusCode(StatusCodes.Status501NotImplemented));
+        var result = await sender.Send(new PinAllCommand { AllocationId = allocationId, RoomIds = request.RoomIds }, cancellationToken);
+        return result.Match<ActionResult<IReadOnlyList<PinDto>>>(
+            pins => pins.Select(x => x.Pin.ToDto(x.SeatKey)).ToList(),
+            e => e.ToObjectResult());
     }
 }

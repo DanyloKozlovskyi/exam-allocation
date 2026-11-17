@@ -140,6 +140,32 @@ public class ImportsControllerTests(IntegrationTestWebFactory factory) : BaseInt
     }
 
     [Fact]
+    public async Task ShouldRePreviewWithChosenHeaderRow()
+    {
+        // Arrange
+        var csv = System.Text.Encoding.UTF8.GetBytes("Список учасників,\nПІБ,Клас\nІваненко Іван,11\n");
+        var preview = await Upload(csv, "people.csv");
+
+        // Act
+        var response = await client.PostAsJsonAsync(
+            Route(ApiRoutes.Imports.Preview, preview.ImportId), new ImportPreviewRequestDto("people", 2), JsonOptions);
+        var unknownSheet = await client.PostAsJsonAsync(
+            Route(ApiRoutes.Imports.Preview, preview.ImportId), new ImportPreviewRequestDto("Немає", 2), JsonOptions);
+        var invalidRow = await client.PostAsJsonAsync(
+            Route(ApiRoutes.Imports.Preview, preview.ImportId), new ImportPreviewRequestDto("people", 0), JsonOptions);
+
+        // Assert
+        preview.SuggestedMapping.Fields.Should().NotContainKey(ParticipantField.FullName);
+        var rePreview = await response.ToResponseModel<ImportPreviewDto>();
+        rePreview.ImportId.Should().Be(preview.ImportId);
+        rePreview.Headers.Should().Equal("ПІБ", "Клас");
+        rePreview.SampleRows.Should().ContainSingle().Which.Should().Equal("Іваненко Іван", "11");
+        rePreview.SuggestedMapping.Fields.Should().ContainKey(ParticipantField.FullName);
+        await ShouldBeProblem(unknownSheet, HttpStatusCode.BadRequest, ErrorCode.InvalidArgument);
+        await ShouldBeProblem(invalidRow, HttpStatusCode.BadRequest, ErrorCode.ValidationFailed);
+    }
+
+    [Fact]
     public async Task ShouldReturnNotFoundForUnknownSession()
     {
         // Act

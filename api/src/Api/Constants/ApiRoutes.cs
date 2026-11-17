@@ -63,6 +63,7 @@ public static class ApiRoutes
     {
         public const string Upload = Sessions.ById + "/imports/upload";
         public const string ById = "imports/{importId:guid}";
+        public const string Preview = ById + "/preview";
         public const string Validate = ById + "/validate";
         public const string Commit = ById + "/commit";
         public const string Template = "imports/template";

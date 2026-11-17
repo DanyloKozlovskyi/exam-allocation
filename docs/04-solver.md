@@ -69,10 +69,17 @@ public sealed record Diagnostic(DiagnosticCode Code, DiagnosticSeverity Severity
 Progress is reported through `IProgress<SolveProgress>`:
 
 ```csharp
-public sealed record SolveProgress(SolveStage Stage, string Message, double? Percent,
+public sealed record SolveProgress(SolveStage Stage, double? Percent,
     double? Objective, double? BestBound, int? RoomsDone, int? RoomsTotal, int? AlternativesDone);
 public enum SolveStage { Precheck, Stage1, Stage2, Feedback, Alternatives, Expanding, Done }
 ```
+
+The enum order is not the reporting order: the pipeline reports Precheck → Stage1 → Stage2
+(→ Feedback → Stage2 …) → Expanding → Alternatives → Done (§8a). Nested solves of the
+alternatives generator report nothing; only `Alternatives` with `AlternativesDone`.
+
+Progress carries no message text: clients derive the label from `SolveStage` (i18n) and the
+numeric fields, so `SolveProgressDto` has no `message` either.
 
 Entry point: `SolverPipeline.RunAsync(SolverInput, IProgress<SolveProgress>, CancellationToken)`.
 
@@ -190,12 +197,19 @@ Pinned participants are not in classes; they are constants: `pin_r` = number pin
 6. R3 `NoAdjacentByAttribute(a, kinds)` stage-1 bound, hard, for every `v`, `r`:
    `Σ_{k: val_a(k)=v} n_{k,r} + pin_{a,v,r} ≤ α_r(kinds)`.
    (Necessary, not sufficient — stage 2 decides; see feedback loop.)
+   Accessibility refinement: needs-accessible participants may only use accessible seats, so for
+   every `v` and `r` additionally
+   `Σ_{k: val_a(k)=v, k needs acc} n_{k,r} + pinAcc_{a,v,r} ≤ α^acc_r(kinds)`, where `α^acc_r` is the
+   maximum independent set over the accessible seats of `r` only (`AlphaCache.GetAccessible`) and
+   `pinAcc_{a,v,r}` counts pinned needs-accessible participants with value `v` in `r` (`PinFacts.AccessibleValue`). Without it, a value
+   whose accessible members exceed `α^acc` passes stage 1, stage 2 is infeasible and the feedback
+   loop cuts the wrong class.
 
 **Soft constraints** (each adds a non-negative penalty variable)
 
 - R2 soft: `excess_{v,u} ≥ Σ… − m`, penalty `w · Σ excess`.
 - R3 soft: bound not applied in stage 1 (penalty arises in stage 2 only).
-- R5 `MinRoomFill(p)`: `short_r ≥ ⌈p · cap_r⌉ · y_r − Σ_k n_{k,r} − pin_r`, penalty `w · Σ short_r`.
+- R5 `MinRoomFill(p)`: `short_r ≥ ⌈p · cap_r − 1e-9⌉ · y_r − Σ_k n_{k,r} − pin_r` (same rounding as the validator, §10), penalty `w · Σ short_r`.
 - R6 `KeepTogetherInCenter(a)`: `z_{v,c} ∈ {0,1}`,
   `Σ_{k: val=v} Σ_{r∈c} n_{k,r} ≤ s_v · z_{v,c}`; penalty `w · Σ_v (Σ_c z_{v,c} − 1)`.
 
@@ -214,6 +228,19 @@ pins) are ordered: `y_{r_i} ≥ y_{r_{i+1}}`.
 Rooms whose layout hash and cost coincide are only interchangeable if no rule distinguishes
 centers, so the center is part of the key whenever R6 **or a Center-scoped R2** is enabled.
 Rooms with pins or with feedback cuts are excluded from symmetry groups.
+
+**Redundant covering knapsacks** (stated explicitly, implied by coverage + capacity):
+`Σ_r cap_r · y_r ≥ |P|` and `Σ_r acc_r · y_r ≥ |P_acc|` (pinned participants included). They
+expose the room-selection knapsack to CP-SAT directly, so its objective bound reaches the optimum
+quickly instead of being proved by search over the per-class counts.
+
+**Greedy hint** (when no hint is given, i.e. not for alternatives): `y_r = 1` for pinned rooms, then
+rooms in ascending `cost_r / cap_r` (ties: lowest index, matching the symmetry order) until the open
+seats cover `|P|` and the open accessible seats cover `|P_acc|`; all other `y_r = 0`.
+
+Measured effect (Bench medium, 2 cores): stage 1 from 12.5–15 s to 5.2–7.2 s (full run 8.7–12 s).
+A complete greedy hint (class counts too) was tried and rejected: it conflicts with the symmetry
+order and slowed medium to ~25 s.
 
 **Model size guardrail**: if |K| × |eligible rooms| > 2 000 000, emit `ModelTooLarge`
 diagnostic and abort with a clear message (MVP; later: split by center). Stage 1 then returns
@@ -326,7 +353,7 @@ after cuts were added, the result is also `SeatingInfeasible` (no conflict core)
 | `CapacityTotalExceeded` | participants > Σ cap of active rooms |
 | `AccessibleCapacityExceeded` | needs-accessible participants > Σ acc |
 | `SeparationImpossible` | hard R2: `size_v > m · (#scope units)` for some value `v` |
-| `NoAdjacencyImpossible` | hard R3: `size_v > Σ_r α_r` |
+| `NoAdjacencyImpossible` | hard R3: `size_v > Σ_r α_r`, or `accSize_v > Σ_r α^acc_r` (needs-accessible members of `v`) |
 | `PinInvalidSeat` | pin references a disabled/missing seat |
 | `PinDuplicateSeat` | two pins on one seat |
 | `PinRoomOverfull` | pins in a room exceed its capacity |
@@ -438,6 +465,18 @@ Used by:
 
 It must be written by a different agent than the CP model (see 09) so that the model is not
 grading itself.
+
+Validator semantics (binding for the CP model as well):
+- `SameDesk` adjacency is always on for R3 **and** R8, whatever `kinds` lists (03 "always on").
+- `SeatLevelSide` refines `Side` only, not `SideAcrossAisle`.
+- R5 uses `⌈ratio · cap − 1e-9⌉` and applies to used rooms only.
+- R5/R6/R8/R9 are soft regardless of `IsHard`; R4 is always hard, and accessibility is checked
+  even when no R4 rule exists.
+- `Penalties.PenaltyByRule` contains every enabled soft rule (also with 0) and no hard rule.
+- Attribute values that are absent or whitespace are "missing": such a participant forms a
+  value of its own (never conflicts with anyone).
+- An assignment whose participant is not in the input is `UnknownParticipant` (hard); an unknown
+  room or a missing/disabled seat is `SeatNotFound` (hard).
 
 ---
 

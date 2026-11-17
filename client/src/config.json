@@ -2,5 +2,5 @@
   "apiUrl": "http://localhost:5080",
   "googleMapsApiKey": "",
   "googleMapsMapId": "",
-  "useMocks": true
+  "useMocks": false
 }

@@ -53,11 +53,7 @@ public static partial class ApiTestHelpers
     {
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         var code = document.RootElement.GetProperty(ErrorExtensionKeys.Code);
-
-        // ValidationExceptionHandler currently writes the code as a number (see docs/change-requests.md).
-        return code.ValueKind == JsonValueKind.Number
-            ? (ErrorCode)code.GetInt32()
-            : Enum.Parse<ErrorCode>(code.GetString()!);
+        return Enum.Parse<ErrorCode>(code.GetString()!);
     }
 
     /// <summary>Reads <c>extensions.data</c> of a ProblemDetails body.</summary>

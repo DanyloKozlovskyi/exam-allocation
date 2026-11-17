@@ -17,9 +17,9 @@ Swagger document exported to `contracts/openapi.json` (committed).
   `*ArgumentException` → 400, `*UnknownException` → 500.
 - **Validation** failures (FluentValidation via `ValidationBehaviour`) → 400
   `ValidationProblemDetails { errors: { field: [msg] }, code: "ValidationFailed" }`.
-- **Paging** (participants, allocation rows): query `page`, `pageSize`, `search`, `sortBy`
-  (`ParticipantSortField` enum), `sortDirection` (`SortDirection` enum) →
-  `PagedDto<T> { items, page, pageSize, total }`.
+- **Paging** (participants, allocation rows): query `page`, `pageSize`, `search`, `sortDirection`
+  (`SortDirection` enum) → `PagedDto<T> { items, page, pageSize, total }`. Participants also take
+  `sortBy` (`ParticipantSortField` enum); allocation rows are always sorted by name.
 - **Concurrency**: DTOs carry `version` (Postgres `xmin`); `edit` with a stale version →
   409 `ErrorCode.ConcurrencyConflict`.
 
@@ -47,7 +47,7 @@ Swagger document exported to `contracts/openapi.json` (committed).
 | GET | `centers/{centerId}/rooms/{roomId}` | | `RoomDto` (incl. `seats: SeatDto[]`, `capacity`, `accessibleCapacity`) |
 | POST | `centers/{centerId}/rooms/create` | `RoomDto` | `RoomDto` |
 | POST | `centers/{centerId}/rooms/create-bulk` | `CreateRoomsBulkDto { template: RoomDto, names: string[] }` | `RoomDto[]` |
-| PUT | `centers/{centerId}/rooms/edit` | `RoomDto` | `RoomDto`; removing a pinned seat → 409 `ErrorCode.SeatReferencedByPin` with `pins` extension |
+| PUT | `centers/{centerId}/rooms/edit` | `RoomDto` | `RoomDto`; removing a pinned seat → 409 `ErrorCode.SeatReferencedByPin`, affected pins in the `data` extension |
 | DELETE | `centers/{centerId}/rooms/{roomId}` | | `204` |
 | POST | `rooms/preview-layout` | `RoomLayoutDto` | `RoomLayoutPreviewDto { seats, capacity, accessibleCapacity, adjacency: AdjacencyEdgesDto[] { kind: AdjacencyKind, edges: [ [a,b] ] } }` (no persistence) |
 
@@ -88,14 +88,15 @@ Swagger document exported to `contracts/openapi.json` (committed).
 ### Solve runs — `SolveRunsController`
 | POST | `sessions/{sessionId}/solve-runs/create` | `SolveOptionsDto { alternatives?, diversityRatio?, costSlack?, timeLimitSeconds?, objectiveMode?: ObjectiveMode, seed? }` | `SolveRunDto` (status `Queued`) |
 | GET | `sessions/{sessionId}/solve-runs` | | `SolveRunDto[]` newest first |
-| GET | `solve-runs/{runId}` | | `SolveRunDto { id, status: SolveRunStatus, createdAt, startedAt, finishedAt, stats, diagnostics: DiagnosticDto[], allocationIds[], isStale }` |
+| GET | `solve-runs/{runId}` | | `SolveRunDto { id, status: SolveRunStatus, createdAt, startedAt, finishedAt, stats, diagnostics: DiagnosticDto[], allocationIds[], isStale }`; `allocationIds`: solver allocations by index (best first), then manual versions |
 | POST | `solve-runs/{runId}/cancel` | | `202` |
-| POST | `sessions/{sessionId}/precheck` | | `DiagnosticDto[] { code: DiagnosticCode, severity: DiagnosticSeverity, message, ruleId?, data }` |
+| POST | `sessions/{sessionId}/precheck` | | `DiagnosticDto[] { code: DiagnosticCode, severity: DiagnosticSeverity, message, ruleId?, arguments }` |
 
-Second run while one is `Queued`/`Running` → 409 `ErrorCode.SolveRunAlreadyActive`.
+Second run while one is `Queued`/`Running` → 409 `ErrorCode.SolveRunAlreadyActive` (also under
+concurrent creates: a partial unique index allows one active run per session).
 
 ### Allocations — `AllocationsController`
-| GET | `solve-runs/{runId}/allocations` | | `AllocationSummaryDto[] { id, index, objective }` |
+| GET | `solve-runs/{runId}/allocations` | | `AllocationSummaryDto[] { id, index, objective }`, same order as `allocationIds` |
 | GET | `allocations/{allocationId}` | | `AllocationDto { id, index, objective, centers: [{ centerId, rooms: [{ roomId, used, filled, capacity }] }] }` |
 | GET | `allocations/{allocationId}/rooms/{roomId}` | | `RoomSeatingDto { room, seats: [{ seatKey, participant?, violations: ViolationDto[] }] }` |
 | GET | `allocations/{allocationId}/participants` | paging + search | `PagedDto<AllocationRowDto>` |
@@ -114,7 +115,7 @@ Second run while one is `Queued`/`Running` → 409 `ErrorCode.SolveRunAlreadyAct
 |---|---|---|
 | client → server | `SubscribeToRun` | `runId` (adds connection to group `HubGroups.Run(runId)`) |
 | client → server | `UnsubscribeFromRun` | `runId` |
-| server → client | `ProgressUpdated` | `SolveProgressDto { runId, stage: SolveStage, message, percent?, objective?, bestBound?, roomsDone?, roomsTotal?, alternativesDone? }` |
+| server → client | `ProgressUpdated` | `SolveProgressDto { runId, stage: SolveStage, percent?, objective?, bestBound?, roomsDone?, roomsTotal?, alternativesDone? }` |
 | server → client | `RunCompleted` | `SolveRunDto` |
 
 On subscribe, the hub immediately sends the last known progress (kept in memory per run),

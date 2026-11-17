@@ -1,5 +1,4 @@
 import { AdjacencyKind, RuleScope, RuleType, type RuleDto, type RuleTypeInfoDto } from '../../../../api/dtos';
-// Discriminator enums are not re-exported from api/dtos.ts yet (see docs/change-requests.md).
 import {
   AccessibleSeatingParametersDtoType,
   FillFromFrontParametersDtoType,
@@ -8,7 +7,7 @@ import {
   NoAdjacentByAttributeParametersDtoType,
   SeparateByAttributeParametersDtoType,
   SpreadInRoomParametersDtoType,
-} from '../../../../api/generated/schema';
+} from '../../../../api/dtos';
 import { BuiltInAttributeKey } from '../../../../enums/Rules';
 import { RULE_DEFAULT_MIN_FILL_RATIO, RULE_MIN_PER_SCOPE } from './constants';
 

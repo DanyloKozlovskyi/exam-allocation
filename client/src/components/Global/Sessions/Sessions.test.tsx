@@ -1,9 +1,14 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
+import { SolveRunStatus } from '../../../api/dtos';
+import { apiRoutes } from '../../../constants/apiRoutes';
+import { routes } from '../../../constants/routes';
 import { SessionChecklistItem, SessionsTestId } from '../../../enums/Sessions';
 import { resources, Language } from '../../../i18n';
-import { MOCK_SESSION_EMPTY_ID, MOCK_SESSION_KYIV_ID, resetMockStore } from '../../../mocks/handlers/sessions';
-import { renderWithProviders } from './Common/testing';
+import { MOCK_SESSION_EMPTY_ID, MOCK_SESSION_KYIV_ID, mockUrl, resetMockStore } from '../../../mocks/handlers/sessions';
+import { server } from '../../../mocks/server';
+import { renderWithProviders } from '../../../test-utils';
 import SessionCreate from './Create';
 import SessionEdit from './Edit';
 import SessionsList from './List';
@@ -93,5 +98,25 @@ describe('Sessions', () => {
 
     await waitFor(() => expect(byQa(SessionsTestId.Checklist)).toBeInTheDocument());
     expect(within(byQa(`${SessionsTestId.Checklist}-${SessionChecklistItem.Centers}`)).getByTitle(texts.view.checklistPending)).toBeInTheDocument();
+  });
+
+  it('shows the last run status with links to the run and its results', async () => {
+    const runs = [
+      { id: 'run-old', createdAt: '2026-01-01T10:00:00Z', status: SolveRunStatus.Failed, allocationIds: [] },
+      { id: 'run-new', createdAt: '2026-01-02T10:00:00Z', status: SolveRunStatus.Succeeded, allocationIds: ['allocation-1'] },
+    ];
+    server.use(http.get(mockUrl(apiRoutes.solveRuns.list(':sessionId')), () => HttpResponse.json(runs)));
+    renderWithProviders(<SessionView sessionId={MOCK_SESSION_KYIV_ID} />);
+
+    const lastRun = await waitFor(() => within(byQa(SessionsTestId.LastRun)).getByRole('link', { name: texts.view.openResults }));
+    expect(lastRun).toHaveAttribute('href', routes.allocations.view(MOCK_SESSION_KYIV_ID, 'allocation-1'));
+    expect(within(byQa(SessionsTestId.LastRun)).getByRole('link', { name: texts.view.openRun })).toHaveAttribute('href', routes.solveRuns.view(MOCK_SESSION_KYIV_ID, 'run-new'));
+  });
+
+  it('says when no run has been started', async () => {
+    server.use(http.get(mockUrl(apiRoutes.solveRuns.list(':sessionId')), () => HttpResponse.json([])));
+    renderWithProviders(<SessionView sessionId={MOCK_SESSION_EMPTY_ID} />);
+
+    await waitFor(() => expect(byQa(SessionsTestId.LastRun)).toHaveTextContent(texts.view.noRuns));
   });
 });

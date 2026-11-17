@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using Domain.Allocations;
 using Domain.Rooms;
-using Domain.Rules.Parameters;
 using Domain.SolveRuns;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -373,7 +372,7 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_hard");
 
-                    b.Property<RuleParameters>("Parameters")
+                    b.Property<string>("Parameters")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("parameters");
@@ -505,8 +504,19 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("status");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id")
                         .HasName("pk_solve_runs");
+
+                    b.HasIndex("SessionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_solve_runs_session_id_active")
+                        .HasFilter("status IN ('Queued', 'Running')");
 
                     b.HasIndex("SessionId", "CreatedAt")
                         .HasDatabaseName("ix_solve_runs_session_id_created_at");
@@ -652,7 +662,7 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_pins_rooms_room_id");
 
-                    b.HasOne("Domain.Rooms.Seat", null)
+                    b.HasOne("Domain.Rooms.Seat", "Seat")
                         .WithMany()
                         .HasForeignKey("SeatId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -664,6 +674,8 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_pins_exam_sessions_session_id");
+
+                    b.Navigation("Seat");
                 });
 
             modelBuilder.Entity("Domain.Rooms.Room", b =>

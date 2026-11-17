@@ -1,10 +1,10 @@
 import { useSnackbar } from 'notistack';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { processError } from '../../../../helpers/processError';
-import { SNACKBAR_ERROR, SNACKBAR_SUCCESS } from '../../../../constants/ui';
+import { processError } from '../helpers/processError';
+import { SNACKBAR_ERROR, SNACKBAR_SUCCESS } from '../constants/ui';
 
-/** notistack wrappers shared by the WS-E features: success text from the caller, errors mapped by `processError`. */
+/** notistack wrappers shared by every feature: success text from the caller, errors mapped by `processError`. */
 export const useFeedback = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();

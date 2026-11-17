@@ -1,5 +1,7 @@
+using Application.Solving.Mapping;
 using Domain.SolveRuns;
 using Solver.Model;
+using Solver.Resources;
 using DiagnosticArgument = Domain.SolveRuns.DiagnosticArgument;
 using DiagnosticCode = Domain.SolveRuns.DiagnosticCode;
 using DiagnosticSeverity = Domain.SolveRuns.DiagnosticSeverity;
@@ -35,7 +37,15 @@ public record DiagnosticDto(
     DiagnosticSeverity Severity,
     string Message,
     Guid? RuleId,
-    IReadOnlyDictionary<DiagnosticArgument, string> Arguments);
+    IReadOnlyDictionary<DiagnosticArgument, string> Arguments)
+{
+    public static DiagnosticDto FromDomain(SolveDiagnostic diagnostic) => new(
+        diagnostic.Code,
+        diagnostic.Severity,
+        DiagnosticMessages.Render(SolverModelMapper.ToSolverDiagnostic(diagnostic)),
+        diagnostic.RuleId?.Value,
+        diagnostic.Arguments);
+}
 
 public record SolveRunStatsDto(
     long PrecheckMs,
@@ -62,7 +72,21 @@ public record SolveRunDto(
     IReadOnlyList<DiagnosticDto> Diagnostics,
     IReadOnlyList<Guid> AllocationIds,
     bool IsStale,
-    string? ErrorMessage);
+    string? ErrorMessage)
+{
+    public static SolveRunDto FromDomain(SolveRun run, IReadOnlyList<Guid> allocationIds, bool isStale) => new(
+        run.Id.Value,
+        run.SessionId.Value,
+        run.Status,
+        run.CreatedAt,
+        run.StartedAt,
+        run.FinishedAt,
+        run.Stats is null ? null : SolveRunStatsDto.FromDomain(run.Stats),
+        run.Diagnostics.Select(DiagnosticDto.FromDomain).ToList(),
+        allocationIds,
+        isStale,
+        run.ErrorMessage);
+}
 
 public record SolveProgressDto(
     Guid RunId,

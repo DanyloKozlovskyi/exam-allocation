@@ -1,3 +1,4 @@
+import type { GridFeatureMode } from '@mui/x-data-grid';
 import type { VariantType } from 'notistack';
 
 export const LOCALE = 'uk-UA';
@@ -10,3 +11,11 @@ export const FORM_GRID_SIZE = 8;
 export const SNACKBAR_SUCCESS: VariantType = 'success';
 export const SNACKBAR_ERROR: VariantType = 'error';
 export const SNACKBAR_INFO: VariantType = 'info';
+
+// Shared list / form sizes and input timing.
+export const GRID_HEIGHT_PX = 560;
+export const FORM_SKELETON_HEIGHT_PX = 240;
+export const SEARCH_DEBOUNCE_MS = 300;
+
+// MUI X literal type; a named constant keeps call sites free of magic strings.
+export const GRID_SERVER_MODE: GridFeatureMode = 'server';

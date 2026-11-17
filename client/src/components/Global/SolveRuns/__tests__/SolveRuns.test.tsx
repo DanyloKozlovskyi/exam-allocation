@@ -7,7 +7,7 @@ import { SolveProgressTransport, SolveRunsTestId } from '../../../../enums/Solve
 import { getMockRuns, resetSolveRunsMocks } from '../../../../mocks/handlers/solveRuns';
 import { resetRulesMocks } from '../../../../mocks/handlers/rules';
 import SolveRunsListView from '../../../../views/SolveRuns/List';
-import { byQa, LOCATION_TEST_ID, renderWithProviders } from '../Common/testUtils/renderWithProviders';
+import { byQa, LOCATION_TEST_ID, renderWithProviders } from '../../../../test-utils';
 import { startSolveRun } from '../RunDialog/mutations';
 import SolveRunView from '../View';
 
@@ -36,7 +36,7 @@ jest.mock('@microsoft/signalr', () => {
     }
     build() {
       const handlers = new Map<string, Handler>();
-      const connection: FakeConnection & { on: (e: string, h: Handler) => void; onclose: (h: Handler) => void } = {
+      const connection: FakeConnection & { on: (e: string, h: Handler) => void; onclose: (h: Handler) => void; onreconnected: (h: Handler) => void } = {
         handlers,
         state: 'Disconnected',
         invoke: jest.fn(() => Promise.resolve()),
@@ -48,6 +48,7 @@ jest.mock('@microsoft/signalr', () => {
         stop: jest.fn(() => Promise.resolve()),
         on: (event: string, handler: Handler) => handlers.set(event, handler),
         onclose: (handler: Handler) => handlers.set('close', handler),
+        onreconnected: (handler: Handler) => handlers.set('reconnected', handler),
         emit: (event: string, payload: unknown) => handlers.get(event)?.(payload),
       };
       fakeHub.connection = connection;
@@ -127,6 +128,11 @@ describe('useSolveProgress / run view', () => {
     expect(screen.getByText('Аудиторій оброблено: 2 з 5')).toBeInTheDocument();
     expect(byQa(container, SolveRunsTestId.ObjectiveChart)).toBeInTheDocument();
     expect(byQa(container, SolveRunsTestId.CancelButton)).toBeInTheDocument();
+
+    // After an automatic reconnect the run group is gone: the hook subscribes again.
+    act(() => fakeHub.connection!.emit('reconnected', 'new-connection-id'));
+    await waitFor(() => expect(fakeHub.connection?.invoke).toHaveBeenCalledTimes(2));
+    expect(fakeHub.connection?.invoke).toHaveBeenLastCalledWith(HubMethod.SubscribeToRun, run.id);
 
     const completed: SolveRunDto = { ...run, status: SolveRunStatus.Succeeded, allocationIds: ['alloc-1', 'alloc-2'] };
     act(() => fakeHub.connection!.emit(HubEvent.RunCompleted, completed));

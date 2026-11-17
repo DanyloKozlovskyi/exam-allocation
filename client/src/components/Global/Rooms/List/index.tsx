@@ -17,6 +17,7 @@ import { I18nNamespace } from '../../../../i18n';
 import ConfirmDialog from '../../../Common/ConfirmDialog';
 import { useRoomsListQuery } from '../../Queries/rooms';
 import { deleteRoom } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   centerId: string;
@@ -41,6 +42,7 @@ const RoomsList = ({ centerId, onCreate, onEdit }: Props) => {
     mutationFn: (roomId: string) => deleteRoom(centerId, roomId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.list(centerId) });
+      void invalidateSessionInputs(queryClient);
       enqueueSnackbar(t('messages.deleted'), { variant: SNACKBAR_SUCCESS });
     },
     onError: (error) => processError(error, tc, (message) => enqueueSnackbar(message, { variant: SNACKBAR_ERROR })),

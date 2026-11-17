@@ -8,6 +8,7 @@ internal sealed class PinFacts
     private readonly Dictionary<Guid, int> countByRoom = [];
     private readonly Dictionary<Guid, int> accessibleByRoom = [];
     private readonly Dictionary<(string Key, string Value, Guid RoomId), int> valueByRoom = [];
+    private readonly Dictionary<(string Key, string Value, Guid RoomId), int> accessibleValueByRoom = [];
 
     private PinFacts(IReadOnlyList<(SolverPin Pin, SolverParticipant Participant)> pinned)
     {
@@ -40,6 +41,10 @@ internal sealed class PinFacts
                 {
                     var cell = (key, value, pin.RoomId);
                     facts.valueByRoom[cell] = facts.valueByRoom.GetValueOrDefault(cell) + 1;
+                    if (participant.NeedsAccessibleSeat)
+                    {
+                        facts.accessibleValueByRoom[cell] = facts.accessibleValueByRoom.GetValueOrDefault(cell) + 1;
+                    }
                 }
             }
         }
@@ -52,6 +57,9 @@ internal sealed class PinFacts
     public int Accessible(Guid roomId) => accessibleByRoom.GetValueOrDefault(roomId);
 
     public int Value(string key, string value, Guid roomId) => valueByRoom.GetValueOrDefault((key, value, roomId));
+
+    /// <summary>pinAcc_{a,v,r}: pinned needs-accessible participants with value <paramref name="value"/> in a room.</summary>
+    public int AccessibleValue(string key, string value, Guid roomId) => accessibleValueByRoom.GetValueOrDefault((key, value, roomId));
 
     public int Value(string key, string value, IEnumerable<Guid> roomIds) => roomIds.Sum(r => Value(key, value, r));
 

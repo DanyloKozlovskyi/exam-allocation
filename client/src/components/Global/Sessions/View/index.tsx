@@ -9,9 +9,13 @@ import { SessionTotal, SessionsTestId } from '../../../../enums/Sessions';
 import { I18nNamespace } from '../../../../i18n';
 import ReadOnlyBlock from '../../../Common/ReadOnlyBlock';
 import { useSessionQuery, useSessionTotalsQuery } from '../../Queries/sessions';
-import { CARD_GRID_SIZE_MD, CARD_GRID_SIZE_SM, FORM_SKELETON_HEIGHT_PX, FULL_GRID_SIZE } from '../Common/constants';
+import { useSolveRunsListQuery } from '../../Queries/solveRuns';
+import { latestRun } from '../../SolveRuns/Common/latestRun';
+import StatusChip from '../../SolveRuns/Common/StatusChip';
+import { CARD_GRID_SIZE_MD, CARD_GRID_SIZE_SM, FULL_GRID_SIZE } from '../Common/constants';
+import { FORM_SKELETON_HEIGHT_PX } from '../../../../constants/ui';
 import { buildChecklist } from '../Common/checklist';
-import { formatDate, formatNumber } from '../Common/formatters';
+import { formatDate, formatDateTime, formatNumber } from '../Common/formatters';
 
 interface Props {
   sessionId: string;
@@ -21,6 +25,9 @@ const SessionView = ({ sessionId }: Props) => {
   const { t } = useTranslation(I18nNamespace.Sessions);
   const session = useSessionQuery(sessionId);
   const totals = useSessionTotalsQuery(sessionId);
+  const { data: runs = [] } = useSolveRunsListQuery(sessionId);
+  const lastRun = latestRun(runs);
+  const bestAllocationId = lastRun?.allocationIds?.[0];
 
   if (session.isError) {
     return <Alert severity="error">{t('view.notFound')}</Alert>;
@@ -101,6 +108,28 @@ const SessionView = ({ sessionId }: Props) => {
           </List>
         </Paper>
       )}
+
+      <Paper sx={{ p: 2 }} data-qa={SessionsTestId.LastRun}>
+        <Typography variant="h6" gutterBottom>
+          {t('view.lastRunTitle')}
+        </Typography>
+        {lastRun?.id ? (
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+            <StatusChip status={lastRun.status} isStale={lastRun.isStale} />
+            {lastRun.createdAt && <Typography variant="body2">{formatDateTime(lastRun.createdAt)}</Typography>}
+            <Button size="small" component={RouterLink} to={routes.solveRuns.view(sessionId, lastRun.id)}>
+              {t('view.openRun')}
+            </Button>
+            {bestAllocationId && (
+              <Button size="small" component={RouterLink} to={routes.allocations.view(sessionId, bestAllocationId)}>
+                {t('view.openResults')}
+              </Button>
+            )}
+          </Stack>
+        ) : (
+          <Typography color="text.secondary">{t('view.noRuns')}</Typography>
+        )}
+      </Paper>
     </Stack>
   );
 };

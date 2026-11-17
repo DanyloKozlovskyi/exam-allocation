@@ -81,7 +81,7 @@ public class AllocationValidatorCoreTests
     }
 
     [Fact]
-    public void ShouldReportMissingDisabledAndUnknownSeats()
+    public void ShouldReportMissingDisabledAndUnknownSeatsAndUnknownParticipants()
     {
         // Arrange
         var scenario = new ValidatorScenario();
@@ -96,7 +96,8 @@ public class AllocationValidatorCoreTests
 
         // Assert
         report.IsValid.Should().BeFalse();
-        report.Violations.Where(x => x.Kind == ViolationKind.SeatNotFound).Should().HaveCount(4).And.OnlyContain(x => x.IsHard);
+        report.Violations.Where(x => x.Kind == ViolationKind.SeatNotFound).Should().HaveCount(3).And.OnlyContain(x => x.IsHard);
+        report.Violations.Should().ContainSingle(x => x.Kind == ViolationKind.UnknownParticipant).Which.IsHard.Should().BeTrue();
     }
 
     [Fact]

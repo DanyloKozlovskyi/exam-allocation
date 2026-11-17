@@ -68,6 +68,10 @@
     },
     "checklistDone": "Виконано",
     "checklistPending": "Потребує уваги",
-    "goTo": "Перейти"
+    "goTo": "Перейти",
+    "lastRunTitle": "Останній розрахунок",
+    "noRuns": "Розрахунок ще не запускався.",
+    "openRun": "Відкрити",
+    "openResults": "Результати"
   }
 }

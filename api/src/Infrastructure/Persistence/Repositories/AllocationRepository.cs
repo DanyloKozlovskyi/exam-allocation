@@ -20,12 +20,15 @@ public class AllocationRepository(ApplicationDbContext dbContext)
         return entity ?? Option<Allocation>.None;
     }
 
+    /// <summary>Solver allocations by index (best first), then manual versions (index -1) in creation order.</summary>
     public async Task<IReadOnlyList<Allocation>> GetByRun(SolveRunId runId, CancellationToken cancellationToken)
     {
         return await Context.Allocations
             .AsNoTracking()
             .Where(x => x.RunId == runId)
-            .OrderBy(x => x.Index)
+            .OrderBy(x => x.Index == AllocationConstraints.ManualIndex)
+            .ThenBy(x => x.Index)
+            .ThenBy(x => x.Id)
             .ToListAsync(cancellationToken);
     }
 

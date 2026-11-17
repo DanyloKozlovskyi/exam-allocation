@@ -15,4 +15,5 @@ public enum ViolationKind
     KeepTogetherSplit = 11,
     SpreadViolated = 12,
     FillFromFront = 13,
+    UnknownParticipant = 14,
 }

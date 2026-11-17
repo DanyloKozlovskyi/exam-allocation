@@ -1,4 +1,5 @@
 import AddLocationIcon from '@mui/icons-material/AddLocationAlt';
+import PlaceIcon from '@mui/icons-material/Place';
 import { Alert, Box, Button, Chip, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,7 @@ import { parseNumber, validateNumber } from '../../Sessions/Common/formHelpers';
 import { DEFAULT_MAP_CENTER, type CentersMapProps } from './types';
 
 /** Used instead of the Google map when `appConfig.googleMapsApiKey` is empty (and in tests). */
-const CentersMapFallback = ({ centers, selectedCenterId, onSelect, onAddAtPoint }: CentersMapProps) => {
+const CentersMapFallback = ({ centers, selectedCenterId, onSelect, onAddAtPoint, getMarkerColor }: CentersMapProps) => {
   const { t } = useTranslation(I18nNamespace.Centers);
   const [latitude, setLatitude] = useState(String(DEFAULT_MAP_CENTER.latitude));
   const [longitude, setLongitude] = useState(String(DEFAULT_MAP_CENTER.longitude));
@@ -65,6 +66,13 @@ const CentersMapFallback = ({ centers, selectedCenterId, onSelect, onAddAtPoint 
               {centers.map((center) => (
                 <Chip
                   key={center.id}
+                  icon={
+                    getMarkerColor ? (
+                      <Box component="span" sx={{ display: 'flex', color: getMarkerColor(center) }}>
+                        <PlaceIcon fontSize="small" />
+                      </Box>
+                    ) : undefined
+                  }
                   label={center.isActive === false ? `${center.name} (${t('map.inactive')})` : center.name}
                   color={center.id === selectedCenterId ? 'primary' : 'default'}
                   variant={center.id === selectedCenterId ? 'filled' : 'outlined'}

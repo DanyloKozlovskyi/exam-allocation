@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { AllocationDto, AllocationRowDtoPagedDto, AllocationSummaryDto, RoomSeatingDto } from '../../../api/dtos';
 import { api } from '../../../api/axiosInstance';
-import { apiRoutes } from '../../../constants/apiRoutes';
+import { ApiQueryParam, apiRoutes } from '../../../constants/apiRoutes';
 import { queryKeys } from '../../../constants/queryKeys';
 
 export interface AllocationParticipantsParams {
@@ -37,7 +37,7 @@ export const useAllocationParticipantsQuery = (allocationId: string, params: All
     queryFn: async () =>
       (
         await api.get<AllocationRowDtoPagedDto>(apiRoutes.allocations.participants(allocationId), {
-          params: { page: params.page, pageSize: params.pageSize, search: params.search || undefined },
+          params: { [ApiQueryParam.Page]: params.page, [ApiQueryParam.PageSize]: params.pageSize, [ApiQueryParam.Search]: params.search || undefined },
         })
       ).data,
     enabled: Boolean(allocationId),

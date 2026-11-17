@@ -6,7 +6,7 @@ import { MutationKey } from '../../../../constants/mutationKeys';
 import { queryKeys } from '../../../../constants/queryKeys';
 import { I18nNamespace } from '../../../../i18n';
 import CustomBackdrop from '../../../Common/CustomBackdrop';
-import { useFeedback } from '../../Sessions/Common/useFeedback';
+import { useFeedback } from '../../../../hooks/useFeedback';
 import { fromPrefill, toCenterDto } from '../Common';
 import Steps from '../Common/components/Steps';
 import type { PickedPlace } from '../Map/types';

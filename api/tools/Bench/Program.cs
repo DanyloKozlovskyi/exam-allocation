@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using Bench;
 using Microsoft.Extensions.DependencyInjection;
 using Solver;
 using Solver.Model;
@@ -66,7 +65,7 @@ Console.WriteLine(
     + $"Target: {(target is { } t ? $"{t.TotalSeconds:0} s (fail > {t.TotalSeconds * TargetToleranceFactor:0.#} s)" : "n/a")}");
 Console.WriteLine();
 
-var pipeline = new MinimalServiceProvider(new ServiceCollection().AddSolver()).GetRequiredService<ISolverPipeline>();
+var pipeline = new ServiceCollection().AddSolver().BuildServiceProvider().GetRequiredService<ISolverPipeline>();
 var validator = new AllocationValidator();
 var rows = new List<BenchRow>();
 var exitCode = BenchExitCode.Success;

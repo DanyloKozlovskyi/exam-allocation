@@ -14,6 +14,7 @@ import { initialRoomState, roomReducer, toRoomDto } from '../Common';
 import Steps from '../Common/components/Steps';
 import { ROOM_MAX_DUPLICATES, ROOM_MIN_DUPLICATES } from '../Common/constants';
 import { createRoom, createRoomsBulk } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   centerId: string;
@@ -33,6 +34,7 @@ const RoomCreate = ({ centerId, onFinish }: Props) => {
 
   const onSuccess = (count: number) => {
     void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.list(centerId) });
+    void invalidateSessionInputs(queryClient);
     enqueueSnackbar(count > 1 ? t('messages.bulkCreated', { count }) : t('messages.created'), { variant: SNACKBAR_SUCCESS });
     onFinish();
   };

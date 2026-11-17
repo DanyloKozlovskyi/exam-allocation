@@ -4,7 +4,6 @@ import { AccessibleFilter, ParticipantColumn, ParticipantConstraint } from '../.
 import { DEFAULT_PAGE_SIZE } from '../../../../constants/queryParams';
 import { emptyToNull } from '../../Sessions/Common/formHelpers';
 
-export const SEARCH_DEBOUNCE_MS = 300;
 const SMALL_PAGE_SIZE = 25;
 const LARGE_PAGE_SIZE = 100;
 export const PAGE_SIZE_OPTIONS = [SMALL_PAGE_SIZE, DEFAULT_PAGE_SIZE, LARGE_PAGE_SIZE];

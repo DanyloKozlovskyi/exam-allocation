@@ -21,6 +21,11 @@ public record ImportPreviewDto(
         => new(preview.ImportId, preview.Sheets, preview.Headers, preview.SampleRows, ColumnMappingDto.FromModel(preview.SuggestedMapping));
 }
 
+public record ImportPreviewRequestDto(string Sheet, int HeaderRow)
+{
+    public PreviewImportCommand ToCommand(Guid importId) => new() { ImportId = importId, Sheet = Sheet, HeaderRow = HeaderRow };
+}
+
 public record ImportMappingDto(
     string Sheet,
     int HeaderRow,

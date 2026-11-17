@@ -19,6 +19,7 @@ import {
   SOLVE_DEFAULT_COST_SLACK_PERCENT,
   SOLVE_DEFAULT_DIVERSITY_PERCENT,
   SOLVE_DEFAULT_SEED,
+  SOLVE_MAX_SEED,
   SOLVE_DEFAULT_TIME_LIMIT_SECONDS,
   SOLVE_MAX_ALTERNATIVES,
   SOLVE_MAX_TIME_LIMIT_SECONDS,
@@ -65,19 +66,28 @@ interface FieldSpec {
   min: number;
   max: number;
   qa: SolveRunsTestId;
+  /** Integer fields bind to C# int: fractions are rejected client-side. */
+  integer?: boolean;
 }
 
 const FIELDS: Record<NumericField, FieldSpec> = {
-  [NumericField.Alternatives]: { label: FieldLabelKey.Alternatives, min: SOLVE_MIN_ALTERNATIVES, max: SOLVE_MAX_ALTERNATIVES, qa: SolveRunsTestId.AlternativesField },
+  [NumericField.Alternatives]: {
+    label: FieldLabelKey.Alternatives,
+    min: SOLVE_MIN_ALTERNATIVES,
+    max: SOLVE_MAX_ALTERNATIVES,
+    qa: SolveRunsTestId.AlternativesField,
+    integer: true,
+  },
   [NumericField.TimeLimitSeconds]: {
     label: FieldLabelKey.TimeLimitSeconds,
     min: SOLVE_MIN_TIME_LIMIT_SECONDS,
     max: SOLVE_MAX_TIME_LIMIT_SECONDS,
     qa: SolveRunsTestId.TimeLimitField,
+    integer: true,
   },
   [NumericField.DiversityPercent]: { label: FieldLabelKey.DiversityRatio, min: PERCENT_MIN, max: PERCENT_MAX, qa: SolveRunsTestId.DiversityRatioField },
   [NumericField.CostSlackPercent]: { label: FieldLabelKey.CostSlack, min: PERCENT_MIN, max: PERCENT_MAX, qa: SolveRunsTestId.CostSlackField },
-  [NumericField.Seed]: { label: FieldLabelKey.Seed, min: 0, max: Number.MAX_SAFE_INTEGER, qa: SolveRunsTestId.SeedField },
+  [NumericField.Seed]: { label: FieldLabelKey.Seed, min: 0, max: SOLVE_MAX_SEED, qa: SolveRunsTestId.SeedField, integer: true },
 };
 
 const DEFAULT_FORM: OptionsForm = {
@@ -89,7 +99,8 @@ const DEFAULT_FORM: OptionsForm = {
   seed: SOLVE_DEFAULT_SEED,
 };
 
-const isFieldValid = (field: NumericField, value: number) => Number.isFinite(value) && value >= FIELDS[field].min && value <= FIELDS[field].max;
+const isFieldValid = (field: NumericField, value: number) =>
+  Number.isFinite(value) && value >= FIELDS[field].min && value <= FIELDS[field].max && (!FIELDS[field].integer || Number.isInteger(value));
 
 const toSolveOptionsDto = (form: OptionsForm): SolveOptionsDto => ({
   alternatives: form.alternatives,

@@ -18,5 +18,11 @@ public interface ISolveRunRepository
 
     Task<SolveRun> UpdateAsync(SolveRun entity, CancellationToken cancellationToken = default);
 
+    /// <summary>Inserts a new active run; false when the session already has one (unique active-run index).</summary>
+    Task<bool> TryAddActive(SolveRun entity, CancellationToken cancellationToken = default);
+
+    /// <summary>Saves a status change; false when another writer changed the run since it was loaded (xmin).</summary>
+    Task<bool> TryUpdate(SolveRun entity, CancellationToken cancellationToken = default);
+
     Task<SolveRun> RemoveAsync(SolveRun entity, CancellationToken cancellationToken = default);
 }

@@ -25,6 +25,8 @@ export interface ImportState {
   file: File | null;
   fileError: FileError | null;
   preview: ImportPreviewDto | null;
+  /** Sheet and header row the current preview (headers, sample, suggested mapping) was read for. */
+  previewFor: string;
   sheet: string;
   headerRow: string;
   /** ParticipantField → source header ('' = not imported). */
@@ -57,6 +59,7 @@ export interface MappingValidationErrors {
 export enum ImportReducerAction {
   File = 'file',
   Preview = 'preview',
+  RePreview = 'rePreview',
   Sheet = 'sheet',
   HeaderRow = 'headerRow',
   Field = 'field',
@@ -82,6 +85,7 @@ export const initialImportState: ImportState = {
   file: null,
   fileError: null,
   preview: null,
+  previewFor: '',
   sheet: '',
   headerRow: String(ImportLimit.FirstHeaderRow),
   fields: {},
@@ -109,7 +113,15 @@ export const checkFile = (file: File): FileError | null => {
   return file.size > ImportLimit.MaxFileSizeMb * ImportLimit.BytesPerMb ? FileError.TooLarge : null;
 };
 
-const stateFromPreview = (state: ImportState, preview: ImportPreviewDto): ImportState => {
+const PREVIEW_KEY_SEPARATOR = '\u0000';
+
+/** Identifies the sheet / header row combination a preview was read for. */
+export const previewKey = (sheet: string, headerRow: string) => `${sheet}${PREVIEW_KEY_SEPARATOR}${headerRow}`;
+
+/** True when the chosen sheet / header row differ from the ones the current preview was read for. */
+export const needsRePreview = (state: ImportState) => Boolean(state.preview) && previewKey(state.sheet, state.headerRow) !== state.previewFor;
+
+const stateFromPreview = (state: ImportState, preview: ImportPreviewDto, sheet: string, headerRow: string): ImportState => {
   const suggestedAttributes = preview.suggestedMapping?.attributes ?? {};
   const keyByHeader = Object.fromEntries(Object.entries(suggestedAttributes).map(([key, header]) => [header, key]));
   const fields = { ...(preview.suggestedMapping?.fields ?? {}) } as Partial<Record<ParticipantField, string>>;
@@ -117,8 +129,9 @@ const stateFromPreview = (state: ImportState, preview: ImportPreviewDto): Import
   return {
     ...state,
     preview,
-    sheet: preview.sheets?.[0] ?? '',
-    headerRow: String(ImportLimit.FirstHeaderRow),
+    previewFor: previewKey(sheet, headerRow),
+    sheet,
+    headerRow,
     fields,
     attributes,
     validation: null,
@@ -129,7 +142,9 @@ const stateFromPreview = (state: ImportState, preview: ImportPreviewDto): Import
 export const importReducer = (state: ImportState, action: ImportAction): ImportState => {
   switch (action.type) {
     case ImportReducerAction.Preview:
-      return action.payload.preview ? stateFromPreview(state, action.payload.preview) : state;
+      return action.payload.preview ? stateFromPreview(state, action.payload.preview, action.payload.preview.sheets?.[0] ?? '', String(ImportLimit.FirstHeaderRow)) : state;
+    case ImportReducerAction.RePreview:
+      return action.payload.preview ? stateFromPreview(state, action.payload.preview, state.sheet, state.headerRow) : state;
     case ImportReducerAction.Field:
       return action.field ? { ...state, fields: { ...state.fields, [action.field]: action.value ?? '' }, validation: null } : state;
     case ImportReducerAction.Attribute:

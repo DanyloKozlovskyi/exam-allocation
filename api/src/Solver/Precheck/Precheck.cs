@@ -154,6 +154,19 @@ public sealed class Precheck(ISeatGenerator seatGenerator, IAdjacencyBuilder adj
             {
                 diagnostics.Add(ValueDiagnostic(DiagnosticCode.NoAdjacencyImpossible, rule, parameters.AttributeKey, value, size, alphaTotal));
             }
+
+            // Participants needing accessible seats can only use accessible seats (04 §7.1).
+            var accessibleSizes = ValueSizes(input.Participants.Where(p => p.NeedsAccessibleSeat).ToList(), parameters.AttributeKey);
+            if (accessibleSizes.Count == 0 || accessibleSizes.Max(s => s.Size) < 2)
+            {
+                continue;
+            }
+
+            long accessibleAlphaTotal = rooms.Sum(r => (long)alphaCache.GetAccessible(r, parameters, cancellationToken));
+            foreach (var (value, size) in accessibleSizes.Where(s => s.Size > accessibleAlphaTotal && s.Size <= alphaTotal))
+            {
+                diagnostics.Add(ValueDiagnostic(DiagnosticCode.NoAdjacencyImpossible, rule, parameters.AttributeKey, value, size, accessibleAlphaTotal));
+            }
         }
     }
 

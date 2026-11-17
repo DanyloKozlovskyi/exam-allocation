@@ -9,7 +9,7 @@ import {
   NoAdjacentByAttributeParametersDtoType,
   SeparateByAttributeParametersDtoType,
   SpreadInRoomParametersDtoType,
-} from '../../api/generated/schema';
+} from '../../api/dtos';
 import { apiRoutes } from '../../constants/apiRoutes';
 import { mockApiUrl, mockGuid, problem } from './rooms';
 

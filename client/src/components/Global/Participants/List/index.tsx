@@ -16,10 +16,11 @@ import { AccessibleFilter, ParticipantColumn, ParticipantsTestId } from '../../.
 import { I18nNamespace } from '../../../../i18n';
 import ConfirmDialog from '../../../Common/ConfirmDialog';
 import { useAttributesQuery, useParticipantsPageQuery, type ParticipantsPageParams } from '../../Queries/participants';
-import { GRID_HEIGHT_PX, GRID_SERVER_MODE } from '../../Sessions/Common/constants';
-import { useFeedback } from '../../Sessions/Common/useFeedback';
-import { attributeColumnField, fullName, PAGE_SIZE_OPTIONS, SEARCH_DEBOUNCE_MS, sortFieldByColumn, toAccessibleParam, toEditedParticipant, toParticipantsSort } from '../Common';
+import { GRID_HEIGHT_PX, GRID_SERVER_MODE, SEARCH_DEBOUNCE_MS } from '../../../../constants/ui';
+import { useFeedback } from '../../../../hooks/useFeedback';
+import { attributeColumnField, fullName, PAGE_SIZE_OPTIONS, sortFieldByColumn, toAccessibleParam, toEditedParticipant, toParticipantsSort } from '../Common';
 import { deleteAllParticipants, deleteParticipant, editParticipant } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 const NAME_WIDTH_PX = 150;
 const TEXT_WIDTH_PX = 130;
@@ -75,7 +76,7 @@ const ParticipantsList = ({ sessionId }: Props) => {
     Promise.all([
       queryClient.invalidateQueries({ queryKey: [QueryKey.Participants, sessionId] }),
       queryClient.invalidateQueries({ queryKey: queryKeys.participants.attributes(sessionId) }),
-      queryClient.invalidateQueries({ queryKey: queryKeys.sessions.totals(sessionId) }),
+      invalidateSessionInputs(queryClient),
     ]);
 
   const editMutation = useMutation({

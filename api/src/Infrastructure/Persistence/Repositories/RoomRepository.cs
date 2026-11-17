@@ -11,17 +11,24 @@ namespace Infrastructure.Persistence.Repositories;
 public class RoomRepository(ApplicationDbContext dbContext)
     : RepositoryBase<Room, RoomId>(dbContext), IRoomRepository, IRoomQueries
 {
-    /// <summary>
-    /// Tracked lookup including seats and center. <see cref="TestCenterId.Empty"/> as <paramref name="centerId"/>
-    /// matches any center (pin commands only know the room id; see docs/change-requests.md).
-    /// </summary>
+    /// <summary>Tracked lookup including seats and center, within a center.</summary>
     public async Task<Option<Room>> GetById(TestCenterId centerId, RoomId id, CancellationToken cancellationToken)
     {
-        var anyCenter = centerId == TestCenterId.Empty();
         var entity = await Context.Rooms
             .Include(x => x.Seats)
             .Include(x => x.Center)
-            .FirstOrDefaultAsync(x => (anyCenter || x.CenterId == centerId) && x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CenterId == centerId && x.Id == id, cancellationToken);
+
+        return entity ?? Option<Room>.None;
+    }
+
+    /// <summary>Tracked lookup including seats and center, by id only.</summary>
+    public async Task<Option<Room>> GetById(RoomId id, CancellationToken cancellationToken)
+    {
+        var entity = await Context.Rooms
+            .Include(x => x.Seats)
+            .Include(x => x.Center)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         return entity ?? Option<Room>.None;
     }
@@ -72,6 +79,20 @@ public class RoomRepository(ApplicationDbContext dbContext)
             .FirstOrDefaultAsync(x => x.CenterId == centerId && x.Id == id, cancellationToken);
 
         return entity ?? Option<Room>.None;
+    }
+
+    public async Task<IReadOnlyList<Room>> GetAllBySession(ExamSessionId sessionId, CancellationToken cancellationToken)
+    {
+        return await Context.Rooms
+            .AsNoTracking()
+            .Include(x => x.Seats)
+            .Include(x => x.Center)
+            .Where(x => x.Center!.SessionId == sessionId)
+            .OrderBy(x => x.CenterId)
+            .ThenBy(x => x.Name)
+            .ThenBy(x => x.Id)
+            .AsSplitQuery()
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Room>> GetActiveBySession(ExamSessionId sessionId, CancellationToken cancellationToken)

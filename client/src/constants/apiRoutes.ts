@@ -16,6 +16,15 @@ const session = (sessionId: string) => `${SESSIONS}/${sessionId}`;
 const allocation = (allocationId: string) => `${ALLOCATIONS}/${allocationId}`;
 const solveRun = (runId: string) => `${SOLVE_RUNS}/${runId}`;
 
+/** Query parameter names (mirror the `[FromQuery]` names of the API controllers). */
+export enum ApiQueryParam {
+  Format = 'format',
+  RoomId = 'roomId',
+  Page = 'page',
+  PageSize = 'pageSize',
+  Search = 'search',
+}
+
 export const apiRoutes = {
   health: () => '/health',
   sessions: {
@@ -62,6 +71,7 @@ export const apiRoutes = {
   },
   imports: {
     upload: (sessionId: string) => `${session(sessionId)}/${IMPORTS}/upload`,
+    preview: (importId: string) => `${IMPORTS}/${importId}/preview`,
     validate: (importId: string) => `${IMPORTS}/${importId}/validate`,
     commit: (importId: string) => `${IMPORTS}/${importId}/commit`,
     template: () => `${IMPORTS}/template`,

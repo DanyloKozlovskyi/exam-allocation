@@ -19,7 +19,7 @@ public record AllocationRoomDto(Guid RoomId, string Name, bool Used, int Filled,
 
 public record AllocationCenterDto(Guid CenterId, string Name, double Latitude, double Longitude, IReadOnlyList<AllocationRoomDto> Rooms);
 
-public record AllocationDto(Guid Id, int Index, ObjectiveDto Objective, IReadOnlyList<AllocationCenterDto> Centers);
+public record AllocationDto(Guid Id, Guid RunId, int Index, ObjectiveDto Objective, IReadOnlyList<AllocationCenterDto> Centers);
 
 public record ParticipantBriefDto(Guid Id, string LastName, string FirstName, string? MiddleName, string? Group, string? School);
 

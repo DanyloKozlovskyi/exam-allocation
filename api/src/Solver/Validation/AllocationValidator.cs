@@ -10,9 +10,6 @@ namespace Solver.Validation;
 /// </summary>
 public sealed class AllocationValidator : IAllocationValidator
 {
-    /// <summary>Guards <c>⌈ratio · capacity⌉</c> against binary floating-point noise (e.g. 0.7 · 10).</summary>
-    private const double FillRatioTolerance = 1e-9;
-
     private static readonly AdjacencyKind[] NoExtraKinds = [];
 
     public ValidationReport Validate(SolverInput input, IReadOnlyList<SeatAssignment> items)
@@ -57,11 +54,15 @@ public sealed class AllocationValidator : IAllocationValidator
         var placements = new List<Placement>(items.Count);
         foreach (var item in items)
         {
-            if (!context.Participants.TryGetValue(item.ParticipantId, out var participant)
-                || !context.Rooms.TryGetValue(item.RoomId, out var room)
-                || !room.Seats.TryGetValue(item.SeatKey, out var seat))
+            if (!context.Participants.TryGetValue(item.ParticipantId, out var participant))
             {
-                // Unknown participant, unknown room, missing or disabled seat.
+                violations.Add(new Violation(ViolationKind.UnknownParticipant, true, null, item.ParticipantId, item.RoomId, item.SeatKey));
+                continue;
+            }
+
+            if (!context.Rooms.TryGetValue(item.RoomId, out var room) || !room.Seats.TryGetValue(item.SeatKey, out var seat))
+            {
+                // Unknown room, missing or disabled seat.
                 violations.Add(new Violation(ViolationKind.SeatNotFound, true, null, item.ParticipantId, item.RoomId, item.SeatKey));
                 continue;
             }
@@ -217,7 +218,7 @@ public sealed class AllocationValidator : IAllocationValidator
         long units = 0;
         foreach (var room in placements.GroupBy(x => x.Room))
         {
-            var required = (long)Math.Ceiling((parameters.MinFillRatio * room.Key.Capacity) - FillRatioTolerance);
+            var required = (long)Math.Ceiling((parameters.MinFillRatio * room.Key.Capacity) - SolverDefaults.FillRatioTolerance);
             var shortfall = required - room.Count();
             if (shortfall <= 0)
             {

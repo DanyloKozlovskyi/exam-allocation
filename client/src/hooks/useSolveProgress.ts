@@ -73,6 +73,13 @@ export const useSolveProgress = (runId: string, { transport: preferred }: Option
       void queryClient.invalidateQueries({ queryKey: [QueryKey.SolveRuns, completed.sessionId] });
     });
     connection.onclose(fallBack);
+    // A reconnect gets a new connection id without the run group: subscribe again (the hub replays the last
+    // progress, or RunCompleted when the run finished meanwhile). If that fails, poll instead.
+    connection.onreconnected(() => {
+      if (!disposed) {
+        connection.invoke(HubMethod.SubscribeToRun, runId).catch(fallBack);
+      }
+    });
 
     connection
       .start()

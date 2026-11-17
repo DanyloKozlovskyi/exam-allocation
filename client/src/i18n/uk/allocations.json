@@ -30,8 +30,6 @@
   },
   "overview": {
     "map": "Центри тестування",
-    "mapPlaceholder": "Карта буде доступна після підключення компонента карти центрів.",
-    "coordinates": "{{lat}}, {{lng}}",
     "centerFill": "Заповнено {{filled}} з {{capacity}}",
     "rooms": "Аудиторії",
     "roomFill": "{{filled}} / {{capacity}}",
@@ -89,7 +87,8 @@
     "MinRoomFillShortfall": "Аудиторія заповнена недостатньо",
     "KeepTogetherSplit": "Групу розділено між центрами",
     "SpreadViolated": "Зайняті сусідні місця",
-    "FillFromFront": "Не заповнено перші ряди"
+    "FillFromFront": "Не заповнено перші ряди",
+    "UnknownParticipant": "Невідомий учасник"
   },
   "messages": {
     "pinned": "Зафіксовано учасників: {{count}}",

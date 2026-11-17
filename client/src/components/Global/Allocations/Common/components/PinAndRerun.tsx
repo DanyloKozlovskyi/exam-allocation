@@ -12,6 +12,7 @@ import { processError } from '../../../../../helpers/processError';
 import { I18nNamespace } from '../../../../../i18n';
 import RunDialog from '../../../SolveRuns/RunDialog';
 import { pinAll } from '../mutations';
+import { invalidateSessionInputs } from '../../../Queries/invalidation';
 
 interface Props {
   sessionId: string;
@@ -36,6 +37,7 @@ const PinAndRerun = ({ sessionId, allocationId, roomIds, label, testId, onRunSta
     mutationFn: () => pinAll(allocationId, { roomIds: roomIds ?? null }),
     onSuccess: (pins) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.pins.list(sessionId) });
+      void invalidateSessionInputs(queryClient);
       enqueueSnackbar(t('messages.pinned', { count: pins.length }), { variant: SNACKBAR_SUCCESS });
       setRerunOpen(true);
     },

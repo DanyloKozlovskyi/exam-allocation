@@ -13,6 +13,7 @@ import { useRoomQuery } from '../../Queries/rooms';
 import { fromRoomDto, initialRoomState, roomReducer, RoomReducerAction, toRoomDto } from '../Common';
 import Steps from '../Common/components/Steps';
 import { editRoom } from './mutations';
+import { invalidateSessionInputs } from '../../Queries/invalidation';
 
 interface Props {
   centerId: string;
@@ -42,6 +43,7 @@ const RoomEdit = ({ centerId, roomId, onFinish }: Props) => {
     onSuccess: (saved) => {
       queryClient.setQueryData(queryKeys.rooms.detail(centerId, roomId), saved);
       void queryClient.invalidateQueries({ queryKey: queryKeys.rooms.list(centerId) });
+      void invalidateSessionInputs(queryClient);
       enqueueSnackbar(t('messages.saved'), { variant: SNACKBAR_SUCCESS });
       onFinish();
     },

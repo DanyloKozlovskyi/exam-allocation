@@ -435,3 +435,4 @@ client/test-results/
 client/playwright-report/
 samples/generated/medium/
 samples/generated/large/
+samples/generated/custom/
